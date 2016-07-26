@@ -48,7 +48,7 @@ public class ActionExecutorEventTest {
     return x -> {LogInfo.logs("Got %d, expected %d", x.selected().size(), n); return x.selected().size()==n;};
   }
   
-  @Test public void testJoin() {
+//  @Test public void testJoin() {
 //    String defaultEvents = "["
 //    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],"
 //    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],"
@@ -57,7 +57,7 @@ public class ActionExecutorEventTest {
 //    		+ "]";
 //    ContextValue context = getContext(defaultEvents);
 //    LogInfo.begin_track("testJoin");
-
+//
 //    runFormula(executor, "(: select *)", context, selectedSize(4));
 //    runFormula(executor, "(: select (or (color red) (color green)))", context, selectedSize(2));
 //    runFormula(executor, "(: select (or (row (number 1)) (row (number 2))))", context, x -> x.selected().size() == 3);
@@ -67,26 +67,24 @@ public class ActionExecutorEventTest {
 //        x -> x.selected.iterator().next().get("color").equals("red"));
 //    runFormula(executor, "(: select (and (row 1) (not (color green))))", context,
 //        x -> x.selected.iterator().next().get("color").equals("blue"));
-
-    
+//
+//    
 //    LogInfo.end_track();
-
-  }
+//
+//  }
   
   @Test public void testBasicActions() {
     String defaultEvents = "["
-    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],"
-    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],"
+    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-22T10:15:00\",\"2016-07-22T11:15:00\",[]],"
+    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T17:15:00\",[]],"
     		+ "[\"Lunch\",\"cafe\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[]],"
-    		+ "[\"Lunch\",\"bar\",\"2016-07-24T12:00:00\",\"2016-07-24T15:00:00\",[]]"
+    		+ "[\"Lunch\",\"bar\",\"2016-07-24T12:00:00\",\"2016-07-24T14:00:00\",[]]"
     		+ "]";
     ContextValue context = getContext(defaultEvents);
     LogInfo.begin_track("testBasicActions");
     
     runFormula(executor, "(:s (: select *) (: remove) (: remove))", context, x -> x.allitems.size() == 0);
     runFormula(executor, "(:s (: select *) (: update title (string new_title)))", context, x -> x.allitems.size() == 4);
-    runFormula(executor, "(:scope * (: remove))", context, x -> x.allitems.size() == 0);
-    runFormula(executor, "(:scope * (: update title (string new_title)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select (title (string Lunch))) (: remove))", context, x -> x.allitems.size() == 2);
     runFormula(executor, "(:s (: select (title (string Lunch))) (: update title (string replaced_TITLE)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select (title (string Lunch))) (: update location (string replaced_LOCATION)))", context, x -> x.allitems.size() == 4);
@@ -94,10 +92,26 @@ public class ActionExecutorEventTest {
     runFormula(executor, "(:s (: select (title (string Lunch))) (: update end_weekday (string friday)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select (title (string Lunch))) (: move start_weekday (string sat)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select (title (string Lunch))) (: move end_weekday (string sun)))", context, x -> x.allitems.size() == 4);
-    runFormula(executor, "(:s (: select (title (string Lunch))) (: update duration_hours (string 3)))", context, x -> x.allitems.size() == 4);
-    runFormula(executor, "(:s (: select *) (: update duration_minutes (string 120)))", context, x -> x.allitems.size() == 4);
-    runFormula(executor, "(:s (: select (duration_hours (string 3))) (: remove))", context, x -> x.allitems.size() == 4);
-    runFormula(executor, "(:s (: select (duration_minutes (string 90))) (: remove))", context, x -> x.allitems.size() == 4);
+    
+    // old duration
+//    runFormula(executor, "(:s (: select (title (string Lunch))) (: update duration_hours (string 3)))", context, x -> x.allitems.size() == 4);
+//    runFormula(executor, "(:s (: select *) (: update duration_minutes (string 120)))", context, x -> x.allitems.size() == 4);
+//    runFormula(executor, "(:s (: select (duration_hours (string 3))) (: remove))", context, x -> x.allitems.size() == 3);
+//    runFormula(executor, "(:s (: select (duration_minutes (string 90))) (: remove))", context, x -> x.allitems.size() == 3);
+//    runFormula(executor, "(:s (: select *) (: update duration_minutes (string 120)))", context, x -> x.allitems.size() == 4);
+    
+    // new duration
+    runFormula(executor, "(:s (: select *) (: update duration (number 90 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: update duration (number 3 hours)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 90 minutes))) (: update duration (number 90 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(: select (duration (number 60 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(: select (duration (number 60 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 60 minutes))) (: remove))", context, x -> x.allitems.size() == 3);
+    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: remove))", context, x -> x.allitems.size() == 3);
+    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 5 hours)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 30 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 1.5 hours)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 1.5 hours))) (: update duration (number 2.5 hours)))", context, x -> x.allitems.size() == 4);
     
     
     

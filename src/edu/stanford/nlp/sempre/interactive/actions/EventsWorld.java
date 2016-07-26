@@ -46,8 +46,7 @@ public class EventsWorld extends FlatWorld {
 
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
-    LogInfo.log(values);
-    LogInfo.log(values.stream().map(c -> c instanceof String).collect(Collectors.toList()));
+    LogInfo.log("HAS EVENTWORLD: " + values);
     return this.allitems.stream().filter(i -> values.contains(i.get(rel)))
         .collect(Collectors.toSet());
   }
@@ -59,8 +58,8 @@ public class EventsWorld extends FlatWorld {
   }
 
   @Override
-  public void update(String rel, Object value) {
-    this.selected.forEach(i -> i.update(rel, value));
+  public void update(String rel, Object value, Set<Item> selected) {
+    selected.forEach(i -> i.update(rel, value));
   }
   
   // calendar world specific actions TODO

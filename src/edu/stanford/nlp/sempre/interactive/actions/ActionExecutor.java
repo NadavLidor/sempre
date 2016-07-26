@@ -28,7 +28,7 @@ import fig.basic.Option;
  */
 public class ActionExecutor extends Executor {
   public static class Options {
-    @Option(gloss = "Whether to convert NumberValue to int/double") public boolean convertNumberValues = true;
+    @Option(gloss = "Whether to convert NumberValue to int/double") public boolean convertNumberValues = false; // TODO Nadav
     @Option(gloss = "Whether to convert name values to string literal") public boolean convertNameValues = true;
 
     @Option(gloss = "Print stack trace on exception") public boolean printStackTrace = false;
@@ -299,6 +299,8 @@ public class ActionExecutor extends Executor {
   }
 
   private static Object toObject(Value value) {
+  	
+  	
     if (value instanceof NumberValue && opts.convertNumberValues) {
       // Unfortunately, NumberValues don't make a distinction between ints and
       // doubles, so this is a hack.

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.testng.collections.Lists;
 import edu.stanford.nlp.sempre.Json;
+import edu.stanford.nlp.sempre.NumberValue;
 import fig.basic.LogInfo;
 
 class Person {
@@ -83,15 +84,16 @@ public class  Event extends Item {
         propval = this.start.until(this.end, ChronoUnit.HOURS);
     else if (property.equals("duration_minutes"))
         propval = this.start.until(this.end, ChronoUnit.MINUTES);
+    else if (property.equals("duration"))
+      propval = new NumberValue(this.start.until(this.end, ChronoUnit.MINUTES), "minutes");
     else if (property.equals("start_weekday"))
         propval = this.start.getDayOfWeek().getValue();
     else if (property.equals("end_weekday"))
         propval = this.end.getDayOfWeek().getValue();
     else
-      throw new RuntimeException("property " + property + " is not supported.");
+      throw new RuntimeException("EVENT GET property " + property + " is not supported.");
     
-    LogInfo.log(propval.toString());
-    LogInfo.log(propval instanceof String); //TODO right now duration is a string, but should be something like time unit
+    LogInfo.log("EVENT GET: " + propval.toString());
     return propval;
   }
   
@@ -109,6 +111,8 @@ public class  Event extends Item {
     	updateDuration((String)value, "hours");
     else if (property.equals("duration_minutes") && value instanceof String)
     	updateDuration((String)value, "minutes");
+    else if (property.equals("duration") && value instanceof NumberValue)
+    	updateDuration((NumberValue)value);
     
     //TODO continue
     
@@ -127,6 +131,27 @@ public class  Event extends Item {
     else
       throw new RuntimeException("MOVE setting property " + property + " is not supported.");
   }
+  
+  public void updateDuration(NumberValue n) {
+    double x = ((NumberValue) n).value;
+		Integer d = new Integer((int) x);
+		
+		this.end = this.start;
+		if (n.unit.equals("hours")) { 
+			this.end = this.end.plusHours(d - start.until(end, ChronoUnit.HOURS));
+			
+			// handle fractions only for hours
+			Double minutes = (x - Math.floor(x)) * 60.0;
+			if (minutes > 4.5) {
+				Integer min = minutes.intValue();
+				min = min - (min % 5); // floor to 5
+				this.end = this.end.plusMinutes(min);
+			}
+		}
+		else if (n.unit.equals("minutes"))
+			this.end = this.end.plusMinutes(d - start.until(end, ChronoUnit.MINUTES));
+  }
+  
   
   public void updateDuration(String duration, String op) {
   	
