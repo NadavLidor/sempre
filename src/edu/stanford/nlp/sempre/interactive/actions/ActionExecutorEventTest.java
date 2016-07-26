@@ -113,7 +113,26 @@ public class ActionExecutorEventTest {
     runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 1.5 hours)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select (duration (number 1.5 hours))) (: update duration (number 2.5 hours)))", context, x -> x.allitems.size() == 4);
     
+    // date (update)
+    runFormula(executor, "(:s (: select *) (: update start_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: update end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: update start_date (date 1990 08 03)) (: update end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (start_date (date 2016 07 21))) (: remove))", context, x -> x.allitems.size() == 3);
+    runFormula(executor, "(:s (: select (end_date (date 2016 07 22))) (: remove))", context, x -> x.allitems.size() == 2);
     
+    // date (move)
+    runFormula(executor, "(:s (: select *) (: move start_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: move end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    
+    // time (update)
+    runFormula(executor, "(:s (: select *) (: update start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: update start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (start_time (time 12 00))) (: remove))", context, x -> x.allitems.size() == 2);
+    runFormula(executor, "(:s (: select (end_time (time 14 00))) (: remove))", context, x -> x.allitems.size() == 3);
+    
+    // time (move)
+    runFormula(executor, "(:s (: select *) (: move start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: move end_time (time 13 30)))", context, x -> x.allitems.size() == 4);
     
 //    runFormula(executor, "(:s (: select (or (color red) (color orange))) (: remove))", context, x -> x.allitems.size() == 3);
 //    runFormula(executor, "(:scope (or (color red) (color orange)) (: remove))", context, x -> x.allitems.size() == 3);

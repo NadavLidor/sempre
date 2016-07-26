@@ -11,16 +11,16 @@ public class TimeValue extends Value {
   public final int hour;
   public final int minute;
 
+  // TODO Nadav
   public static TimeValue parseTimeValue(String timeStr) {
 	
-	// [3:00|03:00|3] pm
-	// 15:00
-	  
-	int hour = 0;
-	int minute = 0;
-	
-	
-	return new TimeValue(hour, minute);
+		// [3:00|03:00|3] pm
+		// 15:00
+		  
+		int hour = 0;
+		int minute = 0;
+		
+		return new TimeValue(hour, minute);
 	
   }
   
