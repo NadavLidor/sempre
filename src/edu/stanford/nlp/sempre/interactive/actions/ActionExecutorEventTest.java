@@ -21,6 +21,7 @@ public class ActionExecutorEventTest {
   ActionExecutor executor = new ActionExecutor();
 
   protected static void runFormula(ActionExecutor executor, String formula, ContextValue context, Predicate<FlatWorld> checker) {
+  	executor.opts.FlatWorldType = "EventsWorld";
     LogInfo.begin_track("formula: %s", formula);
     Executor.Response response = executor.execute(Formulas.fromLispTree(LispTree.proto.parseFromString(formula)), context);
     
@@ -59,15 +60,6 @@ public class ActionExecutorEventTest {
 //    LogInfo.begin_track("testJoin");
 //
 //    runFormula(executor, "(: select *)", context, selectedSize(4));
-//    runFormula(executor, "(: select (or (color red) (color green)))", context, selectedSize(2));
-//    runFormula(executor, "(: select (or (row (number 1)) (row (number 2))))", context, x -> x.selected().size() == 3);
-//    runFormula(executor, "(: select (col ((reverse row) (color red))))", context, null); // has same col as the row of color red
-//    runFormula(executor, "(: select (color ((reverse color) (row 3))))", context, null); // color of the color of cubes in row 3
-//    runFormula(executor, "(: select (color ((reverse color) (color ((reverse color) (color red))))))", context,
-//        x -> x.selected.iterator().next().get("color").equals("red"));
-//    runFormula(executor, "(: select (and (row 1) (not (color green))))", context,
-//        x -> x.selected.iterator().next().get("color").equals("blue"));
-//
 //    
 //    LogInfo.end_track();
 //
@@ -93,13 +85,6 @@ public class ActionExecutorEventTest {
     runFormula(executor, "(:s (: select (title (string Lunch))) (: move start_weekday (string sat)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select (title (string Lunch))) (: move end_weekday (string sun)))", context, x -> x.allitems.size() == 4);
     
-    // old duration
-//    runFormula(executor, "(:s (: select (title (string Lunch))) (: update duration_hours (string 3)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select *) (: update duration_minutes (string 120)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (duration_hours (string 3))) (: remove))", context, x -> x.allitems.size() == 3);
-//    runFormula(executor, "(:s (: select (duration_minutes (string 90))) (: remove))", context, x -> x.allitems.size() == 3);
-//    runFormula(executor, "(:s (: select *) (: update duration_minutes (string 120)))", context, x -> x.allitems.size() == 4);
-    
     // new duration
     runFormula(executor, "(:s (: select *) (: update duration (number 90 minutes)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select *) (: update duration (number 3 hours)))", context, x -> x.allitems.size() == 4);
@@ -113,6 +98,21 @@ public class ActionExecutorEventTest {
     runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 1.5 hours)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select (duration (number 1.5 hours))) (: update duration (number 2.5 hours)))", context, x -> x.allitems.size() == 4);
     
+    /***
+    (: newevent) (: update start_time (call addtime (call now) (number 30 minutes))
+    		(: newevent) (: update start_time (call addtime (call now) (number 1 day))
+    	(some selected set)  (: update start_time (call addtime ((reverse start_time) this) (number 30 minutes))
+    			(: move start_time (call addtime ((reverse start_time) this) (number 30 minutes))
+    					
+    					
+    					next meeting (event e) 
+    					first/last meeting of the day (eventset)
+    ***/
+    
+    					
+    
+    						
+    						
     // date (update)
     runFormula(executor, "(:s (: select *) (: update start_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select *) (: update end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
@@ -134,12 +134,8 @@ public class ActionExecutorEventTest {
     runFormula(executor, "(:s (: select *) (: move start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
     runFormula(executor, "(:s (: select *) (: move end_time (time 13 30)))", context, x -> x.allitems.size() == 4);
     
-//    runFormula(executor, "(:s (: select (or (color red) (color orange))) (: remove))", context, x -> x.allitems.size() == 3);
-//    runFormula(executor, "(:scope (or (color red) (color orange)) (: remove))", context, x -> x.allitems.size() == 3);
-//    runFormula(executor, "(:scope (or (color red) (color orange)) (:rep (number 5) (: add red top)))",
-//       context, x -> x.allitems.size() == 9);
-//    runFormula(executor, "(:scope (or (color red) (color blue)) (:rep (number 5) (:s (: move left) (: move right) (: move left))))",
-//        context, null);
+    // new event
+    runFormula(executor, "(: add)", context, x -> x.allitems.size() == 5);
     
     LogInfo.end_track();
   }

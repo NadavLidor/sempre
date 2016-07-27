@@ -2,6 +2,8 @@ package edu.stanford.nlp.sempre.interactive.actions;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +30,7 @@ public class  Event extends Item {
   public String location;
   public LocalDateTime start;
   public LocalDateTime end;
-  public int[] repeats; // [0,6] days of week, [7] monthly, [8] yearly
+  public List<Integer> repeats; // [0,6] days of week, [7] monthly, [8] yearly
   public HashSet<Person> guests;
   public Set<String> names;
 	
@@ -36,7 +38,7 @@ public class  Event extends Item {
   public Event() {
     this.title = "meeting";
 		this.location = "none";
-		this.repeats = new int[9];
+		this.repeats = new ArrayList<Integer>(Collections.nCopies(9, 0));
 		this.guests = new HashSet<Person>();
 		this.names = new HashSet<>();
 			
@@ -58,13 +60,13 @@ public class  Event extends Item {
   	this.location = location;
   }
   
-  public Event(String title, String location, LocalDateTime start, LocalDateTime end, int[] repeats, HashSet<Person> guests) {
+  public Event(String title, String location, LocalDateTime start, LocalDateTime end, List<Integer> repeats, HashSet<Person> guests) {
   	this();
   	this.title = title;
   	this.location = location;
   	this.start = start.plusMinutes(0); //TODO better way?
   	this.end = end.plusMinutes(0);
-  	for (int i : repeats) this.repeats[i] = repeats[i];
+  	for (Integer i : repeats) i = repeats.get(i);
   	// TODO guests
 
   }
@@ -80,10 +82,6 @@ public class  Event extends Item {
         propval = this.title;
     else if (property.equals("location"))
         propval = this.location;
-//    else if (property.equals("duration_hours")) TODO 
-//        propval = this.start.until(this.end, ChronoUnit.HOURS);
-//    else if (property.equals("duration_minutes"))
-//        propval = this.start.until(this.end, ChronoUnit.MINUTES);
     else if (property.equals("duration"))
       propval = new NumberValue(this.start.until(this.end, ChronoUnit.MINUTES), "minutes");
     else if (property.equals("start_weekday"))
@@ -115,10 +113,6 @@ public class  Event extends Item {
     	updateWeekday(Utils.weekdayToInt((String)value), "start");
     else if (property.equals("end_weekday") && value instanceof String)
     	updateWeekday(Utils.weekdayToInt((String)value), "end");
-//    else if (property.equals("duration_hours") && value instanceof String)
-//    	updateDuration((String)value, "hours");
-//    else if (property.equals("duration_minutes") && value instanceof String)
-//    	updateDuration((String)value, "minutes");
     else if (property.equals("duration") && value instanceof NumberValue)
     	updateDuration((NumberValue)value);
     else if (property.equals("start_date") && value instanceof DateValue)
@@ -130,13 +124,13 @@ public class  Event extends Item {
     else if (property.equals("end_time") && value instanceof TimeValue)
     	updateTime((TimeValue)value, "end");
     	
-    
     //TODO continue
     
     else
       throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported.");
   }
   
+  // move is similar to update, but preserves the current duration
   public void move(String property, Object value) {
     if (property.equals("start_weekday") && value instanceof String)
     	moveWeekday(Utils.weekdayToInt((String)value), "start");
@@ -154,7 +148,7 @@ public class  Event extends Item {
     //TODO continue
     
     else
-      throw new RuntimeException("MOVE setting property " + property + " is not supported.");
+      throw new RuntimeException("EVENT MOVE setting property " + property + " is not supported.");
   }
 
   public void updateTime(TimeValue time, String op) {
@@ -169,10 +163,7 @@ public class  Event extends Item {
   }
   
   public void moveTime(TimeValue time, String op) {
-  	
-  	// save duration
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
-  	
 	  if (op.equals("start")) {
 		  this.start = this.start.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.start = this.start.with(ChronoField.MINUTE_OF_HOUR, time.minute);
@@ -199,9 +190,7 @@ public class  Event extends Item {
   }
   
   public void moveDate(DateValue date, String op) {
-  	
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
-  	
 	  if (op.equals("start")) {
 		  if (date.day != -1) this.start = this.start.with(ChronoField.DAY_OF_MONTH, date.day);
 		  if (date.month != -1) this.start = this.start.with(ChronoField.MONTH_OF_YEAR, date.month);
@@ -235,35 +224,6 @@ public class  Event extends Item {
 		else if (n.unit.equals("minutes"))
 			this.end = this.end.plusMinutes(d - start.until(end, ChronoUnit.MINUTES));
   }
-  
-  
-//  public void updateDuration(String duration, String op) { // TODO
-//  	
-//  	boolean hours;
-//  	if (op.equals("hours")) hours = true;
-//  	else hours = false;
-//  	
-//	  try {
-//		  int d = Integer.parseInt(duration);
-//	  	this.end = this.start;
-//		  if (hours)
-//		  	this.end = this.end.plusHours(d - start.until(end, ChronoUnit.HOURS));
-//		  else this.end = this.end.plusMinutes(d - start.until(end, ChronoUnit.MINUTES));
-//	  } catch (NumberFormatException e) {
-//		  try {
-//			  float f = Float.parseFloat(duration);
-//			  if (hours && Math.abs((f - Math.floor(f)) - 0.5) < 0.1) this.end = this.end.plusMinutes(30);
-//			  int d = (int) Math.floor(f);
-//			  this.end = this.start;
-//			  if (hours) this.end = this.end.plusHours(d - start.until(end, ChronoUnit.HOURS));
-//			  else this.end = this.end.plusMinutes(d - start.until(end, ChronoUnit.MINUTES));
-//		  }
-//		  catch (Exception err) {
-//			  // do nothing
-//		  }
-//	  }
-//  }
-  
 
   public void moveWeekday(int weekday, String op) {
 	  if (weekday == -1) return;
@@ -282,9 +242,9 @@ public class  Event extends Item {
 	  }
   }
   
-  //advance start and end (start True) or just end (start False) to next occurrence of weekday (Mon = 1, Sun = 7)
+  //advance start or end to next occurrence of weekday (Mon = 1, Sun = 7)
   public void updateWeekday(int weekday, String op) {
-	  if (weekday == -1) return;
+	  if (weekday == -1) return; // could not resolve weekday to integer value
 	  
 	  if (op.equals("start")) {
 		  while (this.start.getDayOfWeek().getValue() != weekday) {  
@@ -311,12 +271,15 @@ public class  Event extends Item {
     retcube.location = ((String)props.get(1));
     retcube.start = LocalDateTime.parse(((String)props.get(2)));
     retcube.end = LocalDateTime.parse(((String)props.get(3)));
+//    retcube.repeats = ((List<Integer>)props.get(4));
+//    retcube.guests = ((HashSet<Person>)props.get(5));
 
     retcube.names.addAll((List<String>)props.get(4));
     return retcube;
   }
   public Object toJSON() {
   	List<String> globalNames = names.stream().collect(Collectors.toList());
+//    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), repeats.toString(), guests.toString(), globalNames);
     List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), globalNames);
     return event;
   }

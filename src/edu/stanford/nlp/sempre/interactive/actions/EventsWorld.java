@@ -1,5 +1,6 @@
 package edu.stanford.nlp.sempre.interactive.actions;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -7,9 +8,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import edu.stanford.nlp.sempre.ContextValue;
+import edu.stanford.nlp.sempre.DateValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NaiveKnowledgeGraph;
+import edu.stanford.nlp.sempre.NumberValue;
 import edu.stanford.nlp.sempre.StringValue;
+import edu.stanford.nlp.sempre.TimeValue;
 import fig.basic.LogInfo;
 
 // the world of stacks
@@ -66,6 +70,10 @@ public class EventsWorld extends FlatWorld {
   public void move(String rel, Object value) {
   	this.selected.forEach(i -> i.move(rel, value));
   }
+  
+  public void add() {
+  	this.allitems.add(new Event());
+  }
 
 //  public void add(String color, String dir) {
 //    Set<Item> extremeCubes = extremeCubes(dir);
@@ -85,4 +93,21 @@ public class EventsWorld extends FlatWorld {
     final int maxValue = maxvalue;
     return items.stream().filter(c -> f.apply((Event)c) >= maxValue).collect(Collectors.toSet());
   }
+  
+  // custom functions
+  public TimeValue now(){
+  	LocalDateTime n = LocalDateTime.now();
+    return new TimeValue(n.getHour(), n.getMinute());
+  }
+  
+  public DateValue today(){
+  	LocalDateTime n = LocalDateTime.now();
+    return new DateValue(n.getYear(), n.getMonthValue(), n.getDayOfMonth());
+  } // TODO // TODO // TODO // TODO// TODO // TODO 
+  
+  //TODO
+//  public LocalDateTime addtime(LocalDateTime t, NumberValue n) {
+//  	t.
+//  	
+//  }
 }
