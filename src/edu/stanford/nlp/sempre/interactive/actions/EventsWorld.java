@@ -1,6 +1,7 @@
 package edu.stanford.nlp.sempre.interactive.actions;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +67,10 @@ public class EventsWorld extends FlatWorld {
     selected.forEach(i -> i.update(rel, value));
   }
   
+  public void add(String rel, Object value) {
+  	selected.forEach(i -> i.add(rel, value));
+  }
+  
   // calendar world specific actions TODO
   public void move(String rel, Object value) {
   	this.selected.forEach(i -> i.move(rel, value));
@@ -74,6 +79,8 @@ public class EventsWorld extends FlatWorld {
   public void add() {
   	this.allitems.add(new Event());
   }
+  
+
 
 //  public void add(String color, String dir) {
 //    Set<Item> extremeCubes = extremeCubes(dir);
@@ -95,19 +102,36 @@ public class EventsWorld extends FlatWorld {
   }
   
   // custom functions
-  public TimeValue now(){
-  	LocalDateTime n = LocalDateTime.now();
-    return new TimeValue(n.getHour(), n.getMinute());
+  public LocalDateTime now(){
+  	return LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+//  	LocalDateTime n = LocalDateTime.now();
+//    return new TimeValue(n.getHour(), n.getMinute());
   }
   
   public DateValue today(){
   	LocalDateTime n = LocalDateTime.now();
     return new DateValue(n.getYear(), n.getMonthValue(), n.getDayOfMonth());
-  } // TODO // TODO // TODO // TODO// TODO // TODO 
+  }  
   
-  //TODO
-//  public LocalDateTime addtime(LocalDateTime t, NumberValue n) {
-//  	t.
-//  	
-//  }
+  //TODO //TODO
+  public LocalDateTime addtime_2(LocalDateTime t, NumberValue n, Set<Item> selected) {
+  	
+  	if (n.unit.equals("minutes")) t = t.plusMinutes((int)n.value);
+  	if (n.unit.equals("hours")) t = t.plusHours((int)n.value);
+  	if (n.unit.equals("days")) t = t.plusDays((int)n.value);
+  	if (n.unit.equals("months")) t = t.plusMonths((int)n.value);
+  	if (n.unit.equals("years")) t = t.plusYears((int)n.value);
+  	return t;
+  }
+  
+  public LocalDateTime addtime(Set<LocalDateTime> timeset, NumberValue n, Set<Item> selected) {
+  	LocalDateTime random = LocalDateTime.now();
+  	for (LocalDateTime t : timeset) {
+  		random = t;
+  		break;
+  	}
+  	return addtime_2(random, n, selected);
+  }
+  
+  
 }

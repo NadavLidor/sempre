@@ -8,4 +8,5 @@ public abstract class Item {
   
   // added
 	public void move(String rel, Object value) {}
+	public abstract void add(String rel, Object value);
 }

@@ -96,12 +96,30 @@ public class  Event extends Item {
       propval = new TimeValue(this.start.getHour(), this.start.getMinute()); 
     else if (property.equals("end_time"))
       propval = new TimeValue(this.end.getHour(), this.end.getMinute());
+    else if (property.equals("start_datetime"))
+      propval = this.start;
+    else if (property.equals("end_datetime"))
+      propval = this.end;
     else
       throw new RuntimeException("EVENT GET property " + property + " is not supported.");
     
     LogInfo.log("EVENT GET: " + propval.toString());
     return propval;
   }
+  
+  @Override
+  public void add(String property, Object value) {
+    if (property.equals("start_datetime") && value instanceof NumberValue)
+    	addDateTime((NumberValue)value, "start");
+    else if (property.equals("end_datetime") && value instanceof NumberValue)
+    	addDateTime((NumberValue)value, "end");
+    	
+    //TODO continue
+
+    else
+      throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported.");
+  }
+  
   
   @Override
   public void update(String property, Object value) {
@@ -123,15 +141,28 @@ public class  Event extends Item {
     	updateTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	updateTime((TimeValue)value, "end");
+    else if (property.equals("start_datetime") && value instanceof Set<?>)
+    	updateDateTime((Set<LocalDateTime>)value, "start");
+    else if (property.equals("end_datetime") && value instanceof Set<?>)
+    	updateDateTime((Set<LocalDateTime>)value, "end");
     	
     //TODO continue
-    
-    else
+
+    else {
+      LogInfo.log(value instanceof TimeValue); // TODO
+      LogInfo.log(value instanceof LocalDateTime); // TODO
+      LogInfo.log(value instanceof Item);
+      LogInfo.log(value instanceof DateValue);
+      LogInfo.log(value instanceof String);
+      LogInfo.log(value instanceof Object);
       throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported.");
+    }
+      
   }
   
   // move is similar to update, but preserves the current duration
-  public void move(String property, Object value) {
+  @SuppressWarnings("unchecked")
+	public void move(String property, Object value) {
     if (property.equals("start_weekday") && value instanceof String)
     	moveWeekday(Utils.weekdayToInt((String)value), "start");
     else if (property.equals("end_weekday") && value instanceof String)
@@ -144,6 +175,11 @@ public class  Event extends Item {
     	moveTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "end");
+    else if (property.equals("start_datetime") && value instanceof Set<?>)
+    	moveDateTime((Set<LocalDateTime>)value, "start");
+    else if (property.equals("end_datetime") && value instanceof Set<?>)
+    	moveDateTime((Set<LocalDateTime>)value, "end");
+    
     
     //TODO continue
     
@@ -159,6 +195,44 @@ public class  Event extends Item {
 	  else if (op.equals("end")) {
 		  this.end = this.end.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.end = this.end.with(ChronoField.MINUTE_OF_HOUR, time.minute);
+	  }
+  }
+  
+  public void updateDateTime(Set<LocalDateTime> value, String op) {
+  	
+  	LocalDateTime sample = LocalDateTime.now();
+  	for (LocalDateTime i : value) {sample = i; break;}
+  	
+	  if (op.equals("start")) this.start = sample;
+	  else if (op.equals("end")) this.end = sample;
+  }
+  
+  public void addDateTime(NumberValue time, String op) {
+	  if (op.equals("start")) {
+	  	if (time.unit.equals("minutes")) this.start = this.start.plusMinutes((int)time.value);
+	  	else if (time.unit.equals("hours")) this.start = this.start.plusHours((int)time.value);
+	  	
+	  	//TODO more units
+	  }
+	  else if (op.equals("end")) {
+	  	if (time.unit.equals("minutes")) this.end = this.end.plusMinutes((int)time.value);
+	  	else if (time.unit.equals("hours")) this.end = this.end.plusHours((int)time.value);
+	  }
+  }
+  
+  public void moveDateTime(Set<LocalDateTime> value, String op) {
+  	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
+  	
+  	LocalDateTime sample = LocalDateTime.now();
+  	for (LocalDateTime i : value) {sample = i; break;}
+  	
+	  if (op.equals("start")) {
+	  	this.start = sample;
+	  	this.end = this.start.plusMinutes(duration);
+	  }
+	  else if (op.equals("end")) {
+	  	this.end = sample;
+	  	this.start = this.end.plusMinutes(-duration);
 	  }
   }
   

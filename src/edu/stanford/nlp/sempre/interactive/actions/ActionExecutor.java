@@ -160,6 +160,10 @@ public class ActionExecutor extends Executor {
         String rel = ((ValueFormula<NameValue>) reverse.child).value.id;
         Set<Object> unary = toSet(processSetFormula(joinFormula.child, world));
         return world.get(rel, toItemSet(unary));
+        
+        // TODO TODO pick?
+        
+        
       } else {
         throw new RuntimeException("relation can either be a value, or its reverse");
       }
@@ -200,7 +204,8 @@ public class ActionExecutor extends Executor {
       Value method  = ((ValueFormula)callFormula.func).value;
       String id = ((NameValue)method).id;
       // all actions takes a fixed set as argument
-      return toItemSet(toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray())));
+//      return toItemSet(toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()))); TODO?
+      return toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()));
       
     }
     
