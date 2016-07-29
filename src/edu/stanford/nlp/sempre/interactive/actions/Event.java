@@ -222,7 +222,7 @@ public class  Event extends Item {
   
   public void moveDateTime(Set<LocalDateTime> value, String op) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
-  	
+  	LogInfo.log("moveDateTime EVENT: " + value.toString());
   	LocalDateTime sample = LocalDateTime.now();
   	for (LocalDateTime i : value) {sample = i; break;}
   	

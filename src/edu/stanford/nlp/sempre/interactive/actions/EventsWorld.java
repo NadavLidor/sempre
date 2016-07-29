@@ -2,6 +2,7 @@ package edu.stanford.nlp.sempre.interactive.actions;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,10 +103,61 @@ public class EventsWorld extends FlatWorld {
   }
   
   // custom functions
+  public Item pick_first(String rel, Set<Item> s) {
+  	if (rel.equals("start_datetime") || rel.equals("end_datetime")) {
+  		LocalDateTime last = LocalDateTime.MAX;
+    	Item t = null;
+    	for (Item i : s) {
+    		LocalDateTime temp = ((LocalDateTime)i.get(rel));
+    		if (temp.isBefore(last)) {
+    			last = temp;
+    			t = i;
+    		}
+    	}
+    	return t;
+  	}
+  	throw new RuntimeException("EventsWorlds: cannot pick the first from ItemSet " + s.toString() + " based on attribute " + rel);
+  }
+  
+  public Set<Item> after(String rel, Set<Object> values) {
+  	LogInfo.log("AFTER EVENTWORLD: " + values);
+    return this.allitems.stream().filter(i -> isAfter(values, i.get(rel)))
+        .collect(Collectors.toSet());
+  }
+  
+  public Set<Item> before(String rel, Set<Object> values) {
+  	LogInfo.log("BEFORE EVENTWORLD: " + values);
+    return this.allitems.stream().filter(i -> isBefore(values, i.get(rel)))
+        .collect(Collectors.toSet());
+}
+  
+  public boolean isAfter(Set<Object> values, Object v) {
+  	if (!(v instanceof LocalDateTime)) return false;
+  	for (Object o : values) {
+  		if (((LocalDateTime)o).isAfter((LocalDateTime)v)) 
+  			return false;
+  	}
+  	return true;
+  }
+  
+  public boolean isBefore(Set<Object> values, Object v) {
+  	if (!(v instanceof LocalDateTime)) return false;
+  	for (Object o : values) {
+  		if (((LocalDateTime)o).isBefore((LocalDateTime)v))
+  			return false; 
+  	}
+  	return true;
+  }
+  
+  
   public LocalDateTime now(){
   	return LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 //  	LocalDateTime n = LocalDateTime.now();
 //    return new TimeValue(n.getHour(), n.getMinute());
+  }
+  
+  public LocalDateTime today_start(){ // 6 am
+  	return LocalDateTime.now().withHour(0).truncatedTo(ChronoUnit.HOURS);
   }
   
   public DateValue today(){
@@ -132,6 +184,8 @@ public class EventsWorld extends FlatWorld {
   	}
   	return addtime_2(random, n, selected);
   }
+  
+
   
   
 }

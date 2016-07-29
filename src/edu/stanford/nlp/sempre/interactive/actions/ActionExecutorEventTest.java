@@ -49,101 +49,84 @@ public class ActionExecutorEventTest {
     return x -> {LogInfo.logs("Got %d, expected %d", x.selected().size(), n); return x.selected().size()==n;};
   }
   
-//  @Test public void testJoin() {
-//    String defaultEvents = "["
-//    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],"
-//    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],"
-//    		+ "[\"Lunch\",\"cafe\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[]],"
-//    		+ "[\"Lunch\",\"bar\",\"2016-07-24T12:00:00\",\"2016-07-24T13:30:00\",[]]"
-//    		+ "]";
-//    ContextValue context = getContext(defaultEvents);
-//    LogInfo.begin_track("testJoin");
-//
-//    runFormula(executor, "(: select *)", context, selectedSize(4));
-//    
-//    LogInfo.end_track();
-//
-//  }
   
-  @Test public void testBasicActions() {
-    String defaultEvents = "["
-    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-22T10:15:00\",\"2016-07-22T11:15:00\",[]],"
-    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T17:15:00\",[]],"
-    		+ "[\"Lunch\",\"cafe\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[]],"
-    		+ "[\"Lunch\",\"bar\",\"2016-07-27T15:00:00\",\"2016-07-27T16:00:00\",[]]"
+  @Test public void testRelative() {
+  	String defaultEvents = "["
+    		+ "[\"Two_day_meeting\",\"office\",\"2016-07-29T10:15:00\",\"2016-07-30T11:15:00\",[]],"
+    		+ "[\"Lunch\",\"cafe\",\"2016-07-28T13:00:00\",\"2016-07-28T14:30:00\",[]],"
+    		+ "[\"Lunch\",\"bar\",\"2016-07-28T15:00:00\",\"2016-07-28T16:00:00\",[]]"
     		+ "]";
     ContextValue context = getContext(defaultEvents);
-    LogInfo.begin_track("testBasicActions");
-//    
-//    runFormula(executor, "(:s (: select *) (: remove) (: remove))", context, x -> x.allitems.size() == 0);
-//    runFormula(executor, "(:s (: select *) (: update title (string new_title)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (title (string Lunch))) (: remove))", context, x -> x.allitems.size() == 2);
-//    runFormula(executor, "(:s (: select (title (string Lunch))) (: update title (string replaced_TITLE)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (title (string Lunch))) (: update location (string replaced_LOCATION)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (title (string Lunch))) (: update start_weekday (string wed)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (title (string Lunch))) (: update end_weekday (string friday)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (title (string Lunch))) (: move start_weekday (string sat)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (title (string Lunch))) (: move end_weekday (string sun)))", context, x -> x.allitems.size() == 4);
-//    
-//    // new duration
-//    runFormula(executor, "(:s (: select *) (: update duration (number 90 minutes)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select *) (: update duration (number 3 hours)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (duration (number 90 minutes))) (: update duration (number 90 minutes)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(: select (duration (number 60 minutes)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(: select (duration (number 60 minutes)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (duration (number 60 minutes))) (: remove))", context, x -> x.allitems.size() == 3);
-//    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: remove))", context, x -> x.allitems.size() == 3);
-//    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 5 hours)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 30 minutes)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 1.5 hours)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (duration (number 1.5 hours))) (: update duration (number 2.5 hours)))", context, x -> x.allitems.size() == 4);						
-//    						
-//    // date (update)
-//    runFormula(executor, "(:s (: select *) (: update start_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select *) (: update end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select *) (: update start_date (date 1990 08 03)) (: update end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (start_date (date 2016 07 21))) (: remove))", context, x -> x.allitems.size() == 3);
-//    runFormula(executor, "(:s (: select (end_date (date 2016 07 22))) (: remove))", context, x -> x.allitems.size() == 2);
-//    
-//    // date (move)
-//    runFormula(executor, "(:s (: select *) (: move start_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select *) (: move end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
-//    
-//    // time (update)
-//    runFormula(executor, "(:s (: select *) (: update start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select *) (: update start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select (start_time (time 12 00))) (: remove))", context, x -> x.allitems.size() == 2);
-//    runFormula(executor, "(:s (: select (end_time (time 14 00))) (: remove))", context, x -> x.allitems.size() == 3);
-//    
-//    // time (move)
-//    runFormula(executor, "(:s (: select *) (: move start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select *) (: move end_time (time 13 30)))", context, x -> x.allitems.size() == 4);
-//    
-//    // new event
-//    runFormula(executor, "(: add)", context, x -> x.allitems.size() == 5);
+    LogInfo.begin_track("testRelativeActions");
     
+    // sets for time ranges
+    String today = "(and (call after start_datetime (call today_start)) (call before start_datetime (call addtime (call today_start) (number 24 hours))))";
+    String tomorrow = "(and (call after start_datetime (call addtime (call today_start) (number 24 hours))) (call before start_datetime (call addtime (call today_start) (number 48 hours))))";
+    String yesterday = "(and (call after start_datetime (call addtime (call today_start) (number -24 hours))) (call before start_datetime (call today_start)))";
+    String next_week = "(and (call after start_datetime (call addtime (call week_start) (number 7 days))) (call before start_datetime (call addtime (call week_start) (number 14 days))))";
     
-    // relative
-//    runFormula(executor, "(:s (: select *) (: update start_datetime (call now)))", context, x -> x.allitems.size() == 4);
-//    runFormula(executor, "(:s (: select *) (: move start_datetime (call now)))", context, x -> x.allitems.size() == 4);
+    // times of day
+    String morning = "(and (call after start_datetime (call addtime (call today_start) (number 8 hours))) (call before start_datetime (call addtime (call today_start) (number 11 hours))))";
+    String afternoon = "(and (call after start_datetime (call addtime (call today_start) (number 12 hours))) (call before start_datetime (call addtime (call today_start) (number 16 hours))))";
     
-    // move my 3pm meeting to 30 minutes from now
-    runFormula(executor, "(:s (: select (and (start_date (date 2016 07 27)) (start_time (time 15 00)))) (: move start_datetime (call addtime (call now) (number 30 minutes))))", context, x -> x.allitems.size() == 4);
+    String select_meeting = "(: select (and " + today + " (start_time (time 15 00))))";
+//    
+//    // move / update my 3pm to now
+//    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call now)))", context, x -> x.allitems.size() == 3);
+//    runFormula(executor, "(:s " + select_meeting + " (: update start_datetime (call now)))", context, x -> x.allitems.size() == 3);
+//    
+//    // move my 3pm meeting to 30 minutes from now
+//    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call addtime (call now) (number 30 minutes))))", context, x -> x.allitems.size() == 3);
+//    
+//    // postpone (all) my 3pm meeting (today) by half 30 minutes
+//    runFormula(executor, "(:s " + select_meeting + " (: add start_datetime (number 30 minutes)))", context, x -> x.allitems.size() == 3);
+//    
+    
+    // postpone all my 3pm meeting (today) by half 30 minutes
+    runFormula(executor, "(:foreach " + today + " (: move start_datetime (call addtime ((reverse start_datetime) this) (number 30 minutes))))", context, x -> x.allitems.size() == 3);
+    
+//    
+//    
+//    // change my 3pm meeting to be 30 minutes after my 10:15am meeting:
+//    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call addtime ((reverse end_datetime) (and (start_date (date 2016 07 29)) (start_time (time 10 15)))) (number 30 minutes))))", context, x -> x.allitems.size() == 3);
+//    
+//    // cancel all my meeting in the next two hours WARNING: time dependent 
+////    select_meeting = "(: select (and (call after start_datetime (call now)) (call before start_datetime (call addtime (call now) (number 2 hours)))))"; 
+////    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
+//    
+//    // cancel all my meeting today
+//    select_meeting = "(: select (and (call after start_datetime (call today_start)) (call before start_datetime (call addtime (call today_start) (number 24 hours)))))"; 
+//    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 1);
+//    
+//    // cancel all my meeting tomorrow morning
+//    select_meeting = "(: select (and (call after start_datetime (call addtime (call today_start) (number 30 hours))) (call before start_datetime (call addtime (call today_start) (number 36 hours)))))"; 
+//    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
+//    
+//    // cancel my next meeting (next is 'first' across all)
+//    select_meeting = "(:s (: select ()) (: select (title (string Lunch))))";
+//    
+//    // cancel my first meeting of the day
+//    select_meeting = "(: select (call pick_first start_datetime " + today + " ))";
+//    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
+//    
+//    // cancel my first meeting tomorrow
+//    
+    
+    // push meeting to tomorrow morning (free slot)
+//    runFormula(executor, "(:s " + select_meeting + "(: free_slot (in_range start_datetime (call addtime (call today_start) (number 28 hours)) start_datetime (call addtime (call today_start) (number 32 hours)))))", context, x -> x.allitems.size() == 3);
     
     // postpone my 3pm meeting by 30 minutes
-//    runFormula(executor, "(:s (: select ...) (: update start_datetime (call addtime ((reverse start_datetime) this) (number 30 minutes))))", context, x -> x.allitems.size() == 4);
-//    
-//    runFormula(executor, "(:s (: select (and (start_date (call now)) (start_time (time 15 00)))) (: move start_datetime (call addtime ((reverse start_datetime) this) (number 30 minutes))))", context, x -> x.allitems.size() == 4);
+		//    runFormula(executor, "(:s (: select ...) (: update start_datetime (call addtime ((reverse start_datetime) this) (number 30 minutes))))", context, x -> x.allitems.size() == 4);
+		//    
+		//    runFormula(executor, "(:s (: select (and (start_date (call now)) (start_time (time 15 00)))) (: move start_datetime (call addtime ((reverse start_datetime) this) (number 30 minutes))))", context, x -> x.allitems.size() == 4);
 //    																																																																						pick first?
     // (:s (select eventSet) (update start_time (valueSet))) --> no
     // (:s (select eventSet) (add start_time (value)))
     
-    // postpone (all) my 3pm meeting (today) by half 30 minutes
-    runFormula(executor, "(:s (: select (and (start_date (date 2016 07 27)) (start_time (time 15 00)))) (: add start_datetime (number 30 minutes)))", context, x -> x.allitems.size() == 4);
     
     
-    // set meeting to 30 minutes after my 3pm meeting
-    runFormula(executor, "(:s (: select *) (: update start_datetime (call addtime ((reverse end_datetime) (and (start_date (date 2016 07 27)) (start_time (time 15 00)))) (number 30 minutes))))", context, x -> x.allitems.size() == 4);
+    
+
     
     // right now, reverse is returning a SET and i pick randomly from it. what should we do?
     // i also changed NOW to return the current time, wrapped in a set, to match reverse and make addtime work
@@ -171,6 +154,67 @@ public class ActionExecutorEventTest {
     ***/
     
     LogInfo.end_track();
+  
+  
+  }
+  
+  @Test public void testBasicActions() {
+    String defaultEvents = "["
+    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-22T10:15:00\",\"2016-07-22T11:15:00\",[]],"
+    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T17:15:00\",[]],"
+    		+ "[\"Lunch\",\"cafe\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[]],"
+    		+ "[\"Lunch\",\"bar\",\"2016-07-27T15:00:00\",\"2016-07-27T16:00:00\",[]]"
+    		+ "]";
+    ContextValue context = getContext(defaultEvents);
+    LogInfo.begin_track("testBasicActions");
+    
+    runFormula(executor, "(:s (: select *) (: remove) (: remove))", context, x -> x.allitems.size() == 0);
+    runFormula(executor, "(:s (: select *) (: update title (string new_title)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: remove))", context, x -> x.allitems.size() == 2);
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: update title (string replaced_TITLE)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: update location (string replaced_LOCATION)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: update start_weekday (string wed)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: update end_weekday (string friday)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: move start_weekday (string sat)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: move end_weekday (string sun)))", context, x -> x.allitems.size() == 4);
+    
+    // new duration
+    runFormula(executor, "(:s (: select *) (: update duration (number 90 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: update duration (number 3 hours)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 90 minutes))) (: update duration (number 90 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(: select (duration (number 60 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(: select (duration (number 60 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 60 minutes))) (: remove))", context, x -> x.allitems.size() == 2);
+    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: remove))", context, x -> x.allitems.size() == 2);
+    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 5 hours)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 30 minutes)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 1 hours))) (: update duration (number 1.5 hours)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (duration (number 1.5 hours))) (: update duration (number 2.5 hours)))", context, x -> x.allitems.size() == 4);						
+    						
+    // date (update)
+    runFormula(executor, "(:s (: select *) (: update start_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: update end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: update start_date (date 1990 08 03)) (: update end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (start_date (date 2016 07 21))) (: remove))", context, x -> x.allitems.size() == 3);
+    runFormula(executor, "(:s (: select (end_date (date 2016 07 22))) (: remove))", context, x -> x.allitems.size() == 2);
+    
+    // date (move)
+    runFormula(executor, "(:s (: select *) (: move start_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: move end_date (date 1990 08 03)))", context, x -> x.allitems.size() == 4);
+    
+    // time (update)
+    runFormula(executor, "(:s (: select *) (: update start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: update start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select (start_time (time 10 15))) (: remove))", context, x -> x.allitems.size() == 2);
+    runFormula(executor, "(:s (: select (end_time (time 13 30))) (: remove))", context, x -> x.allitems.size() == 3);
+    
+    // time (move)
+    runFormula(executor, "(:s (: select *) (: move start_time (time 13 30)))", context, x -> x.allitems.size() == 4);
+    runFormula(executor, "(:s (: select *) (: move end_time (time 13 30)))", context, x -> x.allitems.size() == 4);
+    
+    // new event
+    runFormula(executor, "(: add)", context, x -> x.allitems.size() == 5);
+    
   }
   
 }
