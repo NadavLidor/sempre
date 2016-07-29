@@ -23,7 +23,7 @@ public class EventsWorld extends FlatWorld {
   
   public static EventsWorld fromContext(ContextValue context) {
     if (context == null || context.graph == null) {
-      return fromJSON("[[\"Meeting_Pam\",\"gates\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],[\"Lunch\",\"Bytes\",\"2016-07-22T12:00:00\",\"2016-07-22T13:30:00\",[]]]");
+      return fromJSON("[[\"Meeting_Pam\",\"gates\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[0,0,0,0,0,0,0,0,0],[]],[\"Lunch\",\"Bytes\",\"2016-07-22T12:00:00\",\"2016-07-22T13:30:00\",[0,0,0,0,0,0,0,0,0],[]]]");
     }
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
@@ -78,7 +78,10 @@ public class EventsWorld extends FlatWorld {
   }
   
   public void add() {
-  	this.allitems.add(new Event());
+  	Item event  = new Event();
+  	this.allitems.add(event);
+  	this.selected.clear();
+  	this.selected.add(event);
   }
   
 
@@ -119,6 +122,23 @@ public class EventsWorld extends FlatWorld {
   	throw new RuntimeException("EventsWorlds: cannot pick the first from ItemSet " + s.toString() + " based on attribute " + rel);
   }
   
+  // custom functions
+  public Item pick_last(String rel, Set<Item> s) {
+  	if (rel.equals("start_datetime") || rel.equals("end_datetime")) {
+  		LocalDateTime last = LocalDateTime.MIN;
+    	Item t = null;
+    	for (Item i : s) {
+    		LocalDateTime temp = ((LocalDateTime)i.get(rel));
+    		if (temp.isAfter(last)) {
+    			last = temp;
+    			t = i;
+    		}
+    	}
+    	return t;
+  	}
+  	throw new RuntimeException("EventsWorlds: cannot pick the last from ItemSet " + s.toString() + " based on attribute " + rel);
+  }
+  
   public Set<Item> after(String rel, Set<Object> values) {
   	LogInfo.log("AFTER EVENTWORLD: " + values);
     return this.allitems.stream().filter(i -> isAfter(values, i.get(rel)))
@@ -129,24 +149,50 @@ public class EventsWorld extends FlatWorld {
   	LogInfo.log("BEFORE EVENTWORLD: " + values);
     return this.allitems.stream().filter(i -> isBefore(values, i.get(rel)))
         .collect(Collectors.toSet());
-}
+  }
   
   public boolean isAfter(Set<Object> values, Object v) {
-  	if (!(v instanceof LocalDateTime)) return false;
-  	for (Object o : values) {
-  		if (((LocalDateTime)o).isAfter((LocalDateTime)v)) 
-  			return false;
+  	if (v instanceof DateValue) {
+  		for (Object o : values) {
+    		if (((DateValue)v).isAfter((DateValue)o)) 
+    			return true;
+    	}
   	}
-  	return true;
+  	if (v instanceof TimeValue) {
+  		for (Object o : values) {
+    		if (((TimeValue)v).isAfter((TimeValue)o)) 
+    			return true;
+    	}
+  	}
+  	if (v instanceof LocalDateTime) {
+  		for (Object o : values) {
+    		if (((LocalDateTime)v).isAfter((LocalDateTime)o)) 
+    			return true;
+    	}
+  	}
+  	return false;
   }
   
   public boolean isBefore(Set<Object> values, Object v) {
-  	if (!(v instanceof LocalDateTime)) return false;
-  	for (Object o : values) {
-  		if (((LocalDateTime)o).isBefore((LocalDateTime)v))
-  			return false; 
+  	if (v instanceof DateValue) {
+  		for (Object o : values) {
+    		if (((DateValue)v).isBefore((DateValue)o)) 
+    			return true;
+    	}
   	}
-  	return true;
+  	if (v instanceof TimeValue) {
+  		for (Object o : values) {
+    		if (((TimeValue)v).isBefore((TimeValue)o)) 
+    			return true;
+    	}
+  	}
+  	if (v instanceof LocalDateTime) {
+  		for (Object o : values) {
+    		if (((LocalDateTime)v).isBefore((LocalDateTime)o)) 
+    			return true;
+    	}
+  	}
+  	return false;
   }
   
   
@@ -156,14 +202,28 @@ public class EventsWorld extends FlatWorld {
 //    return new TimeValue(n.getHour(), n.getMinute());
   }
   
-  public LocalDateTime today_start(){ // 6 am
+  public LocalDateTime today_start(){ // 12 am
   	return LocalDateTime.now().withHour(0).truncatedTo(ChronoUnit.HOURS);
   }
   
-  public DateValue today(){
+//  public DateValue today(){
+//  	LocalDateTime n = LocalDateTime.now();
+//    return new DateValue(n.getYear(), n.getMonthValue(), n.getDayOfMonth());
+//  }
+  
+  public LocalDateTime weekstart(){
   	LocalDateTime n = LocalDateTime.now();
-    return new DateValue(n.getYear(), n.getMonthValue(), n.getDayOfMonth());
-  }  
+  	n = n.plusDays(1 -n.getDayOfWeek().getValue()); // reset to previous Monday
+  	n = n.withHour(0).truncatedTo(ChronoUnit.HOURS); // reset to midnight
+    return n;
+  }
+  
+  public LocalDateTime monthstart(){
+  	LocalDateTime n = LocalDateTime.now();
+  	n = n.plusDays(1 -n.getDayOfMonth()); // reset to the 1st of this month
+  	n = n.withHour(0).truncatedTo(ChronoUnit.HOURS); // reset to midnight
+    return n;
+  }
   
   //TODO //TODO
   public LocalDateTime addtime_2(LocalDateTime t, NumberValue n, Set<Item> selected) {

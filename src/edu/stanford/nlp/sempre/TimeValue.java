@@ -62,5 +62,15 @@ public class TimeValue extends Value {
     return result;
   }
   
+  // return true if this TimeValue is after other TimeValue
+  public boolean isAfter(TimeValue other) {
+  	return ((this.hour > other.hour) || (this.hour == other.hour && this.minute > other.minute));
+  }
+  
+  // return true if this TimeValue is before other TimeValue
+  public boolean isBefore(TimeValue other) {
+  	return ((this.hour < other.hour) || (this.hour == other.hour && this.minute < other.minute)); 
+  }
+  
 
 }

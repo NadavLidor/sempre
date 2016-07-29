@@ -52,9 +52,9 @@ public class ActionExecutorEventTest {
   
   @Test public void testRelative() {
   	String defaultEvents = "["
-    		+ "[\"Two_day_meeting\",\"office\",\"2016-07-29T10:15:00\",\"2016-07-30T11:15:00\",[]],"
-    		+ "[\"Lunch\",\"cafe\",\"2016-07-28T13:00:00\",\"2016-07-28T14:30:00\",[]],"
-    		+ "[\"Lunch\",\"bar\",\"2016-07-28T15:00:00\",\"2016-07-28T16:00:00\",[]]"
+    		+ "[\"Two_day_meeting\",\"office\",\"2016-07-30T10:15:00\",\"2016-07-31T11:15:00\",[0,0,0,0,0,0,0,0,0],[]],"
+    		+ "[\"Lunch\",\"cafe\",\"2016-07-29T13:00:00\",\"2016-07-29T14:30:00\",[0,0,0,0,0,0,0,0,0],[]],"
+    		+ "[\"Lunch\",\"bar\",\"2016-07-29T15:00:00\",\"2016-07-29T16:00:00\",[0,0,0,0,0,0,0,0,0],[]]"
     		+ "]";
     ContextValue context = getContext(defaultEvents);
     LogInfo.begin_track("testRelativeActions");
@@ -65,73 +65,78 @@ public class ActionExecutorEventTest {
     String yesterday = "(and (call after start_datetime (call addtime (call today_start) (number -24 hours))) (call before start_datetime (call today_start)))";
     String next_week = "(and (call after start_datetime (call addtime (call week_start) (number 7 days))) (call before start_datetime (call addtime (call week_start) (number 14 days))))";
     
-    // times of day
-    String morning = "(and (call after start_datetime (call addtime (call today_start) (number 8 hours))) (call before start_datetime (call addtime (call today_start) (number 11 hours))))";
-    String afternoon = "(and (call after start_datetime (call addtime (call today_start) (number 12 hours))) (call before start_datetime (call addtime (call today_start) (number 16 hours))))";
+    // times of day (general, not day specific)
+    
     
     String select_meeting = "(: select (and " + today + " (start_time (time 15 00))))";
-//    
-//    // move / update my 3pm to now
-//    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call now)))", context, x -> x.allitems.size() == 3);
-//    runFormula(executor, "(:s " + select_meeting + " (: update start_datetime (call now)))", context, x -> x.allitems.size() == 3);
-//    
-//    // move my 3pm meeting to 30 minutes from now
-//    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call addtime (call now) (number 30 minutes))))", context, x -> x.allitems.size() == 3);
-//    
-//    // postpone (all) my 3pm meeting (today) by half 30 minutes
-//    runFormula(executor, "(:s " + select_meeting + " (: add start_datetime (number 30 minutes)))", context, x -> x.allitems.size() == 3);
-//    
     
-    // postpone all my 3pm meeting (today) by half 30 minutes
+    // move / update my 3pm to now
+    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call now)))", context, x -> x.allitems.size() == 3);
+    runFormula(executor, "(:s " + select_meeting + " (: update start_datetime (call now)))", context, x -> x.allitems.size() == 3);
+    
+    // move my 3pm meeting to 30 minutes from now
+    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call addtime (call now) (number 30 minutes))))", context, x -> x.allitems.size() == 3);
+    
+    
+    // postpone my meetings today by half 30 minutes
     runFormula(executor, "(:foreach " + today + " (: move start_datetime (call addtime ((reverse start_datetime) this) (number 30 minutes))))", context, x -> x.allitems.size() == 3);
     
-//    
-//    
-//    // change my 3pm meeting to be 30 minutes after my 10:15am meeting:
-//    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call addtime ((reverse end_datetime) (and (start_date (date 2016 07 29)) (start_time (time 10 15)))) (number 30 minutes))))", context, x -> x.allitems.size() == 3);
-//    
-//    // cancel all my meeting in the next two hours WARNING: time dependent 
-////    select_meeting = "(: select (and (call after start_datetime (call now)) (call before start_datetime (call addtime (call now) (number 2 hours)))))"; 
-////    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
-//    
-//    // cancel all my meeting today
-//    select_meeting = "(: select (and (call after start_datetime (call today_start)) (call before start_datetime (call addtime (call today_start) (number 24 hours)))))"; 
-//    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 1);
-//    
-//    // cancel all my meeting tomorrow morning
-//    select_meeting = "(: select (and (call after start_datetime (call addtime (call today_start) (number 30 hours))) (call before start_datetime (call addtime (call today_start) (number 36 hours)))))"; 
+    // change my 3pm meeting to be 30 minutes after my 10:15am meeting:
+    runFormula(executor, "(:s " + select_meeting + " (: move start_datetime (call addtime ((reverse end_datetime) (and (start_date (date 2016 07 29)) (start_time (time 10 15)))) (number 30 minutes))))", context, x -> x.allitems.size() == 3);
+    
+    // cancel all my meeting in the next two hours WARNING: time dependent 
+//    select_meeting = "(: select (and (call after start_datetime (call now)) (call before start_datetime (call addtime (call now) (number 2 hours)))))"; 
 //    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
-//    
-//    // cancel my next meeting (next is 'first' across all)
-//    select_meeting = "(:s (: select ()) (: select (title (string Lunch))))";
-//    
-//    // cancel my first meeting of the day
-//    select_meeting = "(: select (call pick_first start_datetime " + today + " ))";
-//    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
-//    
-//    // cancel my first meeting tomorrow
-//    
+    
+    // cancel all my meetings today
+    select_meeting = "(: select (and (call after start_datetime (call today_start)) (call before start_datetime (call addtime (call today_start) (number 24 hours)))))"; 
+    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 1);
+    
+    // cancel all my meeting tomorrow morning
+    select_meeting = "(: select (and (call after start_datetime (call addtime (call today_start) (number 30 hours))) (call before start_datetime (call addtime (call today_start) (number 36 hours)))))"; 
+    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
+    
+    // cancel my next meeting (next is 'first' across all)
+    select_meeting = "(:s (: select ()) (: select (title (string Lunch))))";
+    
+    // move my meetings on Saturday morning to Sunday
+    // version 1
+    String sat_morning = "(and (call after start_datetime (call addtime (call weekstart) (number 126 hours))) (call before start_datetime (call addtime (call weekstart) (number 132 hours))))";
+    runFormula(executor, "(:s (: select " + sat_morning + ") (: move start_weekday (number 7))))", context, x -> x.allitems.size() == 3);
+    
+    // version 2
+    String sat = "(and (call after start_datetime (call addtime (call weekstart) (number 120 hours))) (call before start_datetime (call addtime (call weekstart) (number 144 hours))))";
+    String morning = "(and (call after start_time (time 08 00)) (call before start_time (time 11 00)))";
+    sat_morning = "(and " + sat + " " + morning + ")";
+    runFormula(executor, "(:s (: select " + sat_morning + ") (: move start_weekday (number 7))))", context, x -> x.allitems.size() == 3);
+    
+    // move my meetings on the morning of the 30th to Sunday
+    // with range
+    String the_date = "(and (call after start_date (date 2016 07 29)) (call before start_date (date 2016 07 31)))";
+    sat_morning = "(and " + the_date + " " + morning + ")";
+    runFormula(executor, "(:s (: select " + sat_morning + ") (: move start_weekday (number 7))))", context, x -> x.allitems.size() == 3);
+    // exact
+    the_date = "(start_date (date 2016 07 30))";
+    sat_morning = "(and " + the_date + " " + morning + ")";
+    runFormula(executor, "(:s (: select " + sat_morning + ") (: move start_weekday (number 7))))", context, x -> x.allitems.size() == 3);
+    
+    // cancel my first meeting of the day
+    select_meeting = "(: select (call pick_first start_datetime " + today + " ))";
+    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
+    
+    // cancel my last meeting of the day
+    select_meeting = "(: select (call pick_last start_datetime " + today + " ))";
+    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
+    
+    // cancel my first meeting tomorrow
+    select_meeting = "(: select (call pick_first start_datetime " + tomorrow + " ))";
+    runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
+    
+    
     
     // push meeting to tomorrow morning (free slot)
-//    runFormula(executor, "(:s " + select_meeting + "(: free_slot (in_range start_datetime (call addtime (call today_start) (number 28 hours)) start_datetime (call addtime (call today_start) (number 32 hours)))))", context, x -> x.allitems.size() == 3);
+//    runFormula(executor, "(:s " + select_meeting + "(: free_slot (in_range start_datetime (call addtime (call today_start) (number 28 hours)) start_datetime (call addtime (call today_start) (number 32 hours)))))", context, x -> x.allitems.size() == 3);    
     
-    // postpone my 3pm meeting by 30 minutes
-		//    runFormula(executor, "(:s (: select ...) (: update start_datetime (call addtime ((reverse start_datetime) this) (number 30 minutes))))", context, x -> x.allitems.size() == 4);
-		//    
-		//    runFormula(executor, "(:s (: select (and (start_date (call now)) (start_time (time 15 00)))) (: move start_datetime (call addtime ((reverse start_datetime) this) (number 30 minutes))))", context, x -> x.allitems.size() == 4);
-//    																																																																						pick first?
-    // (:s (select eventSet) (update start_time (valueSet))) --> no
-    // (:s (select eventSet) (add start_time (value)))
-    
-    
-    
-    
-
-    
-    // right now, reverse is returning a SET and i pick randomly from it. what should we do?
-    // i also changed NOW to return the current time, wrapped in a set, to match reverse and make addtime work
-    
-    // bulk changes: postpone all meeting tomorrow
     // 
     
     
@@ -160,10 +165,10 @@ public class ActionExecutorEventTest {
   
   @Test public void testBasicActions() {
     String defaultEvents = "["
-    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-22T10:15:00\",\"2016-07-22T11:15:00\",[]],"
-    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T17:15:00\",[]],"
-    		+ "[\"Lunch\",\"cafe\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[]],"
-    		+ "[\"Lunch\",\"bar\",\"2016-07-27T15:00:00\",\"2016-07-27T16:00:00\",[]]"
+    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-22T10:15:00\",\"2016-07-22T11:15:00\",[0,0,0,0,0,0,0,0,0],[]],"
+    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T17:15:00\",[0,0,0,0,0,0,0,0,0],[]],"
+    		+ "[\"Lunch\",\"cafe\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[0,0,0,0,0,0,0,0,0],[]],"
+    		+ "[\"Lunch\",\"bar\",\"2016-07-27T15:00:00\",\"2016-07-27T16:00:00\",[0,0,0,0,0,0,0,0,0],[]]"
     		+ "]";
     ContextValue context = getContext(defaultEvents);
     LogInfo.begin_track("testBasicActions");

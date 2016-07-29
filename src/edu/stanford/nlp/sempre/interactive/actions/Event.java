@@ -85,9 +85,9 @@ public class  Event extends Item {
     else if (property.equals("duration"))
       propval = new NumberValue(this.start.until(this.end, ChronoUnit.MINUTES), "minutes");
     else if (property.equals("start_weekday"))
-        propval = this.start.getDayOfWeek().getValue();
+        propval = new NumberValue(this.start.getDayOfWeek().getValue());
     else if (property.equals("end_weekday"))
-        propval = this.end.getDayOfWeek().getValue();
+        propval = new NumberValue(this.end.getDayOfWeek().getValue());
     else if (property.equals("start_date"))
       propval = new DateValue(this.start.getYear(), this.start.getMonthValue(), this.start.getDayOfMonth()); 
     else if (property.equals("end_date"))
@@ -121,16 +121,21 @@ public class  Event extends Item {
   }
   
   
-  @Override
+  @SuppressWarnings("unchecked")
+	@Override
   public void update(String property, Object value) {
     if (property.equals("title") && value instanceof String)
     	this.title = (String)value;
     else if (property.equals("location") && value instanceof String)
     	this.location = (String)value;
-    else if (property.equals("start_weekday") && value instanceof String)
+    else if (property.equals("start_weekday") && value instanceof String) //TODO
     	updateWeekday(Utils.weekdayToInt((String)value), "start");
-    else if (property.equals("end_weekday") && value instanceof String)
+    else if (property.equals("end_weekday") && value instanceof String) //TODO
     	updateWeekday(Utils.weekdayToInt((String)value), "end");
+    else if (property.equals("start_weekday") && value instanceof NumberValue)
+    	updateWeekday((NumberValue)value, "start");
+    else if (property.equals("end_weekday") && value instanceof NumberValue)
+    	updateWeekday((NumberValue)value, "end");
     else if (property.equals("duration") && value instanceof NumberValue)
     	updateDuration((NumberValue)value);
     else if (property.equals("start_date") && value instanceof DateValue)
@@ -163,10 +168,14 @@ public class  Event extends Item {
   // move is similar to update, but preserves the current duration
   @SuppressWarnings("unchecked")
 	public void move(String property, Object value) {
-    if (property.equals("start_weekday") && value instanceof String)
+    if (property.equals("start_weekday") && value instanceof String) // TODO
     	moveWeekday(Utils.weekdayToInt((String)value), "start");
-    else if (property.equals("end_weekday") && value instanceof String)
+    else if (property.equals("end_weekday") && value instanceof String) // TODO
     	moveWeekday(Utils.weekdayToInt((String)value), "end");
+    else if (property.equals("start_weekday") && value instanceof NumberValue)
+    	moveWeekday((NumberValue)value, "start");
+    else if (property.equals("end_weekday") && value instanceof NumberValue)
+    	moveWeekday((NumberValue)value, "end");
     else if (property.equals("start_date") && value instanceof DateValue)
     	moveDate((DateValue)value, "start");
     else if (property.equals("end_date") && value instanceof DateValue)
@@ -299,8 +308,26 @@ public class  Event extends Item {
 			this.end = this.end.plusMinutes(d - start.until(end, ChronoUnit.MINUTES));
   }
 
-  public void moveWeekday(int weekday, String op) {
+  public void moveWeekday(int weekday, String op) { // TODO
 	  if (weekday == -1) return;
+	  
+	  if (op.equals("start")) {
+		  while (this.start.getDayOfWeek().getValue() != weekday) {  
+			  this.start = this.start.plusDays(1);
+			  this.end = this.end.plusDays(1);
+		  }
+	  }
+	  else if (op.equals("end")) {
+		  while (this.end.getDayOfWeek().getValue() != weekday) {
+		  	this.start = this.start.plusDays(1);
+			  this.end = this.end.plusDays(1);
+		  }
+	  }
+  }
+  
+  public void moveWeekday(NumberValue n, String op) {
+  	int weekday = (int)n.value;
+	  if (weekday < 1 || weekday > 7) return;
 	  
 	  if (op.equals("start")) {
 		  while (this.start.getDayOfWeek().getValue() != weekday) {  
@@ -332,6 +359,23 @@ public class  Event extends Item {
 	  }
   }
   
+  //advance start or end to next occurrence of weekday (Mon = 1, Sun = 7)
+  public void updateWeekday(NumberValue n, String op) {
+  	int weekday = (int)n.value;
+	  if (weekday < 1 || weekday > 7) return;
+	  
+	  if (op.equals("start")) {
+		  while (this.start.getDayOfWeek().getValue() != weekday) {  
+			  this.start = this.start.plusDays(1);
+		  }
+	  }
+	  else if (op.equals("end")) {
+		  while (this.end.getDayOfWeek().getValue() != weekday) {  
+			  this.end = this.end.plusDays(1);
+		  }
+	  }
+  }
+  
 
   @SuppressWarnings("unchecked")
   public static Event fromJSON(String json) {
@@ -345,16 +389,18 @@ public class  Event extends Item {
     retcube.location = ((String)props.get(1));
     retcube.start = LocalDateTime.parse(((String)props.get(2)));
     retcube.end = LocalDateTime.parse(((String)props.get(3)));
-//    retcube.repeats = ((List<Integer>)props.get(4));
+    List<Integer> temp = (List<Integer>)props.get(4);
+    for (int i = 0; i < retcube.repeats.size(); i++) retcube.repeats.set(i, temp.get(i));
 //    retcube.guests = ((HashSet<Person>)props.get(5));
 
-    retcube.names.addAll((List<String>)props.get(4));
+    retcube.names.addAll((List<String>)props.get(5));
     return retcube;
   }
   public Object toJSON() {
   	List<String> globalNames = names.stream().collect(Collectors.toList());
+  	List<Integer> globalRepeats = repeats.stream().collect(Collectors.toList());
 //    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), repeats.toString(), guests.toString(), globalNames);
-    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), globalNames);
+    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), globalRepeats, globalNames);
     return event;
   }
 

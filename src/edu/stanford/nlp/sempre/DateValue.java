@@ -1,6 +1,8 @@
 package edu.stanford.nlp.sempre;
 
 import fig.basic.LispTree;
+import fig.basic.LogInfo;
+
 import java.util.Calendar;
 
 public class DateValue extends Value {
@@ -103,5 +105,28 @@ public class DateValue extends Value {
     if (this.month != that.month) return false;
     if (this.day != that.day) return false;
     return true;
+  }
+  
+  // return true if this DateValue is after other DateValue
+  public boolean isAfter(DateValue other) {
+  	// if value is -1 in either, disregard field
+  	int this_year = this.year; int this_month = this.month; int this_day = this.day;
+  	int other_year = other.year; int other_month = other.month; int other_day = other.day;
+  	if (this_year == -1 || other_year == -1) {this_year = -1; other_year = -1;}
+  	if (this_month == -1 || other_month == -1) {this_month = -1; other_month = -1;}
+  	if (this_day == -1 || other_day == -1) {this_day = -1; other_day = -1;}
+  	LogInfo.log((this_year > other_year) || (this_year == other_year && this_month > other_month) || (this_year == other_year && this_month == other_month && this_day > other_day)); // TODO
+  	return ((this_year > other_year) || (this_year == other_year && this_month > other_month) || (this_year == other_year && this_month == other_month && this_day > other_day));
+  }
+  // return true if this DateValue is after other DateValue
+  public boolean isBefore(DateValue other) {
+  	// if value is -1 in either, disregard field
+  	int this_year = this.year; int this_month = this.month; int this_day = this.day;
+  	int other_year = other.year; int other_month = other.month; int other_day = other.day;
+  	if (this_year == -1 || other_year == -1) {this_year = -1; other_year = -1;}
+  	if (this_month == -1 || other_month == -1) {this_month = -1; other_month = -1;}
+  	if (this_day == -1 || other_day == -1) {this_day = -1; other_day = -1;}
+  	LogInfo.log((this_year < other_year) || (this_year == other_year && this_month < other_month) || (this_year == other_year && this_month == other_month && this_day < other_day)); // TODO
+  	return ((this_year < other_year) || (this_year == other_year && this_month < other_month) || (this_year == other_year && this_month == other_month && this_day < other_day));
   }
 }
