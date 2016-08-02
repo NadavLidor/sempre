@@ -22,6 +22,7 @@ public class ActionExecutorTest {
 
   protected static void runFormula(ActionExecutor executor, String formula, ContextValue context, Predicate<FlatWorld> checker) {
     LogInfo.begin_track("formula: %s", formula);
+    executor.opts.FlatWorldType = "BlocksWorld";
     Executor.Response response = executor.execute(Formulas.fromLispTree(LispTree.proto.parseFromString(formula)), context);
     
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
@@ -55,13 +56,13 @@ public class ActionExecutorTest {
 
     runFormula(executor, "(: select *)", context, selectedSize(4));
     runFormula(executor, "(: select (or (color red) (color green)))", context, selectedSize(2));
-    runFormula(executor, "(: select (or (row (number 1)) (row (number 2))))", context, x -> x.selected().size() == 3);
+    runFormula(executor, "(: select (or (row (number 1)) (row (number 2))))", context, selectedSize(3));
     runFormula(executor, "(: select (col ((reverse row) (color red))))", context, null); // has same col as the row of color red
     runFormula(executor, "(: select (color ((reverse color) (row 3))))", context, null); // color of the color of cubes in row 3
     runFormula(executor, "(: select (color ((reverse color) (color ((reverse color) (color red))))))", context,
-        x -> x.selected.iterator().next().get("color").equals("red"));
+        x -> x.selected().iterator().next().get("color").equals("red"));
     runFormula(executor, "(: select (and (row 1) (not (color green))))", context,
-        x -> x.selected.isEmpty());
+        x -> x.selected().isEmpty());
     LogInfo.end_track();
 
   }
@@ -113,8 +114,8 @@ public class ActionExecutorTest {
     String defaultBlocks = "[[1,1,1,\"Green\",[]],[1,1,2,\"Green\",[]],[1,1,3,\"Green\",[]],[1,1,4,\"Green\",[]]]";
     ContextValue context = getContext(defaultBlocks);
     LogInfo.begin_track("testMoreActions");
-    runFormula(executor, "(:s (: select *) (: select (call veryx bot)) (: remove) )", context, x -> x.allitems.size() == 3);
-    runFormula(executor, "(:s (: select *) (:for (call veryx left) (: remove)))", context, x -> x.allitems.size() == 0);
+    runFormula(executor, "(:s (:for * (: select)) (: select (call veryx bot)) (: remove) )", context, x -> x.allitems.size() == 3);
+    runFormula(executor, "(:s (:for * (: select)) (:for (call veryx left) (: remove)))", context, x -> x.allitems.size() == 0);
     runFormula(executor, "(:for * (:for (call veryx bot) (:loop (number 2) (:s (: add red left) (: select (call adj top))))))", context, 
         x -> x.allitems.size() == 6);
     // x -> x.selected().iterator().next().get("height") == new Integer(3)
@@ -122,5 +123,18 @@ public class ActionExecutorTest {
 
    LogInfo.end_track();
   }
+  
+  @Test public void troubleCases() {
+    // this is a green stick
+    String defaultBlocks = "[[1,1,1,\"Green\",[\"S\"]],[1,1,2,\"Green\",[]],[1,1,3,\"Green\",[]],[1,1,4,\"Green\",[]]]";
+    ContextValue context = getContext(defaultBlocks);
+    LogInfo.begin_track("testMoreActions");
+    runFormula(executor, "(:s (: select *) (: select (or (call veryx bot) (call veryx top))))", context, selectedSize(2));
+    runFormula(executor, " (: select (or (call veryx top (color green)) (call veryx bot (color green))))", context, selectedSize(2));
+    runFormula(executor, " (: select (or (call veryx top (color green)) (call veryx bot (color green))))", context, selectedSize(2));
+    runFormula(executor, " (: select (call adj top this))", context, selectedSize(1));
+    LogInfo.end_track();
+  }
+  
   
 }

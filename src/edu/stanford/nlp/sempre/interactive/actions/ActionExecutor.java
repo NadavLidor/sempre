@@ -42,8 +42,6 @@ public class ActionExecutor extends Executor {
   }
   public static Options opts = new Options();
  
-
-  
   public Response execute(Formula formula, ContextValue context) {
     // We can do beta reduction here since macro substitution preserves the
     // denotation (unlike for lambda DCS).
@@ -66,8 +64,7 @@ public class ActionExecutor extends Executor {
       String id = ((NameValue)method).id;
       // all actions takes a fixed set as argument
       invoke(id, world, f.args.subList(1, f.args.size()).stream().map(x -> processSetFormula(x, world)).toArray());
-    }
-    else if (f.mode == ActionFormula.Mode.sequential) {
+    } else if (f.mode == ActionFormula.Mode.sequential) {
       for (Formula child : f.args) {
         performActions((ActionFormula)child, world);
       }
@@ -89,21 +86,26 @@ public class ActionExecutor extends Executor {
       if (cond) performActions((ActionFormula)f.args.get(1), world);
     } else if (f.mode == ActionFormula.Mode.forset) {
       Set<Object> selected = toSet(processSetFormula(f.args.get(0), world));
-      world.push();
+      Set<Item> previous = world.selected;
       world.select(toItemSet(selected));
       performActions((ActionFormula)f.args.get(1), world);
-      world.pop();
+      world.select(previous);
       
     } else if (f.mode == ActionFormula.Mode.foreach) {
       Set<Object> selected = toSet(processSetFormula(f.args.get(0), world));
-      world.push();
+      Set<Item> previous = world.selected;
       CopyOnWriteArraySet<Object> fixedset = Sets.newCopyOnWriteArraySet(selected);
       for (Object item : fixedset) {
         world.select(toItemSet(toSet(item)));
         performActions((ActionFormula)f.args.get(1), world);
       }
-
-      world.pop();
+      world.select(previous);
+    } else if (f.mode == ActionFormula.Mode.scope) {
+      Set<Item> scope = toItemSet(toSet(processSetFormula(f.args.get(0), world)));
+      Set<Item> previous = world.all();
+      world.allitems = scope;
+      performActions((ActionFormula)f.args.get(1), world);
+      world.allitems = Sets.union(previous, world.allitems);
     }
   }
   
@@ -111,7 +113,7 @@ public class ActionExecutor extends Executor {
     if (maybeSet instanceof Set) return (Set<Object>) maybeSet;
     else return Sets.newHashSet(maybeSet);
   }
-  private Object toNotSet(Set<Object> set) {
+  private Object toElement(Set<Object> set) {
     if (set.size() == 1) {
       return set.iterator().next();
     }
@@ -148,7 +150,7 @@ public class ActionExecutor extends Executor {
       } 
       return toObject(((ValueFormula<?>) formula).value);
     }
-
+    
     if (formula instanceof JoinFormula) {
       JoinFormula joinFormula = (JoinFormula)formula;
       if (joinFormula.relation instanceof ValueFormula) {
@@ -168,21 +170,26 @@ public class ActionExecutor extends Executor {
         throw new RuntimeException("relation can either be a value, or its reverse");
       }
     }
-
+    
     if (formula instanceof MergeFormula)  {
       MergeFormula mergeFormula = (MergeFormula)formula;
       MergeFormula.Mode mode = mergeFormula.mode;
       Set<Object> set1 = toSet(processSetFormula(mergeFormula.child1, world)); 
       Set<Object> set2 = toSet(processSetFormula(mergeFormula.child2, world));
+      LogInfo.logsForce(set1);
+      LogInfo.logsForce(set2);
+      LogInfo.logsForce("the union is " + Sets.union(set1, set2));
+
       if (mode == MergeFormula.Mode.or)
         return Sets.union(set1, set2);
       if (mode == MergeFormula.Mode.and)
         return Sets.intersection(set1, set2);
+      
     }
     
     if (formula instanceof NotFormula)  {
       NotFormula notFormula = (NotFormula)formula;
-      Set<Object> set1 = toSet(processSetFormula(notFormula.child, world)); 
+      Set<Item> set1 = toItemSet(toSet(processSetFormula(notFormula.child, world))); 
       return Sets.difference(world.allitems, set1);
     }
 
@@ -198,6 +205,21 @@ public class ActionExecutor extends Executor {
         return Sets.newHashSet(set.stream().max((s,t) -> ((NumberValue)s).value < ((NumberValue)t).value ? 1 : -1));
     }
     
+    if (formula instanceof ArithmeticFormula)  {
+      ArithmeticFormula arithmeticFormula = (ArithmeticFormula)formula;
+      Double arg1 = (Double)processSetFormula(arithmeticFormula.child1, world);
+      Double arg2 = (Double)processSetFormula(arithmeticFormula.child2, world);
+      ArithmeticFormula.Mode mode = arithmeticFormula.mode;
+      if (mode == ArithmeticFormula.Mode.add)
+        return arg1 + arg2;
+      if (mode == ArithmeticFormula.Mode.sub)
+        return arg1 - arg2;
+      if (mode == ArithmeticFormula.Mode.mul)
+        return arg1  * arg2;
+      if (mode == ArithmeticFormula.Mode.div)
+        return arg1 / arg2;
+    }
+    
     if (formula instanceof CallFormula)  {
       CallFormula callFormula = (CallFormula)formula;
       @SuppressWarnings("rawtypes")
@@ -205,15 +227,13 @@ public class ActionExecutor extends Executor {
       String id = ((NameValue)method).id;
       // all actions takes a fixed set as argument
 //      return toItemSet(toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()))); TODO?
-      return toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()));
-      
+//      	return toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()));
+      return invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()); // TODO sida's latest
     }
-    
     if (formula instanceof SuperlativeFormula)  {
       throw new RuntimeException("SuperlativeFormula is not implemented");
     }
-    
-    throw new RuntimeException("We do not recognize this formula type: " + formula.getClass());
+    throw new RuntimeException("ActionExecutor does not handle this formula type: " + formula.getClass());
   }
 
   // Example: id = "Math.cos". similar to JavaExecutor's invoke,
@@ -279,7 +299,8 @@ public class ActionExecutor extends Executor {
     List<String> types = Lists.newArrayList();
     for (Object arg : args)
       types.add(arg.getClass().toString());
-    throw new RuntimeException("Method " + methodName + " not found in class " + cls + " with arguments " + Arrays.asList(args) + " having types " + types + "; candidates: " + nameMatches);
+    throw new RuntimeException("Method " + methodName + " not found in class " + cls + " with arguments "
+      + Arrays.asList(args) + " having types " + types + "; candidates: " + nameMatches);
   }
 
   private int typeCastCost(Class[] types, Object[] args) {
@@ -291,7 +312,7 @@ public class ActionExecutor extends Executor {
       if (types[i] == Set.class)
         args[i] = toSet(args[i]);
       if (types[i] != Set.class && args[i].getClass() == Set.class) {
-        args[i] = toNotSet((Set<Object>)args[i]);
+        args[i] = toElement((Set<Object>)args[i]);
       }
         
       cost += typeCastCost(types[i], args[i]);
