@@ -7,14 +7,16 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Sets;
+
 import edu.stanford.nlp.sempre.ContextValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NaiveKnowledgeGraph;
 import edu.stanford.nlp.sempre.StringValue;
-import fig.basic.LogInfo;
 
 enum CubeColor {
-  Red(0), Orange(1), Yellow (2), Green(3), Blue(4), White(6), Black(7), Pink(8), Brown(9), Gray(10), None(-5);
+  Red(0), Orange(1), Yellow (2), Green(3), Blue(4), White(6), Black(7),
+  Pink(8), Brown(9), Gray(10), Anchor(11), None(-5);
   private final int value;
   private static final int MAXCOLOR = 7;
   CubeColor(int value) { this.value = value; }
@@ -57,6 +59,8 @@ enum Direction {
 // the world of stacks
 public class BlocksWorld extends FlatWorld {
   public Map<String,Set<Block>> vars;
+
+  public final String SELECT = "S";
   
   public static BlocksWorld fromContext(ContextValue context) {
     if (context == null || context.graph == null) {
@@ -66,7 +70,7 @@ public class BlocksWorld extends FlatWorld {
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
     return fromJSON(wallString);
   }
-  
+
   public void reset(String name) {
     this.allitems.clear();
     this.selected.clear();
@@ -99,23 +103,23 @@ public class BlocksWorld extends FlatWorld {
   }
 
   public void base(int x, int y) {
-    Block basecube = new Block(x, y, 0, CubeColor.Gray.toString());
+    Block basecube = new Block(x, y, 0, CubeColor.Anchor.toString());
     this.allitems.add(basecube);
     this.selected.add(basecube);
   }
-  
+
   @SuppressWarnings("unchecked")
   public BlocksWorld(Set<Item> blockset) {
     super();
     this.allitems = blockset;
-    this.selected = blockset.stream().filter(b -> ((Block)b).names.contains("S")).collect(Collectors.toSet());
-    this.allitems.forEach(b -> ((Block)b).names.clear());
+    // this.selected = blockset.stream().filter(b -> ((Block)b).names.contains("S")).collect(Collectors.toSet());
+    // this.allitems.forEach(b -> ((Block)b).names.clear());
   }
 
   public String toJSON() {
     // return "testtest";
-    this.allitems.forEach(b -> ((Block)b).names.remove("S"));
-    this.selected.forEach(b -> ((Block)b).names.add("S"));
+    // this.allitems.forEach(b -> ((Block)b).names.remove(SELECT));
+    // this.selected.forEach(b -> ((Block)b).names.add(SELECT));
     return Json.writeValueAsStringHard(this.allitems.stream().map(c -> ((Block)c).toJSON()).collect(Collectors.toList()));
     // return this.worldlist.stream().map(c -> c.toJSON()).reduce("", (o, n) -> o+","+n);
   }
@@ -146,18 +150,46 @@ public class BlocksWorld extends FlatWorld {
 
   @Override
   public void update(String rel, Object value, Set<Item> selected) {
+    allitems.removeAll(selected);
     selected.forEach(i -> i.update(rel, value));
+    allitems.addAll(selected);
   }
   
+  // optional overrides
+  @Override
+  public void select(Set<Item> set) {
+    this.allitems.forEach(b -> ((Block)b).names.remove(SELECT));
+    allitems.stream().filter(d -> set.contains(d)).collect(Collectors.toSet()).forEach(b -> ((Block)b).names.add(SELECT));
+    this.selected = set;
+  }  
+  
+  @Override
+  public Set<Item> selected() {
+    return allitems.stream().filter(b -> ((Block)b).names.contains(SELECT)).collect(Collectors.toSet());
+  }
+
   // block world specific actions
   public void move(String dir, Set<Item> selected) {
+    allitems.removeAll(selected);
     selected.forEach(b -> ((Block)b).move(Direction.fromString(dir)));
+    allitems.addAll(selected);
   }
 
   public void add(String color, String dir, Set<Item> selected) {
     Set<Item> extremeCubes = extremeCubes(dir, selected);
     this.allitems.addAll( extremeCubes.stream().map(
-        c -> {Block d = ((Block)c).copy(Direction.fromString(dir)); d.color = CubeColor.fromString(color); return d;}
+        c -> {
+          Block d = ((Block)c).copy(Direction.fromString(dir));
+
+          // a bit of a hack to deal with special anchor points, where adding to its top behaves differently
+          if (d.color.equals(CubeColor.Anchor) && d.height == 1) {
+            d.height = d.height - 1;
+            ((Block)c).color = CubeColor.fromString(color);
+            return c;
+          }
+
+          d.color = CubeColor.fromString(color);
+          return d;}
         )
         .collect(Collectors.toList()) );
   }
@@ -187,10 +219,13 @@ public class BlocksWorld extends FlatWorld {
   }
   public Set<Item> adj(String dirstr, Set<Item> selected) {
     Direction dir = Direction.fromString(dirstr);
-    return selected.stream().map(c -> ((Block)c).copy(dir)).filter(c -> allitems.contains(c))
+    Set<Item> allselected = selected.stream().map(c -> ((Block)c).copy(dir)).filter(c -> allitems.contains(c))
         .collect(Collectors.toSet());
+    allitems.removeAll(allselected);
+    allitems.addAll(allselected);
+    return allselected;
   }
-  
+
   public static Set<Item> argmax(Function<Block, Integer> f, Set<Item> items) {
     int maxvalue = Integer.MIN_VALUE;
     for (Item i : items) {

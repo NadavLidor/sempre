@@ -30,20 +30,23 @@ public class BeamParser extends Parser {
   
   public BeamParser(Spec spec) {
     super(spec);
-    
-    Parser.opts.trackedCats = Parser.opts.trackedCats.stream()
-        .map(s -> "$" + s).collect(Collectors.toList());
-    LogInfo.logs("Mapped trackedCats to: %s", Parser.opts.trackedCats);
+    if (Parser.opts.trackedCats != null) {
+      Parser.opts.trackedCats = Parser.opts.trackedCats.stream()
+          .map(s -> "$" + s).collect(Collectors.toList());
+      LogInfo.logs("Mapped trackedCats to: %s", Parser.opts.trackedCats);
+    }
     // Index the non-cat-unary rules
     trie = new Trie();
-    for (Rule rule : grammar.rules)
-      addRule(rule);
+    for (Rule rule : grammar.rules) {
+      if (!rule.isFloating())
+        addRule(rule);
+    }
     if (Parser.opts.visualizeChartFilling)
       this.chartFillOut = IOUtils.openOutAppendEasy(Execution.getFile("chartfill"));
   }
 
   public synchronized void addRule(Rule rule) {
-    if (!rule.isCatUnary() && rule.isAnchored()) {
+    if (!rule.isCatUnary()) {
       trie.add(rule);
     }
   }
