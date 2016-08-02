@@ -2,6 +2,8 @@ package edu.stanford.nlp.sempre.interactive.actions;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,8 @@ public class EventsWorld extends FlatWorld {
   
   public static EventsWorld fromContext(ContextValue context) {
     if (context == null || context.graph == null) {
-      return fromJSON("[[\"Meeting_Pam\",\"gates\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[0,0,0,0,0,0,0,0,0],[]],[\"Lunch\",\"Bytes\",\"2016-07-22T12:00:00\",\"2016-07-22T13:30:00\",[0,0,0,0,0,0,0,0,0],[]]]");
+      return fromJSON("[[\"Meeting_Pam\",\"gates\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[0,0,0,0,0,0,0,0,0],[]]"
+      		+ ",[\"Lunch\",\"Bytes\",\"2016-07-22T12:00:00\",\"2016-07-22T13:30:00\",[0,0,0,0,0,0,0,0,0],[]]]");
     }
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
@@ -53,6 +56,10 @@ public class EventsWorld extends FlatWorld {
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
     LogInfo.log("HAS EVENTWORLD: " + values);
+    if (rel.equals("repeat")) {
+      return this.allitems.stream().filter(i -> !Collections.disjoint(values, (Collection<?>) i.get(rel)))
+          .collect(Collectors.toSet());
+    }
     return this.allitems.stream().filter(i -> values.contains(i.get(rel)))
         .collect(Collectors.toSet());
   }
@@ -65,7 +72,9 @@ public class EventsWorld extends FlatWorld {
 
   @Override
   public void update(String rel, Object value, Set<Item> selected) {
+//  	this.allitems.removeAll(selected);
     selected.forEach(i -> i.update(rel, value));
+//    this.allitems.addAll(selected);
   }
   
   public void add(String rel, Object value) {

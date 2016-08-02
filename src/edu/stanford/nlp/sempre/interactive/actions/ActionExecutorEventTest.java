@@ -52,9 +52,9 @@ public class ActionExecutorEventTest {
   
   @Test public void testRelative() {
   	String defaultEvents = "["
-    		+ "[\"Two_day_meeting\",\"office\",\"2016-07-30T10:15:00\",\"2016-07-31T11:15:00\",[0,0,0,0,0,0,0,0,0],[]],"
-    		+ "[\"Lunch\",\"cafe\",\"2016-07-29T13:00:00\",\"2016-07-29T14:30:00\",[0,0,0,0,0,0,0,0,0],[]],"
-    		+ "[\"Lunch\",\"bar\",\"2016-07-29T15:00:00\",\"2016-07-29T16:00:00\",[0,0,0,0,0,0,0,0,0],[]]"
+    		+ "[\"Two_day_meeting\",\"office\",\"2016-08-02T10:15:00\",\"2016-08-03T11:15:00\",[false,false,false,false,false,false,false,false,false],[]],"
+    		+ "[\"Lunch\",\"cafe\",\"2016-08-01T13:00:00\",\"2016-08-01T14:30:00\",[false,false,false,false,false,false,false,false,false],[]],"
+    		+ "[\"Appointment\",\"bar\",\"2016-08-01T15:00:00\",\"2016-08-01T16:00:00\",[false,false,false,true,false,false,false,false,false],[]]" //repeats on Thu.
     		+ "]";
     ContextValue context = getContext(defaultEvents);
     LogInfo.begin_track("testRelativeActions");
@@ -112,18 +112,18 @@ public class ActionExecutorEventTest {
     
     // move my meetings on the morning of the 30th to Sunday
     // with range
-    String the_date = "(and (call after start_date (date 2016 07 29)) (call before start_date (date 2016 07 31)))";
+    String the_date = "(and (call after start_date (date 2016 07 29)) (call before start_date (date 2016 07 31)))"; //TODO date
     sat_morning = "(and " + the_date + " " + morning + ")";
     runFormula(executor, "(:s (: select " + sat_morning + ") (: move start_weekday (number 7))))", context, x -> x.allitems.size() == 3);
     // exact
-    the_date = "(start_date (date 2016 07 30))";
+    the_date = "(start_date (date 2016 07 30))"; //TODO date
     sat_morning = "(and " + the_date + " " + morning + ")";
     runFormula(executor, "(:s (: select " + sat_morning + ") (: move start_weekday (number 7))))", context, x -> x.allitems.size() == 3);
     
     // cancel my first meeting of the day
     select_meeting = "(: select (call pick_first start_datetime " + today + " ))";
     runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
-    
+
     // cancel my last meeting of the day
     select_meeting = "(: select (call pick_last start_datetime " + today + " ))";
     runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
@@ -131,6 +131,21 @@ public class ActionExecutorEventTest {
     // cancel my first meeting tomorrow
     select_meeting = "(: select (call pick_first start_datetime " + tomorrow + " ))";
     runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
+    
+    // repeat my Lunch to be every monday
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: update repeat (number 1)))", context, x -> x.allitems.size() == 3);
+    
+    // repeat my Lunch weekly
+    runFormula(executor, "(:s (: select (title (string Lunch))) (: update repeat (number 0)))", context, x -> x.allitems.size() == 3);
+    
+    // clear all repeats from appointment
+    runFormula(executor, "(:s (: select (title (string Appointment))) (: update repeat (number 11)))", context, x -> x.allitems.size() == 3);
+    
+    // cancel all meeting that repeat weekly
+    runFormula(executor, "(:s (: select (repeat (number 0))) (: remove))", context, x -> x.allitems.size() == 2);
+    
+    // cancel all meeting that repeat on Thursdays
+    runFormula(executor, "(:s (: select (repeat (number 4))) (: remove))", context, x -> x.allitems.size() == 2);
     
     
     
