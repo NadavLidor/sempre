@@ -47,12 +47,15 @@ public class ActionExecutor extends Executor {
     // denotation (unlike for lambda DCS).
     FlatWorld world = FlatWorld.fromContext(opts.FlatWorldType, context);
     formula = Formulas.betaReduction(formula);
-    performActions((ActionFormula)formula, world);
     try {
+      performActions((ActionFormula)formula, world);
       return new Response(new StringValue(world.toJSON()));
     } catch (Exception e) {
       // Comment this out if we expect lots of innocuous type checking failures
-      if (opts.printStackTrace) e.printStackTrace();
+      if (opts.printStackTrace) {
+        LogInfo.log("tried to execute: " + formula.toString());
+        e.printStackTrace();
+      }
       return new Response(ErrorValue.badJava(e.toString()));
     }
   }
@@ -87,19 +90,19 @@ public class ActionExecutor extends Executor {
     } else if (f.mode == ActionFormula.Mode.forset) {
       Set<Object> selected = toSet(processSetFormula(f.args.get(0), world));
       Set<Item> previous = world.selected;
-      world.select(toItemSet(selected));
+      world.selected = toItemSet(selected);
       performActions((ActionFormula)f.args.get(1), world);
-      world.select(previous);
+      world.selected = previous;
       
     } else if (f.mode == ActionFormula.Mode.foreach) {
       Set<Object> selected = toSet(processSetFormula(f.args.get(0), world));
       Set<Item> previous = world.selected;
       CopyOnWriteArraySet<Object> fixedset = Sets.newCopyOnWriteArraySet(selected);
       for (Object item : fixedset) {
-        world.select(toItemSet(toSet(item)));
+        world.selected = (toItemSet(toSet(item)));
         performActions((ActionFormula)f.args.get(1), world);
       }
-      world.select(previous);
+      world.selected = previous;
     } else if (f.mode == ActionFormula.Mode.scope) {
       Set<Item> scope = toItemSet(toSet(processSetFormula(f.args.get(0), world)));
       Set<Item> previous = world.all();

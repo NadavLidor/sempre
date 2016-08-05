@@ -26,7 +26,8 @@ public class ActionFormula extends Formula {
     forset(":for"), // (:for (and this (color red)) (:s (: add red top) (: add yellow top) (: remove)))
     foreach(":foreach"), // (:foreach * (add ((reverse color) this) top))
     assignment(":let"), // (:let * @x)
-    scope(":scope"); // (:scope this (blah))
+    scope(":scope"),
+    other(":?"); // (:scope this (blah))
 
     private final String value;
     Mode(String value) {this.value = value;}
@@ -44,11 +45,14 @@ public class ActionFormula extends Formula {
   }
 
   public static Mode parseMode(String mode) {
+    if (mode == null) return null;
     for (Mode m : Mode.values()) {
       // LogInfo.logs("mode string %s \t== %s \t!= %s", m.toString(), mode, m.name());
       if (m.toString().equals(mode))
         return m;
     }
+    if (mode.startsWith(":"))
+      throw new RuntimeException("Unsupported ActionFormula mode");
     return null;
   }
 

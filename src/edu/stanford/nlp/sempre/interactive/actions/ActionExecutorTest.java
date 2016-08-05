@@ -106,6 +106,7 @@ public class ActionExecutorTest {
         context, null);
     runFormula(executor, "(:foreach (or (color red) (color blue)) (: update color ((reverse color) (call adj left))))",
         context, null);
+    
     LogInfo.end_track();
   }
   
@@ -127,6 +128,18 @@ public class ActionExecutorTest {
   @Test public void troubleCases() {
     // this is a green stick
     String defaultBlocks = "[[1,1,1,\"Green\",[\"S\"]],[1,1,2,\"Green\",[]],[1,1,3,\"Green\",[]],[1,1,4,\"Green\",[]]]";
+    ContextValue context = getContext(defaultBlocks);
+    LogInfo.begin_track("testMoreActions");
+    runFormula(executor, "(:s (: select *) (: select (or (call veryx bot) (call veryx top))))", context, selectedSize(2));
+    runFormula(executor, " (: select (or (call veryx top (color green)) (call veryx bot (color green))))", context, selectedSize(2));
+    runFormula(executor, " (: select (or (call veryx top (color green)) (call veryx bot (color green))))", context, selectedSize(2));
+    runFormula(executor, " (: select (call adj top this))", context, selectedSize(1));
+    LogInfo.end_track();
+  }
+  
+  @Test public void testAnchor() {
+    // this is a green stick
+    String defaultBlocks = "[[1,1,0,\"Anchor\",[\"S\"]]]";
     ContextValue context = getContext(defaultBlocks);
     LogInfo.begin_track("testMoreActions");
     runFormula(executor, "(:s (: select *) (: select (or (call veryx bot) (call veryx top))))", context, selectedSize(2));
