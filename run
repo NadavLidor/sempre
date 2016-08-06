@@ -989,7 +989,62 @@ addMode('interactive', 'interactive semantic parsing in blocks', lambda { |e| l(
   selo(0, 'Grammar.inPaths', './shrdlurn/blocksworld.grammar', './shrdlurn/calendar.grammar'),
 
   o('Params.initWeightsRandomly', false),
-  selo(1, 'Grammar.inPaths', './shrdlurn/magnetic.grammar', './shrdlurn/actionLDCS_calendar.grammar'),
+  o('Grammar.binarizeRules', false),
+  o('Grammar.useApplyFn', 'interactive.ApplyFn'),
+  o('LanguageAnalyzer.lowerCaseTokens', true),
+  o('LanguageAnalyzer.useLemmaTokens', false),
+
+  o('Parser.pruneErrorValues', true),
+  o('Parser', 'BeamFloatingParser'),
+  o('Parser.trackedCats', 'Color', 'Numbers', 'Direction', 'Set', 'Set2', 'Action', 'Actions'),
+  o('FloatingParser.defaultIsFloating', true),
+
+o('ParserState.customExpectedCounts', 'UNIFORM'),
+o('Params.l1Reg', 'lazy'),
+o('Params.l1RegCoeff', 0.001),
+o('Parser.beamSize', 50),
+o('Params.initStepSize', 0.1),
+o('Params.adaptiveStepSize', true),
+
+# o('FeatureExtractor.featureComputers', 'interactive.blocks.RicherStacksWorldFeatureComputer'),
+o('FeatureExtractor.featureDomains', 'rule'),
+o('RicherStacksWorldFeatureComputer.ngramN', 2),
+o('RicherStacksWorldFeatureComputer.parameterizeCats', 'Number','Color'),
+
+lambda { |e| system 'mkdir -p ./shrdlurn_output/examples/'},
+lambda { |e| system 'mkdir -p ./shrdlurn_output/logs/'},
+lambda { |e| system 'mkdir -p ./shrdlurn_output/grammar/'},
+o('Master.newExamplesPath', './shrdlurn_output/examples/'),
+o('Master.logPath', './shrdlurn_output/logs/'),
+o('Master.newGrammarPath', './shrdlurn_output/grammar/'),
+
+o('Master.onlineLearnExamples', true),
+o('Master.independentSessions', false),
+
+o('Dataset.inPaths', 'def:./shrdlurn/sidaw.lisp'),
+o('Learner.maxTrainIters', 1),
+
+o('server', true),
+o('Server.numThreads', 8),
+nil) })
+
+
+############################################################
+
+############################################################
+# {2016-08-01} [Nadav Lidor]: interactive semantic parsing
+addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda { |e| l(
+  rlwrap,
+  header('core,interactive'),
+  'edu.stanford.nlp.sempre.Main',
+  figOpts,
+
+  o('Executor', 'interactive.actions.ActionExecutor'),
+  o('ActionExecutor.convertNumberValues', true),
+  o('ActionExecutor.printStackTrace', true),
+  selo(1, 'ActionExecutor.FlatWorldType', 'BlocksWorld', 'EventsWorld'),
+  o('Params.initWeightsRandomly', false),
+  selo(2, 'Grammar.inPaths', './shrdlurn/magnetic.grammar', './shrdlurn/blocksworld.grammar', './shrdlurn/actionLDCS_calendar.grammar'),
   o('Grammar.binarizeRules', false),
   o('Grammar.useApplyFn', 'interactive.ApplyFn'),
   o('LanguageAnalyzer.lowerCaseTokens', true),

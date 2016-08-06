@@ -52,9 +52,9 @@ public class ActionExecutorEventTest {
   
   @Test public void testRelative() {
   	String defaultEvents = "["
-    		+ "[\"Two_day_meeting\",\"office\",\"2016-08-02T10:15:00\",\"2016-08-03T11:15:00\",[false,false,false,false,false,false,false,false,false],[]],"
-    		+ "[\"Lunch\",\"cafe\",\"2016-08-01T13:00:00\",\"2016-08-01T14:30:00\",[false,false,false,false,false,false,false,false,false],[]],"
-    		+ "[\"Appointment\",\"bar\",\"2016-08-01T15:00:00\",\"2016-08-01T16:00:00\",[false,false,false,true,false,false,false,false,false],[]]" //repeats on Thu.
+    		+ "[\"Two_day_meeting\",\"office\",\"2016-08-03T10:15:00\",\"2016-08-04T11:15:00\",[false,false,false,false,false,false,false,false,false],[]],"
+    		+ "[\"Lunch\",\"cafe\",\"2016-08-02T13:00:00\",\"2016-08-02T14:30:00\",[false,false,false,false,false,false,false,false,false],[]],"
+    		+ "[\"Appointment\",\"bar\",\"2016-08-02T15:00:00\",\"2016-08-02T16:00:00\",[false,false,false,true,false,false,false,false,false],[]]" //repeats on Thu.
     		+ "]";
     ContextValue context = getContext(defaultEvents);
     LogInfo.begin_track("testRelativeActions");
@@ -180,10 +180,10 @@ public class ActionExecutorEventTest {
   
   @Test public void testBasicActions() {
     String defaultEvents = "["
-    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-22T10:15:00\",\"2016-07-22T11:15:00\",[0,0,0,0,0,0,0,0,0],[]],"
-    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T17:15:00\",[0,0,0,0,0,0,0,0,0],[]],"
-    		+ "[\"Lunch\",\"cafe\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[0,0,0,0,0,0,0,0,0],[]],"
-    		+ "[\"Lunch\",\"bar\",\"2016-07-27T15:00:00\",\"2016-07-27T16:00:00\",[0,0,0,0,0,0,0,0,0],[]]"
+    		+ "[\"Meeting_Pam\",\"office\",\"2016-07-22T10:15:00\",\"2016-07-22T11:15:00\",[false,false,false,true,false,false,false,false,false],[]],"
+    		+ "[\"Group_Meeting\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T17:15:00\",[false,false,false,true,false,false,false,false,false],[]],"
+    		+ "[\"Lunch\",\"cafe\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[false,false,false,true,false,false,false,false,false],[]],"
+    		+ "[\"Lunch\",\"bar\",\"2016-07-27T15:00:00\",\"2016-07-27T16:00:00\",[false,false,false,true,false,false,false,false,false],[]]"
     		+ "]";
     ContextValue context = getContext(defaultEvents);
     LogInfo.begin_track("testBasicActions");

@@ -37,8 +37,8 @@ public class ActionExecutor extends Executor {
     public String classPathPrefix = "edu.stanford.nlp.sempre";
 
     @Option(gloss = "The type of FlatWorld used")
-//    public String FlatWorldType = "EventsWorld";
-    public String FlatWorldType = "BlocksWorld";
+    public String FlatWorldType = "EventsWorld";
+//    public String FlatWorldType = "BlocksWorld";
   }
   public static Options opts = new Options();
  
@@ -230,8 +230,8 @@ public class ActionExecutor extends Executor {
       String id = ((NameValue)method).id;
       // all actions takes a fixed set as argument
 //      return toItemSet(toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()))); TODO?
-//      	return toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()));
-      return invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()); // TODO sida's latest
+      	return toSet(invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()));
+//      return invoke(id, world, callFormula.args.stream().map(x -> processSetFormula(x, world)).toArray()); // TODO sida's latest
     }
     if (formula instanceof SuperlativeFormula)  {
       throw new RuntimeException("SuperlativeFormula is not implemented");

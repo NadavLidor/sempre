@@ -2,11 +2,13 @@ package edu.stanford.nlp.sempre.interactive.actions;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,10 +25,19 @@ import fig.basic.LogInfo;
 // the world of stacks
 public class EventsWorld extends FlatWorld {
   
+	public void select(Set<Item> set) {
+		this.selected = set;
+	} //TODO
+	
   public static EventsWorld fromContext(ContextValue context) {
     if (context == null || context.graph == null) {
-      return fromJSON("[[\"Meeting_Pam\",\"gates\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[0,0,0,0,0,0,0,0,0],[]]"
-      		+ ",[\"Lunch\",\"Bytes\",\"2016-07-22T12:00:00\",\"2016-07-22T13:30:00\",[0,0,0,0,0,0,0,0,0],[]]]");
+    	
+    	String defaultEvents = "["
+      		+ "[\"Two_day_meeting\",\"office\",\"2016-08-03T10:15:00\",\"2016-08-04T11:15:00\",[false,false,false,false,false,false,false,false,false],[]],"
+      		+ "[\"Lunch\",\"cafe\",\"2016-08-02T13:00:00\",\"2016-08-02T14:30:00\",[false,false,false,false,false,false,false,false,false],[]],"
+      		+ "[\"Appointment\",\"bar\",\"2016-08-02T15:00:00\",\"2016-08-02T16:00:00\",[false,false,false,true,false,false,false,false,false],[]]" //repeats on Thu.
+      		+ "]";
+      return fromJSON(defaultEvents);
     }
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
@@ -255,6 +266,24 @@ public class EventsWorld extends FlatWorld {
   }
   
 
+  public void reset(String name) {
+    this.allitems.clear();
+    this.selected.clear();
+    this.allitems.add(new Event());
+    
+    List<Boolean> repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
+    HashSet<Person> guests = new HashSet<Person>();
+    this.allitems.add(new Event("meeting2", "location2", LocalDateTime.now().plusMinutes(120), LocalDateTime.now().plusMinutes(180), repeats, guests));
+    this.allitems.add(new Event("meeting3", "location3", LocalDateTime.now().plusHours(-48), LocalDateTime.now().plusHours(-24), repeats, guests));
+    
+  }
   
+  public void add_event(String name) {
+    
+    List<Boolean> repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
+    HashSet<Person> guests = new HashSet<Person>();
+    this.allitems.add(new Event("new_meeting", "new_location", LocalDateTime.now(), LocalDateTime.now().plusMinutes(120), repeats, guests));
+    
+  }
   
 }
