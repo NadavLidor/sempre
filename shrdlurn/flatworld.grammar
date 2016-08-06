@@ -100,4 +100,4 @@
 
 (rule $Action ($Sets) (lambda s (: @select (var s))) (floating 1))
 (rule $Action ($Rel $ValueSets) (lambda r (lambda v (: @change (var r) (var v)))) (floating 1))
-(rule $Action (nothing) (ConstantFn (: @remove)) (floating 1))
+# (rule $Action (nothing) (ConstantFn (: @remove)) (floating 1))
