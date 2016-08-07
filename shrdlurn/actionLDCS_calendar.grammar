@@ -1,14 +1,35 @@
 
 # (rule $Action (nothing) (lambda d (: update start_date (date 11 10 9)))) #explore dateset / valueset
 # (rule $Action ($Number) (lambda d (: update start_date (date 11 10 9)))) #explore dateset / valueset
-(rule $Action ($DateSet) (lambda d (:s (: select *) (: move start_date (var d)))))
-(rule $Action ($DateSet) (lambda d (:s (: select *) (: move end_date (var d)))))
+# (rule $Action ($DateSet) (lambda d (:s (: select *) (: move start_date (var d)))))
+# (rule $Action ($DateSet) (lambda d (:s (: select *) (: move end_date (var d)))))
 
-# (rule $Actions ($Action) (IdentityFn) (floating 1))
+
 
 # (rule $Action (nothing) (ConstantFn (: select *)) (floating 1))
+# (rule $Action (nothing) (ConstantFn (: add)) (floating 1))
+# (rule $Actions ($Action) (IdentityFn) (floating 1))
+
+
+# select 
+(rule $Actions ($Action) (lambda a (:s (: select *) (var a))) (floating 1))
+(rule $Action ($EventSet) (lambda e (: select (var e))) (floating 1))
+
+
 # (rule $Action ($DateSet) (lambda d (: move end_date (var d))))
 
+
+# EventSet: dates
+(rule $EventSet ($DateSet) (lambda d (start_date (var d))) (anchored 1))
+(rule $EventSet ($DateSet) (lambda d (end_date (var d))) (anchored 1))
+
+
+
+# update/move: dates
+(rule $Action ($DateSet) (lambda d (: move end_date (var d))) (floating 1))
+(rule $Action ($DateSet) (lambda d (: move start_date (var d))) (floating 1))
+(rule $Action ($DateSet) (lambda d (: update end_date (var d))) (floating 1))
+(rule $Action ($DateSet) (lambda d (: update start_date (var d))) (floating 1))
 
 (rule $DateSet ($PHRASE) (DateFn))
 
