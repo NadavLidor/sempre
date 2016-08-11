@@ -46,10 +46,10 @@
 
 ### numbers
 
-(rule $NumberR ($TOKEN) (NumberFn) (anchored 1))
-(rule $Duration ($NumberR) (lambda n (call numberunit (var n) (string minutes))) (anchored 1))
-(rule $Duration ($NumberR) (lambda n (call numberunit (var n) (string hours))) (anchored 1))
-(rule $Duration ($NumberR) (lambda n (call numberunit (var n) (string days))) (anchored 1))
+(rule $Number ($TOKEN) (NumberFn) (anchored 1))
+(rule $Duration ($Number) (lambda n (call numberunit (var n) (string minutes))) (anchored 1))
+(rule $Duration ($Number) (lambda n (call numberunit (var n) (string hours))) (anchored 1))
+(rule $Duration ($Number) (lambda n (call numberunit (var n) (string days))) (anchored 1))
 
 (for @num (1 2 3 4 5 6 7)
 (rule $Weekday (@num) (ConstantFn (number @num)) (anchored 1))

@@ -64,8 +64,8 @@
 (@op (var n1) (var n2))))) (anchored 1))
 )
 
-#(rule $Number ([ $Numbers ]) (IdentityFn) (anchored 1))
-#(rule $Numbers ( $Number ) (IdentityFn) (anchored 1))
+(rule $Number ([ $Numbers ]) (IdentityFn) (anchored 1))
+(rule $Numbers ( $Number ) (IdentityFn) (anchored 1))
 
 ###### Keywords 
 #(rule $Keyword (add) (ConstantFn (string keyword))  (anchored 1))
