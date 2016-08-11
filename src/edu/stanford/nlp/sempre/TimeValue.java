@@ -11,14 +11,23 @@ public class TimeValue extends Value {
   public final int hour;
   public final int minute;
 
-  // TODO Nadav
+  // timeStr format is THH:MM:SS (M and S optional)
   public static TimeValue parseTimeValue(String timeStr) {
 	
-		// [3:00|03:00|3] pm
-		// 15:00
-		  
-		int hour = 0;
-		int minute = 0;
+  	//extract hour 
+  	int hour = -1;
+  	int minute = 0;
+  	try {
+  		hour = Integer.parseInt(timeStr.substring(1, 3));
+  	} catch (NumberFormatException e) {} // do nothing on exception
+  	
+  	
+  	// extract minute
+  	if (timeStr.length() >= 5) {
+    	try {
+    		minute = Integer.parseInt(timeStr.substring(4, 6));
+    	} catch (NumberFormatException e) {} // do nothing on exception
+  	}
 		
 		return new TimeValue(hour, minute);
 	

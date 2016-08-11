@@ -1,5 +1,6 @@
 package edu.stanford.nlp.sempre.interactive.actions;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -42,7 +43,8 @@ public class  Event extends Item {
 		this.guests = new HashSet<Person>();
 		this.names = new HashSet<>();
 			
-		this.start = LocalDateTime.now();
+//		this.start = LocalDateTime.now();
+		this.start = LocalDateTime.now(ZoneId.of("UTC+00:00"));
 		if (this.start.getMinute() > 30) {
 			this.start = this.start.plusHours(1);
 			this.start = this.start.truncatedTo(ChronoUnit.HOURS);
@@ -113,7 +115,7 @@ public class  Event extends Item {
     else
       throw new RuntimeException("EVENT GET property " + property + " is not supported.");
     
-    LogInfo.log("EVENT GET: " + propval.toString());
+//    LogInfo.log("EVENT GET: " + propval.toString());
     return propval;
   }
   
@@ -127,7 +129,7 @@ public class  Event extends Item {
     //TODO continue
 
     else
-      throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported.");
+      throw new RuntimeException("EVENT ADD setting property " + property + " is not supported.");
   }
   
   
@@ -146,8 +148,8 @@ public class  Event extends Item {
     	updateWeekday((NumberValue)value, "start");
     else if (property.equals("end_weekday") && value instanceof NumberValue)
     	updateWeekday((NumberValue)value, "end");
-    else if (property.equals("duration") && value instanceof NumberValue)
-    	updateDuration((NumberValue)value);
+    else if (property.equals("duration") && value instanceof Set<?>)
+    	updateDuration((Set<NumberValue>)value);
     else if (property.equals("start_date") && value instanceof DateValue)
     	updateDate((DateValue)value, "start");
     else if (property.equals("end_date") && value instanceof DateValue)
@@ -172,7 +174,7 @@ public class  Event extends Item {
       LogInfo.log(value instanceof DateValue);
       LogInfo.log(value instanceof String);
       LogInfo.log(value instanceof Object);
-      throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported.");
+      throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double));
     }
       
   }
@@ -205,7 +207,7 @@ public class  Event extends Item {
     //TODO continue
     
     else
-      throw new RuntimeException("EVENT MOVE setting property " + property + " is not supported.");
+      throw new RuntimeException("EVENT MOVE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double));
   }
 
   public void updateTime(TimeValue time, String op) {
@@ -228,6 +230,7 @@ public class  Event extends Item {
 	  else if (op.equals("end")) this.end = sample;
   }
   
+  // if no unit is specified, no change is made
   public void addDateTime(NumberValue time, String op) {
 	  if (op.equals("start")) {
 	  	if (time.unit.equals("minutes")) this.start = this.start.plusMinutes((int)time.value);
@@ -235,8 +238,6 @@ public class  Event extends Item {
 	  	else if (time.unit.equals("days")) this.start = this.start.plusDays((int)time.value);
 	  	else if (time.unit.equals("months")) this.start = this.start.plusMonths((int)time.value);
 	  	else if (time.unit.equals("years")) this.start = this.start.plusYears((int)time.value);
-	  	
-	  	//TODO more units
 	  }
 	  else if (op.equals("end")) {
 	  	if (time.unit.equals("minutes")) this.end = this.end.plusMinutes((int)time.value);
@@ -271,7 +272,7 @@ public class  Event extends Item {
   
   public void moveDateTime(Set<LocalDateTime> value, String op) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
-  	LogInfo.log("moveDateTime EVENT: " + value.toString());
+//  	LogInfo.log("moveDateTime EVENT: " + value.toString());
   	LocalDateTime sample = LocalDateTime.now();
   	for (LocalDateTime i : value) {sample = i; break;}
   	
@@ -328,13 +329,25 @@ public class  Event extends Item {
 	  }
   }
   
-  public void updateDuration(NumberValue n) {
+  public void updateDuration(Set<NumberValue> numbers) {
+  	
+  	if (numbers.isEmpty()) return; // TODO handle singleton better
+  	NumberValue n = null;
+  	for (NumberValue t : numbers) {
+  		n = t;
+  		break;
+  	}
+  	
+  	if (!(n.unit.equals("minutes") || n.unit.equals("hours") || n.unit.equals("days"))) return;
+  	if (n.value < 1) return; // duration must be positive, greater than 0
+  	
     double x = ((NumberValue) n).value;
 		Integer d = new Integer((int) x);
 		
 		this.end = this.start;
 		if (n.unit.equals("hours")) { 
-			this.end = this.end.plusHours(d - start.until(end, ChronoUnit.HOURS));
+//			this.end = this.end.plusHours(d - start.until(end, ChronoUnit.HOURS)); //TODO ???
+			this.end = this.end.plusHours(d);
 			
 			// handle fractions only for hours
 			Double minutes = (x - Math.floor(x)) * 60.0;
@@ -345,8 +358,12 @@ public class  Event extends Item {
 			}
 		}
 		else if (n.unit.equals("minutes"))
-			this.end = this.end.plusMinutes(d - start.until(end, ChronoUnit.MINUTES));
-  }
+//			this.end = this.end.plusMinutes(d - start.until(end, ChronoUnit.MINUTES));//TODO ???
+			this.end = this.end.plusMinutes(d);
+		
+		else if (n.unit.equals("days"))
+			this.end = this.end.plusDays(d);
+	}
 
   public void moveWeekday(int weekday, String op) { // TODO
 	  if (weekday == -1) return;
@@ -455,28 +472,27 @@ public class  Event extends Item {
     for (int i = 0; i < this.title.length(); i++) result = prime * result + title.charAt(i);
     result = prime * result + this.start.hashCode();
     result = prime * result + this.end.hashCode();
-    return result;
+    return result; // TODO why not return only this.start.hashCode() ??
   }
   @Override
   public boolean equals(Object obj) {
-    
   	if (this == obj)
       return true;
     if (obj == null)
       return false;
     if (getClass() != obj.getClass())
-      return false;
-        
+      return false;    
+    
     Event other = (Event) obj;
-    if (title != other.title)
-      return false;
-	  if (location != other.location)
+    if (!title.equalsIgnoreCase(other.title))
+    	return false;
+	  if (!location.equalsIgnoreCase(other.location))
 	      return false;
-	  if (start != other.start)
+	  if (!start.equals(other.start))
 	      return false;
-	  if (end != other.end)
+	  if (!end.equals(other.end))
 	      return false;
-	  // TODO locations, repeats
+	  // TODO repeats, guests, names
 	  
     return true;
   }

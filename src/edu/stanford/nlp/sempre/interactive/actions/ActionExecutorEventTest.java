@@ -50,6 +50,7 @@ public class ActionExecutorEventTest {
   }
   
   
+  /*
   @Test public void testRelative() {
   	String defaultEvents = "["
     		+ "[\"Two_day_meeting\",\"office\",\"2016-08-03T10:15:00\",\"2016-08-04T11:15:00\",[false,false,false,false,false,false,false,false,false],[]],"
@@ -120,6 +121,8 @@ public class ActionExecutorEventTest {
     sat_morning = "(and " + the_date + " " + morning + ")";
     runFormula(executor, "(:s (: select " + sat_morning + ") (: move start_weekday (number 7))))", context, x -> x.allitems.size() == 3);
     
+    String b = "(:s (: select *) (: select (start_weekday (number 1))))";
+    
     // cancel my first meeting of the day
     select_meeting = "(: select (call pick_first start_datetime " + today + " ))";
     runFormula(executor, "(:s " + select_meeting + " (: remove))", context, x -> x.allitems.size() == 2);
@@ -162,21 +165,22 @@ public class ActionExecutorEventTest {
     
     
     
-    /***
-    (: new_event) (: update start_time (call add_time (call now) (number 30 minutes))
-    		(: new_event) (: update start_time (call add_time (call now) (number 1 day))
-    	(some selected set)  (: update start_time (call add_time ((reverse start_time) this) (number 30 minutes))
-    			(: move start_time (call add_time ((reverse start_time) this) (number 30 minutes))
-    					
-    					
-    					next meeting (event e) 
-    					first/last meeting of the day (eventset)
-    ***/
+    
+//    (: new_event) (: update start_time (call add_time (call now) (number 30 minutes))
+//    		(: new_event) (: update start_time (call add_time (call now) (number 1 day))
+//    	(some selected set)  (: update start_time (call add_time ((reverse start_time) this) (number 30 minutes))
+//    			(: move start_time (call add_time ((reverse start_time) this) (number 30 minutes))
+//    					
+//    					
+//    					next meeting (event e) 
+//    					first/last meeting of the day (eventset)
+//    
     
     LogInfo.end_track();
   
   
   }
+*/
   
   @Test public void testBasicActions() {
     String defaultEvents = "["
@@ -235,6 +239,11 @@ public class ActionExecutorEventTest {
     // new event
     runFormula(executor, "(: add)", context, x -> x.allitems.size() == 5);
     
+    // move to weekday (number)
+    runFormula(executor, "(:s (: select *) (: move start_weekday (number 1)))", context, x -> x.allitems.size() == 4);
+    
+    //(:s (: select *) (: move start_weekday (number 1)))
+    //(:s (: select *) (: move start_weekday (number 1)))
   }
   
 }

@@ -150,6 +150,27 @@ public class NumberFn extends SemanticFn {
             }
           }
         }
+        
+        // Duration
+        if (request("DURATION")) {
+          String value = languageInfo.getNormalizedNerSpan("DURATION", start, end);
+          if (value != null) {
+            try {
+              NumberValue numberValue = (opts.unitless ?
+                  new NumberValue(Double.parseDouble(value.substring(0))) :
+//                    new NumberValue(Double.parseDouble(value.substring(0)), "minutes")); // TODO temp workaround
+                  	new NumberValue(Double.parseDouble(value.substring(0))));
+              SemType type = SemType.floatType;
+              return new Derivation.Builder()
+                      .withCallable(c)
+                      .formula(new ValueFormula<>(numberValue))
+                      .type(type)
+                      .createDerivation();
+            } catch (NumberFormatException e) {
+              LogInfo.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
+            }
+          }
+        }
 
         return null;
       }

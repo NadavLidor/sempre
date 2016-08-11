@@ -1,37 +1,168 @@
+### temp
 
-# (rule $Action (nothing) (lambda d (: update start_date (date 11 10 9)))) #explore dateset / valueset
-# (rule $Action ($Number) (lambda d (: update start_date (date 11 10 9)))) #explore dateset / valueset
-# (rule $Action ($DateSet) (lambda d (:s (: select *) (: move start_date (var d)))))
-# (rule $Action ($DateSet) (lambda d (:s (: select *) (: move end_date (var d)))))
-
+# (rule $Set ($twentyfour) (lambda a (and (call after start_datetime (call todaystart)) (call before start_datetime (call addtime (call todaystart) (call numberunit (var a) (string hours)))))) (floating 1))
+# (rule $twentyfour (nothing) (ConstantFn (number 24)) (floating 1))
 
 
-# (rule $Action (nothing) (ConstantFn (: select *)) (floating 1))
-# (rule $Action (nothing) (ConstantFn (: add)) (floating 1))
-# (rule $Actions ($Action) (IdentityFn) (floating 1))
+(rule $Set (today) (ConstantFn (and (call after start_datetime (call todaystart)) (call before start_datetime (call addtime (call todaystart) (number 24 hours))))) (anchored 1))
+
+(rule $Set (tomorrow) (ConstantFn (and (call after start_datetime (call addtime (call todaystart) (number 24 hours))) (call before start_datetime (call addtime (call todaystart) (number 48 hours))))) (anchored 1))
 
 
-# select 
-(rule $Actions ($Action) (lambda a (:s (: select *) (var a))) (floating 1))
-(rule $Action ($EventSet) (lambda e (: select (var e))) (floating 1))
+(rule $Select (nothing) (ConstantFn (: add)) (floating 1))
+
+(rule $Select ($Set) (lambda s (: select (var s))) (floating 1))
+(rule $ROOT ($Select) (IdentityFn) (floating 1))
+
+#(rule $Check (nothing) (ConstantFn (number 5)) (floating 1))
+#(rule $Check2 ($Check) (IdentityFn) (floating 1))
+#(rule $Action ($Check2) (IdentityFn) (floating 1))
+
+# for debugging
+(rule $Duration (10) (ConstantFn (call numberunit (number 10) (string minutes))) (anchored 1))
+(rule $Duration (10) (ConstantFn (call numberunit (number 10) (string hours))) (anchored 1))
+(rule $Duration (10) (ConstantFn (call numberunit (number 10) (string days))) (anchored 1))
 
 
-# (rule $Action ($DateSet) (lambda d (: move end_date (var d))))
+# go 5 minutes -> [5, 0] and produces addtime results
+
+### units
+
+# (rule $Unit ($TOKEN) (UnitFn))
+# (rule $Actions ($Unit) (IdentityFn) (anchored 1))
+# (rule $NumberUnit ($Number $Unit) (lambda n (lambda u ((var n) (var u)))) (floating 1))
+# (rule $Action ($NumberUnit) (IdentityFn) (floating 1))
+
+### general
+
+(rule $Select ($Sets) (lambda s (: select (var s))) (floating 1))
+(rule $Select (all) (ConstantFn (: select *)) (anchored 1))
+
+(rule $Actions ($Select $Action) (lambda s (lambda a (:s (var s) (var a)))) (floating 1)) # chain a select and an action
+
+(for @rel (title, location, duration, start_weekday, end_weekday, start_date, end_date, start_time, end_time, start_datetime end_datetime, repeat)
+     (rule $Rel (nothing) (ConstantFn @rel) (anchored 1))
+)
+
+### numbers
+
+(rule $NumberR ($TOKEN) (NumberFn) (anchored 1))
+(rule $Duration ($NumberR) (lambda n (call numberunit (var n) (string minutes))) (anchored 1))
+(rule $Duration ($NumberR) (lambda n (call numberunit (var n) (string hours))) (anchored 1))
+(rule $Duration ($NumberR) (lambda n (call numberunit (var n) (string days))) (anchored 1))
+
+(for @num (1 2 3 4 5 6 7)
+(rule $Weekday (@num) (ConstantFn (number @num)) (anchored 1))
+)
 
 
-# EventSet: dates
-(rule $EventSet ($DateSet) (lambda d (start_date (var d))) (anchored 1))
-(rule $EventSet ($DateSet) (lambda d (end_date (var d))) (anchored 1))
+# actions
+
+(rule $Action ($Weekday) (lambda d (: move end_weekday (var d))) (anchored 1))
+(rule $Action ($Weekday) (lambda d (: move start_weekday (var d))) (anchored 1))
+(rule $Action ($Weekday) (lambda d (: update end_weekday (var d))) (anchored 1))
+(rule $Action ($Weekday) (lambda d (: update start_weekday (var d))) (anchored 1))
+(rule $Action ($Duration) (lambda d (: update duration (var d))) (anchored 1))
 
 
+# select
 
-# update/move: dates
-(rule $Action ($DateSet) (lambda d (: move end_date (var d))) (floating 1))
-(rule $Action ($DateSet) (lambda d (: move start_date (var d))) (floating 1))
-(rule $Action ($DateSet) (lambda d (: update end_date (var d))) (floating 1))
-(rule $Action ($DateSet) (lambda d (: update start_date (var d))) (floating 1))
+(rule $Set ($Weekday) (lambda d (end_weekday (var d))) (floating 1))
+(rule $Set ($Weekday) (lambda d (start_weekday (var d))) (floating 1))
+(rule $Set ($Duration) (lambda d (duration (var d))) (floating 1))
 
-(rule $DateSet ($PHRASE) (DateFn))
+#### dates
+
+(rule $Date ($PHRASE) (DateFn))
+
+(rule $Action ($Date) (lambda d (: move end_date (var d))) (floating 1))
+(rule $Action ($Date) (lambda d (: move start_date (var d))) (floating 1))
+(rule $Action ($Date) (lambda d (: update end_date (var d))) (floating 1))
+(rule $Action ($Date) (lambda d (: update start_date (var d))) (floating 1))
+
+(rule $Set ($Date) (lambda d (start_date (var d))) (floating 1))
+(rule $Set ($Date) (lambda d (end_date (var d))) (floating 1))
+
+#### datetime
+
+(rule $Action ($DateTime) (lambda d (: move end_datetime (var d))) (floating 1))
+(rule $Action ($DateTime) (lambda d (: move start_datetime (var d))) (floating 1))
+(rule $Action ($DateTime) (lambda d (: update end_datetime (var d))) (floating 1))
+(rule $Action ($DateTime) (lambda d (: update start_datetime (var d))) (floating 1))
+
+(rule $Set ($DateTime) (lambda d (start_datetime (var d))) (floating 1))
+(rule $Set ($DateTime) (lambda d (end_datetime (var d))) (floating 1))
+
+### title and location
+
+(rule $Word ($TOKEN) (IdentityFn))
+#(rule $Set ($Word) (lambda t (title (var t))) (floating 1)) 
+#(rule $Action ($Word) (lambda t (: update title (var t))) (floating 1))
+#(rule $Set ($Word) (lambda t (location (var t))) (floating 1))
+#(rule $Action ($Word) (lambda t (: update location (var t))) (floating 1))
+
+
+### time
+
+(rule $Time ($PHRASE) (TimeFn))
+
+(rule $Action ($Time) (lambda d (: move end_time (var d))) (floating 1))
+(rule $Action ($Time) (lambda d (: move start_time (var d))) (floating 1))
+(rule $Action ($Time) (lambda d (: update end_time (var d))) (floating 1))
+(rule $Action ($Time) (lambda d (: update start_time (var d))) (floating 1))
+
+(rule $Set ($Time) (lambda d (start_time (var d))) (floating 1))
+(rule $Set ($Time) (lambda d (end_time (var d))) (floating 1))
+
+### call functions
+
+# addtime
+
+(rule $DateTimeSet ($DateTime) (IdentityFn) (floating 1))
+(rule $DateTime ($DateTimeSet $Duration) (lambda s (lambda d (call addtime (var s) (var d)))) (anchored 1))
+
+#pick
+
+(rule $Set ($Word $Set) (lambda w (lambda s (call pick_first start_datetime (var s)))) (anchored 1))
+(rule $Set ($Word $Set) (lambda w (lambda s (call pick_first end_datetime (var s)))) (anchored 1))
+
+(rule $Set ($Word $Set) (lambda w (lambda s (call pick_last start_datetime (var s)))) (anchored 1))
+(rule $Set ($Word $Set) (lambda w (lambda s (call pick_last end_datetime (var s)))) (anchored 1))
+
+# anchored times
+
+(rule $DateTime (month) (ConstantFn (call monthstart)) (anchored 1))
+(rule $DateTime (week) (ConstantFn (call weekstart)) (anchored 1))
+(rule $DateTime (today) (ConstantFn (call todaystart)) (anchored 1))
+(rule $DateTime (tomorrow) (ConstantFn (call addtime (call todaystart) (call numberunit (number 24) (string hours)))) (anchored 1))
+(rule $DateTime (now) (ConstantFn (call now)) (anchored 1))
+
+# time ranges
+
+(rule $Set ($DateTime) (lambda d (call after start_datetime (var d))) (floating 1))
+(rule $Set ($DateTime) (lambda d (call after end_datetime (var d))) (floating 1))
+(rule $Set ($DateTime) (lambda d (call before start_datetime (var d))) (floating 1))
+(rule $Set ($DateTime) (lambda d (call before end_datetime (var d))) (floating 1))
+
+# 
+
+
+### reverse
+
+(rule $DateTimeSet ($Set) (lambda s ((reverse start_datetime) (var s))) (floating 1))
+(rule $DateTimeSet ($Set) (lambda s ((reverse end_datetime) (var s))) (floating 1))
+
+(rule $DateSet ($Set) (lambda s ((reverse start_date) (var s))) (floating 1))
+(rule $DateSet ($Set) (lambda s ((reverse end_date) (var s))) (floating 1))
+
+(rule $TimeSet ($Set) (lambda s ((reverse start_time) (var s))) (floating 1))
+(rule $TimeSet ($Set) (lambda s ((reverse end_time) (var s))) (floating 1))
+
+(rule $DurationSet ($Sets) (lambda s ((reverse duration) (var s))) (floating 1))
+
+(rule $TitleSet ($Set) (lambda s ((reverse title) (var s))) (floating 1))
+(rule $TitleSet ($Set) (lambda s ((reverse location) (var s))) (floating 1))
+
 
 #############################################################################
 #############################################################################
@@ -64,78 +195,7 @@
 (rule $Action (base $Number $Number) (lambda x (lambda y (: @base (var x) (var y)))) (anchored 1))
 (rule $ROOT (_contextcmd) (ConstantFn (string "(context (graph NaiveKnowledgeGraph ((string [[1,3,1,\"Green\",[]],[2,2,1,\"Blue\",[]],[1,3,2,\"Red\",[]]]) (name b) (name c))))")) (anchored 1))
 
-# primitive actions
-(rule $Action (add $Color) (lambda c (: @add (var c) top)) (anchored 1))
-(rule $Action (add $Color $Direction) (lambda c (lambda d (: @add (var c) (var d)))) (anchored 1))
-(rule $Action (move $Direction) (lambda d (: @move (var d))) (anchored 1))
-# primitive actions with arguments
-
-# cube to cube relations
-(rule $Set ($Direction of $Sets) (lambda d (lambda s
-			   (call adj (var d) (var s)))) (anchored 1))
-(rule $Set ($Extreme of $Sets) (lambda e (lambda s
-			   (call @veryx (var e) (var s)))) (anchored 1))
-(rule $Set ($Direction) (lambda d
-			   (call adj (var d))) (anchored 1))
-(rule $Set ($Extreme) (lambda e
-			   (call @veryx (var e))) (anchored 1))
-
-
-(for @dir (top bot left right front back)
-(rule $Direction (@dir) @dir (anchored 1))
-)
-(for @dir (top bot left right front back)
-(rule $Extreme (very @dir) @dir (anchored 1))
-)
-
-(for @rel (col row height color name age)
-     (rule $Rel (@rel) (ConstantFn @rel) (anchored 1))
-)
 
 (rule $ValueSet ($Color) (IdentityFn) (anchored 1))
-(rule $ValueSet ($Number) (IdentityFn) (anchored 1))			 
+#(rule $ValueSet ($Number) (IdentityFn) (anchored 1))			 
 
-(for @num (0 1 2 3 4 5 6 7 8 9)
-(rule $Number (@num) (ConstantFn (number @num)) (anchored 1))
-)
-(rule $Number (many) (ConstantFn (number 10)) (anchored 1))
-# (rule $Number ($TOKEN) (NumberFn) (anchored 1)) # dont want this yet, since large loops can hang
-
-(rule $Color (red) red (anchored 1))
-(rule $Color (orange) orange (anchored 1))
-(rule $Color (yellow) yellow (anchored 1))
-(rule $Color (green) green (anchored 1))
-(rule $Color (blue) blue (anchored 1))
-(rule $Color (white) white (anchored 1))
-(rule $Color (black) black (anchored 1))
-(rule $Color (pink) pink (anchored 1))
-(rule $Color (brown) brown (anchored 1))
-
-(rule $Keyword (col) (ConstantFn (string keyword)))
-(rule $Keyword (row) (ConstantFn (string keyword)))
-(rule $Keyword (height) (ConstantFn (string keyword)))
-(rule $Keyword (color) (ConstantFn (string keyword)))
-(rule $Keyword (top) (ConstantFn (string keyword)))
-(rule $Keyword (bot) (ConstantFn (string keyword)))
-(rule $Keyword (left) (ConstantFn (string keyword)))
-(rule $Keyword (right) (ConstantFn (string keyword)))
-(rule $Keyword (front) (ConstantFn (string keyword)))
-(rule $Keyword (back) (ConstantFn (string keyword)))
-
-
-####### domain specific floating rules
-# red means has color red
-(rule $Sets ($Color) (lambda c (color (var c))))
-
-# various actions can be performed without prompt
-(rule $Action ($Color) (lambda c (: @add (var c) (string top))))
-(rule $Action ($Color $Direction) (lambda c (lambda d (: @add (var c) (var d)))) )
-(rule $Action ($Direction) (lambda d (: @move (var d))))
-(rule $Set ($Direction $Sets) (lambda d (lambda s
-			   (call adj (var d) (var s)))))
-(rule $Set ($Extreme $Sets) (lambda e (lambda s
-			   (call @veryx (var e) (var s)))))
-(rule $Set ($Direction) (lambda d
-			   (call adj (var d))))
-(rule $Set ($Extreme) (lambda e
-			   (call @veryx (var e))))

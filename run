@@ -1040,7 +1040,7 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
   figOpts,
 
   o('Executor', 'interactive.actions.ActionExecutor'),
-  o('ActionExecutor.convertNumberValues', true),
+  o('ActionExecutor.convertNumberValues', false),
   o('ActionExecutor.printStackTrace', true),
   selo(1, 'ActionExecutor.FlatWorldType', 'BlocksWorld', 'EventsWorld'),
   o('Params.initWeightsRandomly', false),
@@ -1055,6 +1055,8 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
   o('Parser.trackedCats', 'Color', 'Numbers', 'Direction', 'Set', 'Set2', 'Action', 'Actions'),
   o('FloatingParser.defaultIsFloating', true),
 
+  o('Builder.valueEvaluator', 'CalendarValueEvaluator'),
+
 o('ParserState.customExpectedCounts', 'UNIFORM'),
 o('Params.l1Reg', 'lazy'),
 o('Params.l1RegCoeff', 0.001),
@@ -1065,7 +1067,7 @@ o('Params.adaptiveStepSize', true),
 # o('FeatureExtractor.featureComputers', 'interactive.blocks.RicherStacksWorldFeatureComputer'),
 o('FeatureExtractor.featureDomains', 'rule'),
 o('RicherStacksWorldFeatureComputer.ngramN', 2),
-o('RicherStacksWorldFeatureComputer.parameterizeCats', 'Number','Color'),
+o('RicherStacksWorldFeatureComputer.parameterizeCats', 'Number','Color', 'Date', 'Time'),
 
 lambda { |e| system 'mkdir -p ./shrdlurn_output/examples/'},
 lambda { |e| system 'mkdir -p ./shrdlurn_output/logs/'},

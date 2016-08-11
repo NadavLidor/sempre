@@ -1,6 +1,7 @@
 package edu.stanford.nlp.sempre.interactive.actions;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,12 +34,15 @@ public class EventsWorld extends FlatWorld {
     if (context == null || context.graph == null) {
     	
     	String defaultEvents = "["
-      		+ "[\"Two_day_meeting\",\"office\",\"2016-08-03T10:15:00\",\"2016-08-04T11:15:00\",[false,false,false,false,false,false,false,false,false],[]],"
-      		+ "[\"Lunch\",\"cafe\",\"2016-08-02T13:00:00\",\"2016-08-02T14:30:00\",[false,false,false,false,false,false,false,false,false],[]],"
-      		+ "[\"Appointment\",\"bar\",\"2016-08-02T15:00:00\",\"2016-08-02T16:00:00\",[false,false,false,true,false,false,false,false,false],[]]" //repeats on Thu.
+      		+ "[\"Meeting_Today_1\",\"office\",\"2016-08-08T10:15\",\"2016-08-08T11:15\",[false,false,false,false,false,false,false,false,false],[]],"
+      		+ "[\"Meeting_Today_2\",\"cafe\",\"2016-08-08T13:00\",\"2016-08-08T14:30\",[false,false,false,false,false,false,false,false,false],[]],"
+      		+ "[\"Meeting_Tomorrow\",\"bar\",\"2016-08-09T15:00\",\"2016-08-10T16:00\",[false,false,false,true,false,false,false,false,false],[]]" //repeats on Thu.
       		+ "]";
       return fromJSON(defaultEvents);
     }
+    
+//    LogInfo.log("context.toString()==================================");
+//    LogInfo.log(context.toString());
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
     return fromJSON(wallString);
@@ -56,7 +60,7 @@ public class EventsWorld extends FlatWorld {
     return Json.writeValueAsStringHard(this.allitems.stream().map(c -> ((Event)c).toJSON()).collect(Collectors.toList()));
   }
 
-  private static EventsWorld fromJSON(String wallString) {
+  public static EventsWorld fromJSON(String wallString) {
     @SuppressWarnings("unchecked")
     List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
     Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
@@ -66,7 +70,7 @@ public class EventsWorld extends FlatWorld {
 
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
-    LogInfo.log("HAS EVENTWORLD: " + values);
+//    LogInfo.log("HAS EVENTWORLD: " + values);
     if (rel.equals("repeat")) {
       return this.allitems.stream().filter(i -> !Collections.disjoint(values, (Collection<?>) i.get(rel)))
           .collect(Collectors.toSet());
@@ -126,7 +130,9 @@ public class EventsWorld extends FlatWorld {
   }
   
   // custom functions
-  public Item pick_first(String rel, Set<Item> s) {
+  public Set<Item> pick_first(String rel, Set<Item> s) {
+  	Set<Item> res = new HashSet<Item>();
+  	if (s.isEmpty()) return res;
   	if (rel.equals("start_datetime") || rel.equals("end_datetime")) {
   		LocalDateTime last = LocalDateTime.MAX;
     	Item t = null;
@@ -137,13 +143,17 @@ public class EventsWorld extends FlatWorld {
     			t = i;
     		}
     	}
-    	return t;
+    	res.add(t);
+    	return res;
+//    	return t;
   	}
   	throw new RuntimeException("EventsWorlds: cannot pick the first from ItemSet " + s.toString() + " based on attribute " + rel);
   }
   
   // custom functions
-  public Item pick_last(String rel, Set<Item> s) {
+  public Set<Item> pick_last(String rel, Set<Item> s) {
+  	Set<Item> res = new HashSet<Item>();
+  	if (s.isEmpty()) return res;
   	if (rel.equals("start_datetime") || rel.equals("end_datetime")) {
   		LocalDateTime last = LocalDateTime.MIN;
     	Item t = null;
@@ -154,19 +164,20 @@ public class EventsWorld extends FlatWorld {
     			t = i;
     		}
     	}
-    	return t;
+    	res.add(t);
+    	return res;
   	}
   	throw new RuntimeException("EventsWorlds: cannot pick the last from ItemSet " + s.toString() + " based on attribute " + rel);
   }
   
   public Set<Item> after(String rel, Set<Object> values) {
-  	LogInfo.log("AFTER EVENTWORLD: " + values);
+//  	LogInfo.log("AFTER EVENTWORLD: " + values);
     return this.allitems.stream().filter(i -> isAfter(values, i.get(rel)))
         .collect(Collectors.toSet());
   }
   
   public Set<Item> before(String rel, Set<Object> values) {
-  	LogInfo.log("BEFORE EVENTWORLD: " + values);
+//  	LogInfo.log("BEFORE EVENTWORLD: " + values);
     return this.allitems.stream().filter(i -> isBefore(values, i.get(rel)))
         .collect(Collectors.toSet());
   }
@@ -217,13 +228,14 @@ public class EventsWorld extends FlatWorld {
   
   
   public LocalDateTime now(){
-  	return LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-//  	LocalDateTime n = LocalDateTime.now();
-//    return new TimeValue(n.getHour(), n.getMinute());
+//  	return LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+  	return LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+  	
   }
   
-  public LocalDateTime today_start(){ // 12 am
-  	return LocalDateTime.now().withHour(0).truncatedTo(ChronoUnit.HOURS);
+  public LocalDateTime todaystart(){ // 12 am
+//  	return LocalDateTime.now().withHour(0).truncatedTo(ChronoUnit.HOURS);
+  	return LocalDateTime.now(ZoneId.of("UTC+00:00")).withHour(0).truncatedTo(ChronoUnit.HOURS);
   }
   
 //  public DateValue today(){
@@ -256,25 +268,39 @@ public class EventsWorld extends FlatWorld {
   	return t;
   }
   
-  public LocalDateTime addtime(Set<LocalDateTime> timeset, NumberValue n, Set<Item> selected) {
-  	LocalDateTime random = LocalDateTime.now();
+  // todo, need to handle singleton sets better
+  public LocalDateTime addtime(Set<LocalDateTime> timeset, Set<NumberValue> numbers, Set<Item> selected) {
+  	
+  	if (timeset == null || timeset.isEmpty() || numbers == null || numbers.isEmpty()) return null;
+  	
+  	LocalDateTime random = null;
   	for (LocalDateTime t : timeset) {
   		random = t;
   		break;
   	}
-  	return addtime_2(random, n, selected);
+  	NumberValue random_n = null;
+  	for (NumberValue n : numbers) {
+  		random_n = n;
+  		break;
+  	}
+  	return addtime_2(random, random_n, selected);
+  }
+  
+  public NumberValue numberunit (NumberValue n, String s) {
+  	return new NumberValue(n.value, s);
   }
   
 
   public void reset(String name) {
     this.allitems.clear();
     this.selected.clear();
-    this.allitems.add(new Event());
+    Event n = new Event();
+    this.allitems.add(n);
     
     List<Boolean> repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
     HashSet<Person> guests = new HashSet<Person>();
-    this.allitems.add(new Event("meeting2", "location2", LocalDateTime.now().plusMinutes(120), LocalDateTime.now().plusMinutes(180), repeats, guests));
-    this.allitems.add(new Event("meeting3", "location3", LocalDateTime.now().plusHours(-48), LocalDateTime.now().plusHours(-24), repeats, guests));
+    this.allitems.add(new Event("meeting2", "location2", n.start.plusMinutes(120), n.end.plusMinutes(180), repeats, guests));
+    this.allitems.add(new Event("meeting3", "location3", n.start.plusHours(24), n.end.plusHours(48), repeats, guests));
     
   }
   

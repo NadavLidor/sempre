@@ -1,5 +1,7 @@
 package edu.stanford.nlp.sempre;
 
+import fig.basic.LogInfo;
+
 /**
  * Maps a string to a Time.
  *
@@ -10,10 +12,9 @@ public class TimeFn extends SemanticFn {
     return new SingleDerivationStream() {
       @Override
       public Derivation createDerivation() {
-        String value = ex.languageInfo.getNormalizedNerSpan("DATE", c.getStart(), c.getEnd());
+        String value = ex.languageInfo.getNormalizedNerSpan("TIME", c.getStart(), c.getEnd());
         if (value == null)
           return null;
-        
         TimeValue timeValue = TimeValue.parseTimeValue(value);
         if (timeValue == null)
           return null;

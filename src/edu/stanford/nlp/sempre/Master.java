@@ -311,10 +311,16 @@ public class Master {
   }
 
   private void handleCommand(Session session, String line, Response response) {
+  	
+  	
     LispTree tree = LispTree.proto.parseFromString(line);
     tree = builder.grammar.applyMacros(tree);
-
     String command = tree.child(0).value;
+    
+    
+    LogInfo.log("handleCommand===============handleCommand=============handleCommand");
+    LogInfo.log(line);
+    LogInfo.log(command);
 
     if (command == null || command.equals("help")) {
       printHelp();
@@ -421,6 +427,7 @@ public class Master {
         LogInfo.log("Please enter a query first.");
         return;
       }
+      
       ex.setTargetValue(Values.fromLispTree(tree.child(1)));
       addNewExample(ex, session);
     } else if (command.equals("rule")) {
