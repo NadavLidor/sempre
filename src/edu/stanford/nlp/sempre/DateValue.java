@@ -13,6 +13,9 @@ public class DateValue extends Value {
   // Format: YYYY-MM-DD (from Freebase).
   // Return null if it's not a valid date string.
   public static DateValue parseDateValue(String dateStr) {
+  	LogInfo.log("dateStr: " + dateStr);
+  	
+  	if (dateStr.charAt(5) == 'W') return null; // Nadav: don't handle week days 
     if (dateStr.equals("PRESENT_REF")) return null;
     if (dateStr.startsWith("OFFSET")) return null;
 

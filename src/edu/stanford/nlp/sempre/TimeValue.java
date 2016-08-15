@@ -1,6 +1,7 @@
 package edu.stanford.nlp.sempre;
 
 import fig.basic.LispTree;
+import fig.basic.LogInfo;
 
 /**
  * Created by joberant on 1/23/15.
@@ -17,15 +18,23 @@ public class TimeValue extends Value {
   	//extract hour 
   	int hour = -1;
   	int minute = 0;
+  
+//  	if (timeStr.charAt(0) != 'T') LogInfo.log("BAD timeStr: " + timeStr + " returning null");
+  	if (timeStr.charAt(0) != 'T') return null; // Don't handle dateTime
+  	
+  	
+  	String hourStr = timeStr.substring(timeStr.indexOf('T'), timeStr.length());
+  	LogInfo.log("timeStr: " + timeStr);
+  	
   	try {
-  		hour = Integer.parseInt(timeStr.substring(1, 3));
+  		hour = Integer.parseInt(hourStr.substring(1, 3));
   	} catch (NumberFormatException e) {} // do nothing on exception
   	
   	
   	// extract minute
   	if (timeStr.length() >= 5) {
     	try {
-    		minute = Integer.parseInt(timeStr.substring(4, 6));
+    		minute = Integer.parseInt(hourStr.substring(4, 6));
     	} catch (NumberFormatException e) {} // do nothing on exception
   	}
 		

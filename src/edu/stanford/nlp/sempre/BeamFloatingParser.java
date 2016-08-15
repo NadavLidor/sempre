@@ -320,11 +320,11 @@ class BeamFloatingParserState extends ChartParserState {
         }
 
         /* If no derivs created, propagate up */
-        if (derivsCreated == 0) {
+//        if (derivsCreated == 0) {
           copyDerivs(chart[start][end - 1], chart[start][end]);
           if (start != numTokens - 1)
             copyDerivs(chart[start + 1][end], chart[start][end]);
-        }
+//        }
       }
     }
   }

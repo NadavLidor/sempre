@@ -3,9 +3,10 @@
 (def @remove remove)
 (def @R reverse)
 
-(rule $ROOT ($Actions) (IdentityFn) (floating 1)) # process for better
+# (rule $ROOT ($Action) (IdentityFn) (floating 1)) # process for better NADAV
 
-(rule $Actions ($Actions ; $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (floating 1))
+# (rule $Actions ($Actions ; $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (anchored 1)) nadav
+(rule $Actions ($Actions $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (floating 1))
 (rule $Actions ($Action) (IdentityFn) (floating 1))
 (rule $Action ([ $Actions ]) (IdentityFn) (floating 1))
 # (rule $Action (repeat $Numbers [ $Actions ]) (lambda n (lambda a (:loop (var n) (var a)))) (anchored 1))
@@ -86,10 +87,10 @@
 # add red top to has color red
 # (rule $Action ($Sets $Action) (lambda s (lambda a (:for (var s) (var a)))) (floating 1))
 # (rule $Action ($Sets $Action) (lambda s (lambda a (:foreach (var s) (var a)))) (floating 1)) Nadav, and next
-(rule $Actions ($Sets $Action) (lambda s (lambda a (:foreach (var s) (var a)))) (floating 1)) 
+(rule $ROOT ($Sets $Action) (lambda s (lambda a (:foreach (var s) (var a)))) (floating 1)) 
 
 # add red top then remove them
-# (rule $Actions ($Actions $Actions) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (floating 1)) NADAV
+(rule $Actions ($Actions $Actions) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (floating 1))
 
 (rule $Set ($Rel $ValueSets) (lambda r (lambda s
 			   ((var r) (var s)))) (floating 1))
@@ -99,4 +100,4 @@
 			   
 # (rule $Action ($Sets) (lambda s (: @select (var s))) (floating 1)) Nadav
 # (rule $Action ($Rel $ValueSets) (lambda r (lambda v (: @change (var r) (var v)))) (floating 1))
-(rule $Action (nothing) (ConstantFn (: @remove)) (floating 1))
+# (rule $Action (nothing) (ConstantFn (: @remove)) (floating 1))

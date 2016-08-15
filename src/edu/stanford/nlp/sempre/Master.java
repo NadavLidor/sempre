@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A Master manages multiple sessions. Currently, they all share the same model,
@@ -252,6 +253,9 @@ public class Master {
   }
 
   private void handleUtterance(Session session, String query, Response response) {
+  	
+  	LogInfo.log("Master.handleUtterance: " + query);
+  	
     session.updateContext();
 
     // Create example
@@ -430,6 +434,83 @@ public class Master {
       
       ex.setTargetValue(Values.fromLispTree(tree.child(1)));
       addNewExample(ex, session);
+    } else if (command.equals("rephrase")) {
+      
+    	
+    	LogInfo.log("rephrasing");
+    	LogInfo.log(tree.child(1));
+    	
+    	Example prev = session.getLastExample();
+	    if (prev == null) {
+	      LogInfo.log("No examples - cannot rephrase nothing - treated as new query");
+	    }
+
+	  	// get new denotations
+	    String utt = tree.child(1).toString();
+	    utt = utt.substring(1, utt.length() - 1);
+	    LogInfo.log(utt);
+	  	handleUtterance(session, utt, response);
+	  	
+	  	Example newEx = session.getLastExample();
+	  	
+	  	LogInfo.logs("------------------------------");
+	  	
+	  	Map<String, Derivation> oldMap = new HashMap<String, Derivation>();
+	  	
+	  	for (Derivation d : prev.predDerivations) {
+	  		oldMap.put(d.formula.toString(), d);
+	  	}
+	  
+	  	for (int i = 0; i < prev.predDerivations.size(); i++) {
+	      Derivation deriv = prev.predDerivations.get(i);
+	      LogInfo.logs("OLD True@%04d: %s [score=%s]", i, deriv.toString(), Fmt.D(deriv.score));
+	  	}
+
+	  	for (int i = 0; i < newEx.predDerivations.size(); i++) {
+	  		Derivation deriv = newEx.predDerivations.get(i);
+	  		LogInfo.logs("NEW True@%04d: %s [score=%s]", i, deriv.toString(), Fmt.D(deriv.score));
+	  	}
+
+	  	
+//	  	newEx.predDerivations.forEach(d -> d.setScore(1.0));
+//	  	
+	  	for (int i = 0; i < newEx.predDerivations.size(); i++) {
+	      Derivation deriv = newEx.predDerivations.get(i);
+	      if (oldMap.containsKey(deriv.formula.toString())) {
+//	      	deriv.score *= oldMap.get(deriv.toString()).score;
+	      	deriv.score = 1.0;
+	      }
+	  	}
+	  	
+	  	for (int i = 0; i < newEx.predDerivations.size(); i++) {
+	  		Derivation deriv = newEx.predDerivations.get(i);
+	  		LogInfo.logs("NEW True@%04d: %s [score=%s]", i, deriv.toString(), Fmt.D(deriv.score));
+	  	}
+	  	
+	  	LogInfo.log(oldMap.size());
+	  	for (String k : oldMap.keySet()) {
+	  		LogInfo.log(k);
+	  	}
+	  	LogInfo.logs("xxxxx");
+	  	for (Derivation k : newEx.predDerivations) {
+	  		LogInfo.log(k.formula.toString());
+	  	}
+	  	
+
+	  	// sort again
+	  	Derivation.sortByScore(newEx.predDerivations);
+	  	
+	    if (newEx.predDerivations.size() > 0) {
+	      response.candidateIndex = 0;
+	      printDerivation(response.getDerivation());
+	    }
+	    session.updateContext(newEx, opts.contextMaxExchanges);
+	    
+	    LogInfo.logs("------------------------------");
+	    
+    	return;
+    	
+    	
     } else if (command.equals("rule")) {
       int n = builder.grammar.rules.size();
       builder.grammar.addStatement(tree.toString());

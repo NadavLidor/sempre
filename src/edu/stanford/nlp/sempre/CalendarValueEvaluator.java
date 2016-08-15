@@ -22,7 +22,6 @@ public class CalendarValueEvaluator implements ValueEvaluator {
   	predEvents = predEvents.substring(8, predEvents.length() - 1);
   	EventsWorld predWorld = EventsWorld.fromJSON(predEvents);
   	
-  	
   	if (targetWorld.allitems.size() != predWorld.allitems.size()) {
   		LogInfo.log("NOT equals: different number of allitems");
   		return 0;

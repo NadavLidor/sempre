@@ -13,6 +13,9 @@ public class TimeFn extends SemanticFn {
       @Override
       public Derivation createDerivation() {
         String value = ex.languageInfo.getNormalizedNerSpan("TIME", c.getStart(), c.getEnd());
+//        LogInfo.log("TimeFn value1 :" + value);
+//        String value2 = ex.languageInfo.tokens.get(c.getStart());
+//        LogInfo.log("TimeFn value2 :" + value2);
         if (value == null)
           return null;
         TimeValue timeValue = TimeValue.parseTimeValue(value);

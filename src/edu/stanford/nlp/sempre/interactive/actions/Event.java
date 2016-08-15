@@ -38,12 +38,11 @@ public class  Event extends Item {
   
   public Event() {
     this.title = "meeting";
-		this.location = "none";
+		this.location = "";
 		this.repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
 		this.guests = new HashSet<Person>();
 		this.names = new HashSet<>();
 			
-//		this.start = LocalDateTime.now();
 		this.start = LocalDateTime.now(ZoneId.of("UTC+00:00"));
 		if (this.start.getMinute() > 30) {
 			this.start = this.start.plusHours(1);
@@ -211,6 +210,7 @@ public class  Event extends Item {
   }
 
   public void updateTime(TimeValue time, String op) {
+  	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 	  if (op.equals("start")) {
 		  this.start = this.start.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.start = this.start.with(ChronoField.MINUTE_OF_HOUR, time.minute);
@@ -219,6 +219,7 @@ public class  Event extends Item {
 		  this.end = this.end.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.end = this.end.with(ChronoField.MINUTE_OF_HOUR, time.minute);
 	  }
+	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
   }
   
   public void updateDateTime(Set<LocalDateTime> value, String op) {
@@ -301,6 +302,7 @@ public class  Event extends Item {
   }
   
   public void updateDate(DateValue date, String op) {
+  	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 	  if (op.equals("start")) {
 		  if (date.day != -1) this.start = this.start.with(ChronoField.DAY_OF_MONTH, date.day);
 		  if (date.month != -1) this.start = this.start.with(ChronoField.MONTH_OF_YEAR, date.month);
@@ -311,6 +313,7 @@ public class  Event extends Item {
 		  if (date.month != -1) this.end = this.end.with(ChronoField.MONTH_OF_YEAR, date.month);
 		  if (date.year != -1) this.end = this.end.with(ChronoField.YEAR, date.year);
 	  }
+	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
   }
   
   public void moveDate(DateValue date, String op) {
@@ -366,71 +369,144 @@ public class  Event extends Item {
 	}
 
   public void moveWeekday(int weekday, String op) { // TODO
-	  if (weekday == -1) return;
+  	
+  	//  if (weekday == -1) return;
+  	
+  	if (weekday < 0) { // previous 
+  		if (op.equals("start")) {
+  		  while (this.start.getDayOfWeek().getValue() != -weekday) {  
+  			  this.start = this.start.plusDays(-1);
+  			  this.end = this.end.plusDays(-1);
+  		  }
+  	  }
+  	  else if (op.equals("end")) {
+  		  while (this.end.getDayOfWeek().getValue() != -weekday) {
+  		  	this.start = this.start.plusDays(-1);
+  			  this.end = this.end.plusDays(-1);
+  		  }
+  	  }
+  	}
+  	
+  	else { // next
+  		if (op.equals("start")) {
+  		  while (this.start.getDayOfWeek().getValue() != weekday) {  
+  			  this.start = this.start.plusDays(1);
+  			  this.end = this.end.plusDays(1);
+  		  }
+  	  }
+  	  else if (op.equals("end")) {
+  		  while (this.end.getDayOfWeek().getValue() != weekday) {
+  		  	this.start = this.start.plusDays(1);
+  			  this.end = this.end.plusDays(1);
+  		  }
+  	  }
+  	}
 	  
-	  if (op.equals("start")) {
-		  while (this.start.getDayOfWeek().getValue() != weekday) {  
-			  this.start = this.start.plusDays(1);
-			  this.end = this.end.plusDays(1);
-		  }
-	  }
-	  else if (op.equals("end")) {
-		  while (this.end.getDayOfWeek().getValue() != weekday) {
-		  	this.start = this.start.plusDays(1);
-			  this.end = this.end.plusDays(1);
-		  }
-	  }
+	  
   }
   
   public void moveWeekday(NumberValue n, String op) {
   	int weekday = (int)n.value;
-	  if (weekday < 1 || weekday > 7) return;
+//	  if (weekday < 1 || weekday > 7) return;
 	  
-	  if (op.equals("start")) {
-		  while (this.start.getDayOfWeek().getValue() != weekday) {  
-			  this.start = this.start.plusDays(1);
-			  this.end = this.end.plusDays(1);
-		  }
-	  }
-	  else if (op.equals("end")) {
-		  while (this.end.getDayOfWeek().getValue() != weekday) {
-		  	this.start = this.start.plusDays(1);
-			  this.end = this.end.plusDays(1);
-		  }
-	  }
+  	if (weekday < 0) {
+  		if (op.equals("start")) {
+  		  while (this.start.getDayOfWeek().getValue() != -weekday) {  
+  			  this.start = this.start.plusDays(-1);
+  			  this.end = this.end.plusDays(-1);
+  		  }
+  	  }
+  	  else if (op.equals("end")) {
+  		  while (this.end.getDayOfWeek().getValue() != -weekday) {
+  		  	this.start = this.start.plusDays(-1);
+  			  this.end = this.end.plusDays(-1);
+  		  }
+  	  }  		
+  	}
+  	else {
+  		if (op.equals("start")) {
+  		  while (this.start.getDayOfWeek().getValue() != weekday) {  
+  			  this.start = this.start.plusDays(1);
+  			  this.end = this.end.plusDays(1);
+  		  }
+  	  }
+  	  else if (op.equals("end")) {
+  		  while (this.end.getDayOfWeek().getValue() != weekday) {
+  		  	this.start = this.start.plusDays(1);
+  			  this.end = this.end.plusDays(1);
+  		  }
+  	  }
+  	}
   }
   
   //advance start or end to next occurrence of weekday (Mon = 1, Sun = 7)
   public void updateWeekday(int weekday, String op) {
-	  if (weekday == -1) return; // could not resolve weekday to integer value
+//	  if (weekday == -1) return; // could not resolve weekday to integer value
 	  
-	  if (op.equals("start")) {
-		  while (this.start.getDayOfWeek().getValue() != weekday) {  
-			  this.start = this.start.plusDays(1);
-		  }
-	  }
-	  else if (op.equals("end")) {
-		  while (this.end.getDayOfWeek().getValue() != weekday) {  
-			  this.end = this.end.plusDays(1);
-		  }
-	  }
+  	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
+	  
+	  
+  	if (weekday < 0) {
+  		LogInfo.log("updateWeekday");
+  		if (op.equals("start")) {
+  		  while (this.start.getDayOfWeek().getValue() != -weekday) {  
+  			  this.start = this.start.plusDays(-1);
+  		  }
+  	  }
+  	  else if (op.equals("end")) {
+  		  while (this.end.getDayOfWeek().getValue() != -weekday) {  
+  			  this.end = this.end.plusDays(-1);
+  		  }
+  	  }
+  	}
+  	else {
+  		if (op.equals("start")) {
+  		  while (this.start.getDayOfWeek().getValue() != weekday) {  
+  			  this.start = this.start.plusDays(1);
+  		  }
+  	  }
+  	  else if (op.equals("end")) {
+  		  while (this.end.getDayOfWeek().getValue() != weekday) {  
+  			  this.end = this.end.plusDays(1);
+  		  }
+  	  }
+  	}
+	  
+	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
   }
   
   //advance start or end to next occurrence of weekday (Mon = 1, Sun = 7)
   public void updateWeekday(NumberValue n, String op) {
   	int weekday = (int)n.value;
-	  if (weekday < 1 || weekday > 7) return;
+//	  if (weekday < 1 || weekday > 7) return;
+	  long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 	  
-	  if (op.equals("start")) {
-		  while (this.start.getDayOfWeek().getValue() != weekday) {  
-			  this.start = this.start.plusDays(1);
+	  if (weekday < 0) {
+	  	 if (op.equals("start")) {
+				  while (this.start.getDayOfWeek().getValue() != -weekday) {  
+					  this.start = this.start.plusDays(-1);
+				  }
+			  }
+			  else if (op.equals("end")) {
+				  while (this.end.getDayOfWeek().getValue() != -weekday) {  
+					  this.end = this.end.plusDays(-1);
+				  }
+			  }
+	  }
+	  else {
+		  if (op.equals("start")) {
+			  while (this.start.getDayOfWeek().getValue() != weekday) {  
+				  this.start = this.start.plusDays(1);
+			  }
+		  }
+		  else if (op.equals("end")) {
+			  while (this.end.getDayOfWeek().getValue() != weekday) {  
+				  this.end = this.end.plusDays(1);
+			  }
 		  }
 	  }
-	  else if (op.equals("end")) {
-		  while (this.end.getDayOfWeek().getValue() != weekday) {  
-			  this.end = this.end.plusDays(1);
-		  }
-	  }
+	  
+	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
   }
   
 

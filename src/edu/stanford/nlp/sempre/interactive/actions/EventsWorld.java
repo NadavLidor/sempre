@@ -26,6 +26,8 @@ import fig.basic.LogInfo;
 // the world of stacks
 public class EventsWorld extends FlatWorld {
   
+//	private int counter = 1;
+	
 	public void select(Set<Item> set) {
 		this.selected = set;
 	} //TODO
@@ -100,24 +102,7 @@ public class EventsWorld extends FlatWorld {
   public void move(String rel, Object value) {
   	this.selected.forEach(i -> i.move(rel, value));
   }
-  
-  public void add() {
-  	Item event  = new Event();
-  	this.allitems.add(event);
-  	this.selected.clear();
-  	this.selected.add(event);
-  }
-  
-
-
-//  public void add(String color, String dir) {
-//    Set<Item> extremeCubes = extremeCubes(dir);
-//    this.allitems.addAll( extremeCubes.stream().map(
-//        c -> {Block d = ((Block)c).copy(Direction.fromString(dir)); d.color = CubeColor.fromString(color); return d;}
-//        )
-//        .collect(Collectors.toList()) );
-//  }
-  
+    
   
   public static Set<Item> argmax(Set<Item> items, Function<Event, Integer> f) {
     int maxvalue = Integer.MIN_VALUE;
@@ -172,12 +157,14 @@ public class EventsWorld extends FlatWorld {
   
   public Set<Item> after(String rel, Set<Object> values) {
 //  	LogInfo.log("AFTER EVENTWORLD: " + values);
+  	if (values == null || values.isEmpty()) return new HashSet<Item>();
     return this.allitems.stream().filter(i -> isAfter(values, i.get(rel)))
         .collect(Collectors.toSet());
   }
   
   public Set<Item> before(String rel, Set<Object> values) {
-//  	LogInfo.log("BEFORE EVENTWORLD: " + values);
+//  	LogInfo.log("BEFORE EVENTWORLD: " + values + " " + rel);
+  	if (values == null || values.isEmpty()) return new HashSet<Item>();
     return this.allitems.stream().filter(i -> isBefore(values, i.get(rel)))
         .collect(Collectors.toSet());
   }
@@ -197,12 +184,20 @@ public class EventsWorld extends FlatWorld {
   	}
   	if (v instanceof LocalDateTime) {
   		for (Object o : values) {
-    		if (((LocalDateTime)v).isAfter((LocalDateTime)o)) 
+    		if (o != null && ((LocalDateTime)v).isAfter((LocalDateTime)o))  // TODO the null check??
     			return true;
     	}
   	}
   	return false;
   }
+  
+  public Object pick(Set<Object> values) {
+  	for (Object s : values) {
+  		return s;
+  	}
+  	return null;
+  }
+  
   
   public boolean isBefore(Set<Object> values, Object v) {
   	if (v instanceof DateValue) {
@@ -219,7 +214,7 @@ public class EventsWorld extends FlatWorld {
   	}
   	if (v instanceof LocalDateTime) {
   		for (Object o : values) {
-    		if (((LocalDateTime)v).isBefore((LocalDateTime)o)) 
+    		if (o != null && ((LocalDateTime)v).isBefore((LocalDateTime)o)) //TODO the null check?? 
     			return true;
     	}
   	}
@@ -244,18 +239,22 @@ public class EventsWorld extends FlatWorld {
 //  }
   
   public LocalDateTime weekstart(){
-  	LocalDateTime n = LocalDateTime.now();
+  	LocalDateTime n = LocalDateTime.now(ZoneId.of("UTC+00:00"));
   	n = n.plusDays(1 -n.getDayOfWeek().getValue()); // reset to previous Monday
   	n = n.withHour(0).truncatedTo(ChronoUnit.HOURS); // reset to midnight
     return n;
   }
   
   public LocalDateTime monthstart(){
-  	LocalDateTime n = LocalDateTime.now();
+  	LocalDateTime n = LocalDateTime.now(ZoneId.of("UTC+00:00"));
   	n = n.plusDays(1 -n.getDayOfMonth()); // reset to the 1st of this month
   	n = n.withHour(0).truncatedTo(ChronoUnit.HOURS); // reset to midnight
     return n;
   }
+  
+//  public toDateTime () {
+//  	
+//  }
   
   //TODO //TODO
   public LocalDateTime addtime_2(LocalDateTime t, NumberValue n, Set<Item> selected) {
@@ -304,12 +303,28 @@ public class EventsWorld extends FlatWorld {
     
   }
   
-  public void add_event(String name) {
-    
-    List<Boolean> repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
-    HashSet<Person> guests = new HashSet<Person>();
-    this.allitems.add(new Event("new_meeting", "new_location", LocalDateTime.now(), LocalDateTime.now().plusMinutes(120), repeats, guests));
-    
+  public Set<Item> all() {
+  	return this.allitems;
   }
+  
+  public void add() {
+//    List<Boolean> repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
+//    HashSet<Person> guests = new HashSet<Person>();
+//    LocalDateTime start = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+//    Event e = new Event("new_meeting", "new_location", start, start.plusMinutes(120), repeats, guests);
+  	Event e = new Event();
+  	e.title = e.title + "_1";
+    this.allitems.add(e);
+    this.selected.clear();
+    this.selected.add(e); 
+  }
+  
+//  public void add() {
+//  	Item event  = new Event();
+////  	((Event)event).names.add("S");
+//  	this.selected.clear();
+//  	this.allitems.add(event);
+//  	this.selected.add(event);
+//  }
   
 }

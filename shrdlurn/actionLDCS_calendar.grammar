@@ -4,12 +4,22 @@
 # (rule $twentyfour (nothing) (ConstantFn (number 24)) (floating 1))
 
 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtime ((reverse start_datetime) this) (var d)))))) (floating 1)) 
+
+
+
+
+
 (rule $Set (today) (ConstantFn (and (call after start_datetime (call todaystart)) (call before start_datetime (call addtime (call todaystart) (number 24 hours))))) (anchored 1))
 
 (rule $Set (tomorrow) (ConstantFn (and (call after start_datetime (call addtime (call todaystart) (number 24 hours))) (call before start_datetime (call addtime (call todaystart) (number 48 hours))))) (anchored 1))
 
+(rule $Set (week) (ConstantFn (and (call after start_datetime (call weekstart)) (call before start_datetime (call addtime (call weekstart) (number 7 days))))) (anchored 1))
 
-(rule $Select (nothing) (ConstantFn (: add)) (floating 1))
+
+(rule $Select (create) (ConstantFn (: add)) (anchored 1))
+(rule $Select (add) (ConstantFn (: add)) (anchored 1))
+(rule $Select (new) (ConstantFn (: add)) (anchored 1))
 
 (rule $Select ($Set) (lambda s (: select (var s))) (floating 1))
 (rule $ROOT ($Select) (IdentityFn) (floating 1))
@@ -37,8 +47,9 @@
 
 (rule $Select ($Sets) (lambda s (: select (var s))) (floating 1))
 (rule $Select (all) (ConstantFn (: select *)) (anchored 1))
+(rule $Select (nothing) (ConstantFn (: select *)) (floating 1))
 
-(rule $Actions ($Select $Action) (lambda s (lambda a (:s (var s) (var a)))) (floating 1)) # chain a select and an action
+(rule $ROOT ($Select $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1)) # chain a select and an action
 
 (for @rel (title, location, duration, start_weekday, end_weekday, start_date, end_date, start_time, end_time, start_datetime end_datetime, repeat)
      (rule $Rel (nothing) (ConstantFn @rel) (anchored 1))
@@ -51,10 +62,54 @@
 (rule $Duration ($Number) (lambda n (call numberunit (var n) (string hours))) (anchored 1))
 (rule $Duration ($Number) (lambda n (call numberunit (var n) (string days))) (anchored 1))
 
-(for @num (1 2 3 4 5 6 7)
-(rule $Weekday (@num) (ConstantFn (number @num)) (anchored 1))
-)
 
+(rule $Weekday (monday) (ConstantFn (number 1)) (anchored 1))
+(rule $Weekday (tuesday) (ConstantFn (number 2)) (anchored 1))
+(rule $Weekday (wednesday) (ConstantFn (number 3)) (anchored 1))
+(rule $Weekday (thursday) (ConstantFn (number 4)) (anchored 1))
+(rule $Weekday (friday) (ConstantFn (number 5)) (anchored 1))
+(rule $Weekday (saturday) (ConstantFn (number 6)) (anchored 1))
+(rule $Weekday (sunday) (ConstantFn (number 7)) (anchored 1))
+(rule $Weekday (mon) (ConstantFn (number 1)) (anchored 1))
+(rule $Weekday (tue) (ConstantFn (number 2)) (anchored 1))
+(rule $Weekday (wed) (ConstantFn (number 3)) (anchored 1))
+(rule $Weekday (thu) (ConstantFn (number 4)) (anchored 1))
+(rule $Weekday (fri) (ConstantFn (number 5)) (anchored 1))
+(rule $Weekday (sat) (ConstantFn (number 6)) (anchored 1))
+(rule $Weekday (sun) (ConstantFn (number 7)) (anchored 1))
+(rule $Weekday (tu) (ConstantFn (number 2)) (anchored 1))
+(rule $Weekday (th) (ConstantFn (number 4)) (anchored 1))
+(rule $Weekday (fr) (ConstantFn (number 5)) (anchored 1))
+(rule $Weekday (sa) (ConstantFn (number 6)) (anchored 1))
+(rule $Weekday (su) (ConstantFn (number 7)) (anchored 1))
+
+(rule $Weekday (monday) (ConstantFn (number -1)) (anchored 1))
+(rule $Weekday (tuesday) (ConstantFn (number -2)) (anchored 1))
+(rule $Weekday (wednesday) (ConstantFn (number -3)) (anchored 1))
+(rule $Weekday (thursday) (ConstantFn (number -4)) (anchored 1))
+(rule $Weekday (friday) (ConstantFn (number -5)) (anchored 1))
+(rule $Weekday (saturday) (ConstantFn (number -6)) (anchored 1))
+(rule $Weekday (sunday) (ConstantFn (number -7)) (anchored 1))
+(rule $Weekday (mon) (ConstantFn (number -1)) (anchored 1))
+(rule $Weekday (tue) (ConstantFn (number -2)) (anchored 1))
+(rule $Weekday (wed) (ConstantFn (number -3)) (anchored 1))
+(rule $Weekday (thu) (ConstantFn (number -4)) (anchored 1))
+(rule $Weekday (fri) (ConstantFn (number -5)) (anchored 1))
+(rule $Weekday (sat) (ConstantFn (number -6)) (anchored 1))
+(rule $Weekday (sun) (ConstantFn (number -7)) (anchored 1))
+(rule $Weekday (tu) (ConstantFn (number -2)) (anchored 1))
+(rule $Weekday (th) (ConstantFn (number -4)) (anchored 1))
+(rule $Weekday (fr) (ConstantFn (number -5)) (anchored 1))
+(rule $Weekday (sa) (ConstantFn (number -6)) (anchored 1))
+(rule $Weekday (su) (ConstantFn (number -7)) (anchored 1))
+
+# (for @num (1 2 3 4 5 6 7) (rule $Weekday (@num) (ConstantFn (number @num)) (anchored 1)))
+
+
+
+(rule $Action (cancel) (ConstantFn (: remove)) (anchored 1))
+(rule $Action (delete) (ConstantFn (: remove)) (anchored 1))
+(rule $Action (remove) (ConstantFn (: remove)) (anchored 1))
 
 # actions
 
@@ -95,6 +150,8 @@
 
 ### title and location
 
+(rule $Pick (pick) (ConstantFn (string pick)) (anchored 1))
+
 (rule $Word ($TOKEN) (IdentityFn))
 #(rule $Set ($Word) (lambda t (title (var t))) (floating 1)) 
 #(rule $Action ($Word) (lambda t (: update title (var t))) (floating 1))
@@ -106,28 +163,35 @@
 
 (rule $Time ($PHRASE) (TimeFn))
 
-(rule $Action ($Time) (lambda d (: move end_time (var d))) (floating 1))
-(rule $Action ($Time) (lambda d (: move start_time (var d))) (floating 1))
-(rule $Action ($Time) (lambda d (: update end_time (var d))) (floating 1))
-(rule $Action ($Time) (lambda d (: update start_time (var d))) (floating 1))
+(rule $Action ($Time) (lambda d (: move end_time (var d))) (anchored 1))
+(rule $Action ($Time) (lambda d (: move start_time (var d))) (anchored 1))
+(rule $Action ($Time) (lambda d (: update end_time (var d))) (anchored 1))
+(rule $Action ($Time) (lambda d (: update start_time (var d))) (anchored 1))
 
-(rule $Set ($Time) (lambda d (start_time (var d))) (floating 1))
-(rule $Set ($Time) (lambda d (end_time (var d))) (floating 1))
+(rule $Set ($Time) (lambda d (start_time (var d))) (anchored 1))
+(rule $Set ($Time) (lambda d (end_time (var d))) (anchored 1))
 
 ### call functions
 
 # addtime
 
 (rule $DateTimeSet ($DateTime) (IdentityFn) (floating 1))
-(rule $DateTime ($DateTimeSet $Duration) (lambda s (lambda d (call addtime (var s) (var d)))) (anchored 1))
+(rule $DateTime ($DateTimeSet $Duration) (lambda s (lambda d (call pick (call addtime (var s) (var d))))) (floating 1))
 
 #pick
 
-(rule $Set ($Word $Set) (lambda w (lambda s (call pick_first start_datetime (var s)))) (anchored 1))
-(rule $Set ($Word $Set) (lambda w (lambda s (call pick_first end_datetime (var s)))) (anchored 1))
+(rule $First (next) next (anchored 1))
+(rule $First (first) first (anchored 1))
+(rule $Last (last) last (anchored 1))
+(rule $Last (final) final (anchored 1))
 
-(rule $Set ($Word $Set) (lambda w (lambda s (call pick_last start_datetime (var s)))) (anchored 1))
-(rule $Set ($Word $Set) (lambda w (lambda s (call pick_last end_datetime (var s)))) (anchored 1))
+(rule $Set (next) (ConstantFn (call pick_first start_datetime (call all))) (anchored 1)) # next meeting from all?
+
+(rule $Set ($First $Set) (lambda w (lambda s (call pick_first start_datetime (var s)))) (floating 1))
+(rule $Set ($First $Set) (lambda w (lambda s (call pick_first end_datetime (var s)))) (floating 1))
+
+(rule $Set ($Last $Set) (lambda w (lambda s (call pick_last start_datetime (var s)))) (floating 1))
+(rule $Set ($Last $Set) (lambda w (lambda s (call pick_last end_datetime (var s)))) (floating 1))
 
 # anchored times
 
