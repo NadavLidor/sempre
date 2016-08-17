@@ -1,0 +1,106 @@
+# open questions
+# start X vs X (start time, start date, start weekday)
+# tomorrow, yesterday, tuesday next week       				==> start date : today + 1
+# define morning / late morning / early afternoon / around dawn		==> start/end time
+# in three hours ==> start time : now + 3 hours
+# next wednesday ==> start weekday : Wednesday + 1
+
+# set (place)
+# add/remove from list (e.g. invites)
+
+# basic actions
+(def @of of)
+(def @has has)
+(def @relationvalue relationvalue)
+(def @new newevent)
+(def @find find)
+(def @update update)
+(def @delete deleteevent)
+(def @intersect intersect)
+(def @union union)
+(def @except except)
+(def @currentevent currentevent)
+(def @root context:root)
+(def @arith arith)
+
+
+# delete event and value? only sets
+
+# calendar grammar extension
+
+(rule $Relation (location) (ConstantFn (string location))) ###
+(rule $Relation (time) (ConstantFn (string start_time))) 
+(rule $Relation (end time) (ConstantFn (string end_time)))
+(rule $Relation (duration hours) (ConstantFn (string duration_hours))) ###
+(rule $Relation (duration minutes) (ConstantFn (string duration_minutes))) ###
+(rule $Relation (date) (ConstantFn (string start_date))) ###
+(rule $Relation (end date) (ConstantFn (string end_date))) ###
+(rule $Relation (move date) (ConstantFn (string start_date_move))) ###
+(rule $Relation (move end date) (ConstantFn (string end_date_move))) ###
+(rule $Relation (title) (ConstantFn (string title))) ###
+(rule $Relation (weekday) (ConstantFn (string start_weekday))) ### 
+(rule $Relation (end weekday) (ConstantFn (string end_weekday))) ###
+
+# repeat
+(rule $Relation (repeat) (ConstantFn (string repeat))) # daily, weekly, yearly, M-S, none
+(rule $Relation (start repeat) (ConstantFn (string start_repeat)))
+(rule $Relation (end repeat) (ConstantFn (string end_repeat)))
+(rule $Relation (number of repeats) (ConstantFn (string num_repeats)))
+	
+# participants
+(rule $Relation (invite) (ConstantFn (string invite)))
+(rule $Relation (remove) (ConstantFn (string remove)))
+(rule $Relation (invited) (ConstantFn (string invited)))
+
+(rule $ValueSet ($TOKEN) (IdentityFn))
+(rule $ValueSet ($PHRASE) (DateFn))
+(rule $ValueSet ($PHRASE) (TimeFn)) # TODO
+# (rule $ValueSetI ($PHRASE) (NumberFn)) ### number issues
+
+
+# name value pair
+(rule $RelationValue ($Relation : $ValueSet) (lambda r (lambda v (call @relationvalue (var r) (var v)))))
+(rule $ValueSet ($Relation of $EventSet) (lambda r (lambda e (call @of (var r) (var e)))))
+(rule $EventSet (has $RelationValue) (lambda rv (call @has (var rv))))
+# (rule $RelationValue ($RelationI : $ValueSetI) (lambda r (lambda v (call @relationvalue (var r) (var v))))) ### number issues
+
+# debugging stuff
+(def @print print)
+(rule $PARAM ($PHRASE) (IdentityFn))
+(rule $ROOT (print $PARAM) (lambda a (call @print (var a))) (anchored 1))
+
+# new
+(rule $Action (new) (ConstantFn (call @new)) (anchored 1))
+
+# find
+(rule $Action (find $EventSet) (lambda a (call @find (var a))) (anchored 1))
+
+# update current
+(rule $Action (update $RelationValue) (lambda a (call @update (var a))) (anchored 1))
+
+# delete current
+(rule $Action (delete) (ConstantFn (call @delete)) (anchored 1))
+
+
+# control flow
+(rule $ValueSet ($ValueSet and $ValueSet) (lambda a1 (lambda a2 (call @intersect (var a1) (var a2)))) (anchored 1))
+(rule $ValueSet ($ValueSet or $ValueSet) (lambda a1 (lambda a2 (call @union (var a1) (var a2)))) (anchored 1))
+(rule $ValueSet ($ValueSet except $ValueSet) (lambda a1 (lambda a2 (call @except (var a1) (var a2)))) (anchored 1))
+
+(rule $EventSet ($EventSet and $EventSet) (lambda a1 (lambda a2 (call @intersect (var a1) (var a2)))) (anchored 1))
+(rule $EventSet ($EventSet or $EventSet) (lambda a1 (lambda a2 (call @union (var a1) (var a2)))) (anchored 1))
+(rule $EventSet ($EventSet except $EventSet) (lambda a1 (lambda a2 (call @except (var a1) (var a2)))) (anchored 1))
+
+
+# Value
+(rule $ValueSet ($Value) (IdentityFn) (anchored 1))
+(rule $Value ([ $ValueSet ]) (IdentityFn) (anchored 1))
+
+
+# Event
+(rule $EventSet ($Event) (IdentityFn) (anchored 1))
+(rule $Event ([ $EventSet ]) (IdentityFn) (anchored 1))
+
+
+(for @op (+ - %)
+(rule $ValueSet ($ValueSet @op $ValueSet) (lambda n1 (lambda n2 (call @arith (string @op) (var n1) (var n2)))) (anchored 1)))

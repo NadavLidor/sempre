@@ -1,7 +1,13 @@
 package edu.stanford.nlp.sempre;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import fig.basic.*;
 
 /**
@@ -10,6 +16,10 @@ import fig.basic.*;
  * @author Percy Liang
  */
 public class NumberFn extends SemanticFn {
+	
+	public static final String[] TO_FILTER = new String[] { "seconds", "second", "hours", "hours", "days", "day", "weeks", "week", "months", "month", "year", "years" };  
+	public static final Set<String> FILTER_SET = new HashSet<String>(Arrays.asList(TO_FILTER));
+	
   public static class Options {
     @Option(gloss = "Omit units") public boolean unitless = false;
     @Option(gloss = "Also test numbers by try converting to float (instead of using NER tags)")
@@ -38,6 +48,11 @@ public class NumberFn extends SemanticFn {
   public DerivationStream call(final Example ex, final Callable c) {
     return new SingleDerivationStream() {
       public Derivation createDerivation() {
+      	
+      	// filter out any ex with alpabetical values
+      	String line = ex.phraseString(c.getStart(), c.getEnd());     
+      	if (FILTER_SET.contains(line)) return null;
+      	
         // Test using NER span
         Derivation deriv = check(ex.languageInfo, c.getStart(), c.getEnd());
         if (deriv != null) return deriv;
@@ -68,7 +83,7 @@ public class NumberFn extends SemanticFn {
           if (deriv != null)
             return deriv;
         }
-
+        
         return null;
       }
 
@@ -76,6 +91,7 @@ public class NumberFn extends SemanticFn {
         // Numbers: If it is an integer, set its type to integer.  Otherwise, use float.
         if (request("NUMBER")) {
           String value = languageInfo.getNormalizedNerSpan("NUMBER", start, end);
+          LogInfo.log("value: " + value);
           if (value != null) {
             try {
               NumberValue numberValue = new NumberValue(Double.parseDouble(value));
@@ -90,7 +106,7 @@ public class NumberFn extends SemanticFn {
             }
           }
         }
-
+/*
         // Ordinals
         if (request("ORDINAL")) {
           String value = languageInfo.getNormalizedNerSpan("ORDINAL", start, end);
@@ -150,16 +166,16 @@ public class NumberFn extends SemanticFn {
             }
           }
         }
-        
+*/  
         // Duration
         if (request("DURATION")) {
           String value = languageInfo.getNormalizedNerSpan("DURATION", start, end);
           if (value != null) {
+          	LogInfo.log("duration: " + value);
             try {
               NumberValue numberValue = (opts.unitless ?
                   new NumberValue(Double.parseDouble(value.substring(0))) :
-//                    new NumberValue(Double.parseDouble(value.substring(0)), "minutes")); // TODO temp workaround
-                  	new NumberValue(Double.parseDouble(value.substring(0))));
+                    new NumberValue(Double.parseDouble(value.substring(0)), "duration")); // temp
               SemType type = SemType.floatType;
               return new Derivation.Builder()
                       .withCallable(c)

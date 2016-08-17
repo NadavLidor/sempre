@@ -26,36 +26,43 @@ public class CalendarValueEvaluator implements ValueEvaluator {
   		LogInfo.log("NOT equals: different number of allitems");
   		return 0;
   	}
+  	
+  	double res = 1.0;
+  	
   	if (targetWorld.selected.size() != predWorld.selected.size()) {
-  		LogInfo.log("NOT equals: different number of selected");
-  		return 0;
+  		LogInfo.log("Different number of selected");
+  		res = 0.000001; // if selected number is off, max value returned is this
   	}
   	
+  	// diff
   	targetWorld.allitems.removeAll(predWorld.allitems);
   	
   	if (targetWorld.allitems.size() > 0) {
   		LogInfo.log("NOT equals: difference:");
-  		for (Item i : targetWorld.allitems) {
-  			Event e = (Event)i; 
-//  			LogInfo.log(e.title + " at " + e.location);
-//  			LogInfo.log(e.start);
-//  			LogInfo.log(e.end);
-//  			LogInfo.log("----");
-  			
-  		}
-  		for (Item i : predWorld.allitems) {
-  			Event e = (Event)i; 
-//  			LogInfo.log(e.title + " at " + e.location);
-//  			LogInfo.log(e.start);
-//  			LogInfo.log(e.end);
-//  			LogInfo.log("----");
-  		}
-//  		LogInfo.log("-------------------");
   		return 0;
+  		
+//		for (Item i : targetWorld.allitems) {
+//		Event e = (Event)i; 
+//		LogInfo.log(e.title + " at " + e.location);
+//		LogInfo.log(e.start);
+//		LogInfo.log(e.end);
+//		LogInfo.log("----");
+//		
+//	}
+//	for (Item i : predWorld.allitems) {
+//		Event e = (Event)i; 
+//		LogInfo.log(e.title + " at " + e.location);
+//		LogInfo.log(e.start);
+//		LogInfo.log(e.end);
+//		LogInfo.log("----");
+//	}
+//	LogInfo.log("-------------------");
   	}
   	
-  	if (target.equals(pred)) LogInfo.log("FOUND EQUALS");
-  	else LogInfo.log("NOT equals");
-    return target.equals(pred) ? 1 : 0;
+  	LogInfo.log("FOUND EQUALS");
+  	return res;
+  	
+//  	else LogInfo.log("NOT equals");
+//    return target.equals(pred) ? 1 : 0;
   }
 }

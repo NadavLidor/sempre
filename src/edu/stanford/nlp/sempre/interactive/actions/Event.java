@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.testng.collections.Lists;
 
+import edu.stanford.nlp.sempre.DateTimeValue;
 import edu.stanford.nlp.sempre.DateValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NumberValue;
@@ -98,6 +99,10 @@ public class  Event extends Item {
       propval = new TimeValue(this.start.getHour(), this.start.getMinute()); 
     else if (property.equals("end_time"))
       propval = new TimeValue(this.end.getHour(), this.end.getMinute());
+    else if (property.equals("start_datetimevalue"))
+      propval = new DateTimeValue(this.start);
+    else if (property.equals("end_datetimevalue"))
+      propval = new DateTimeValue(this.end);
     else if (property.equals("start_datetime"))
       propval = this.start;
     else if (property.equals("end_datetime"))
@@ -114,7 +119,7 @@ public class  Event extends Item {
     else
       throw new RuntimeException("EVENT GET property " + property + " is not supported.");
     
-//    LogInfo.log("EVENT GET: " + propval.toString());
+    LogInfo.log("EVENT GET: " + propval.toString());
     return propval;
   }
   
@@ -157,6 +162,10 @@ public class  Event extends Item {
     	updateTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	updateTime((TimeValue)value, "end");
+    else if (property.equals("start_datetimevalue") && value instanceof DateTimeValue)
+    	updateDateTime((DateTimeValue)value, "start");
+    else if (property.equals("end_datetimevalue") && value instanceof DateTimeValue)
+    	updateDateTime((DateTimeValue)value, "end");
     else if (property.equals("start_datetime") && value instanceof Set<?>)
     	updateDateTime((Set<LocalDateTime>)value, "start");
     else if (property.equals("end_datetime") && value instanceof Set<?>)
@@ -197,6 +206,10 @@ public class  Event extends Item {
     	moveTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "end");
+    else if (property.equals("start_datetimevalue") && value instanceof DateTimeValue)
+    	moveDateTime((DateTimeValue)value, "start");
+    else if (property.equals("end_datetimevalue") && value instanceof DateTimeValue)
+    	moveDateTime((DateTimeValue)value, "end");
     else if (property.equals("start_datetime") && value instanceof Set<?>)
     	moveDateTime((Set<LocalDateTime>)value, "start");
     else if (property.equals("end_datetime") && value instanceof Set<?>)
@@ -220,6 +233,13 @@ public class  Event extends Item {
 		  this.end = this.end.with(ChronoField.MINUTE_OF_HOUR, time.minute);
 	  }
 	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+  }
+
+  public void updateDateTime(DateTimeValue value, String op) {
+  	
+	  if (op.equals("start")) this.start = value.datetime;
+	  else if (op.equals("end")) this.end = value.datetime;
+	  
   }
   
   public void updateDateTime(Set<LocalDateTime> value, String op) {
@@ -283,6 +303,19 @@ public class  Event extends Item {
 	  }
 	  else if (op.equals("end")) {
 	  	this.end = sample;
+	  	this.start = this.end.plusMinutes(-duration);
+	  }
+  }
+  
+  public void moveDateTime(DateTimeValue value, String op) {
+  	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
+  	
+	  if (op.equals("start")) {
+	  	this.start = value.datetime;
+	  	this.end = this.start.plusMinutes(duration);
+	  }
+	  else if (op.equals("end")) {
+	  	this.end = value.datetime;
 	  	this.start = this.end.plusMinutes(-duration);
 	  }
   }
@@ -568,6 +601,7 @@ public class  Event extends Item {
 	      return false;
 	  if (!end.equals(other.end))
 	      return false;
+	  
 	  // TODO repeats, guests, names
 	  
     return true;

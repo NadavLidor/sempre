@@ -1,0 +1,24 @@
+
+
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtime ((reverse start_datetime) this) (var d)))))) (floating 1)) 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: update start_datetime (call addtime ((reverse start_datetime) this) (var d)))))) (floating 1)) 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtime ((reverse end_datetime) this) (var d)))))) (floating 1)) 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: update start_datetime (call addtime ((reverse end_datetime) this) (var d)))))) (floating 1)) 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move end_datetime (call addtime ((reverse end_datetime) this) (var d)))))) (floating 1)) 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: update end_datetime (call addtime ((reverse end_datetime) this) (var d)))))) (floating 1)) 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move end_datetime (call addtime ((reverse start_datetime) this) (var d)))))) (floating 1)) 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: update end_datetime (call addtime ((reverse start_datetime) this) (var d)))))) (floating 1)) 
+
+
+
+
+(:s 
+
+(: select *) 
+
+(: update start_datetime 
+	(call addtime ((reverse end_datetime) (and (call after start_datetime (call todaystart)) (call before start_datetime (call addtime (call todaystart) (number 24 hours))))) (call numberunit (number 10) (string minutes)))
+)
+
+
+)

@@ -28,10 +28,11 @@ public final class Values {
     if ("date".equals(type)) return new DateValue(tree);
     if ("error".equals(type)) return new ErrorValue(tree);
     if ("time".equals(type)) return new TimeValue(tree);
+    if ("datetime".equals(type)) return new DateTimeValue(tree); // Nadav
     return null;
   }
 
-  // Try to parse.  If it fails, throw an exception.
+	// Try to parse.  If it fails, throw an exception.
   public static Value fromLispTree(LispTree tree) {
     Value value = fromLispTreeOrNull(tree);
     if (value == null)

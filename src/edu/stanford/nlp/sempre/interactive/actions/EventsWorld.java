@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import edu.stanford.nlp.sempre.ContextValue;
+import edu.stanford.nlp.sempre.DateTimeValue;
 import edu.stanford.nlp.sempre.DateValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NaiveKnowledgeGraph;
@@ -72,7 +73,7 @@ public class EventsWorld extends FlatWorld {
 
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
-//    LogInfo.log("HAS EVENTWORLD: " + values);
+    LogInfo.log("HAS EVENTWORLD: " + values);
     if (rel.equals("repeat")) {
       return this.allitems.stream().filter(i -> !Collections.disjoint(values, (Collection<?>) i.get(rel)))
           .collect(Collectors.toSet());
@@ -172,19 +173,25 @@ public class EventsWorld extends FlatWorld {
   public boolean isAfter(Set<Object> values, Object v) {
   	if (v instanceof DateValue) {
   		for (Object o : values) {
-    		if (((DateValue)v).isAfter((DateValue)o)) 
+    		if (o != null && o instanceof DateValue && ((DateValue)v).isAfter((DateValue)o)) 
     			return true;
     	}
   	}
   	if (v instanceof TimeValue) {
   		for (Object o : values) {
-    		if (((TimeValue)v).isAfter((TimeValue)o)) 
+    		if (o != null && o instanceof TimeValue && ((TimeValue)v).isAfter((TimeValue)o)) 
     			return true;
     	}
   	}
   	if (v instanceof LocalDateTime) {
   		for (Object o : values) {
-    		if (o != null && ((LocalDateTime)v).isAfter((LocalDateTime)o))  // TODO the null check??
+    		if (o != null && o instanceof LocalDateTime && ((LocalDateTime)v).isAfter((LocalDateTime)o))  // TODO the null check??
+    			return true;
+    	}
+  	}
+  	if (v instanceof DateTimeValue) {
+  		for (Object o : values) {
+    		if (o != null && o instanceof DateTimeValue && ((DateTimeValue)v).isAfter((DateTimeValue)o)) 
     			return true;
     	}
   	}
@@ -192,29 +199,37 @@ public class EventsWorld extends FlatWorld {
   }
   
   public Object pick(Set<Object> values) {
+  	HashSet<Object> res = new HashSet<Object>();
   	for (Object s : values) {
-  		return s;
+  		if (s != null) res.add(s);
+  		break;
   	}
-  	return null;
+  	return res;
   }
   
   
   public boolean isBefore(Set<Object> values, Object v) {
   	if (v instanceof DateValue) {
   		for (Object o : values) {
-    		if (((DateValue)v).isBefore((DateValue)o)) 
+    		if (o != null && o instanceof DateValue && ((DateValue)v).isBefore((DateValue)o)) 
     			return true;
     	}
   	}
   	if (v instanceof TimeValue) {
   		for (Object o : values) {
-    		if (((TimeValue)v).isBefore((TimeValue)o)) 
+    		if (o != null && o instanceof TimeValue && ((TimeValue)v).isBefore((TimeValue)o)) 
     			return true;
     	}
   	}
   	if (v instanceof LocalDateTime) {
   		for (Object o : values) {
-    		if (o != null && ((LocalDateTime)v).isBefore((LocalDateTime)o)) //TODO the null check?? 
+    		if (o != null && o instanceof LocalDateTime && ((LocalDateTime)v).isBefore((LocalDateTime)o)) //TODO the null check?? 
+    			return true;
+    	}
+  	}
+  	if (v instanceof DateTimeValue) {
+  		for (Object o : values) {
+    		if (o != null && o instanceof DateTimeValue && ((DateTimeValue)v).isBefore((DateTimeValue)o)) 
     			return true;
     	}
   	}
@@ -293,13 +308,62 @@ public class EventsWorld extends FlatWorld {
   public void reset(String name) {
     this.allitems.clear();
     this.selected.clear();
-    Event n = new Event();
-    this.allitems.add(n);
     
-    List<Boolean> repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
-    HashSet<Person> guests = new HashSet<Person>();
-    this.allitems.add(new Event("meeting2", "location2", n.start.plusMinutes(120), n.end.plusMinutes(180), repeats, guests));
-    this.allitems.add(new Event("meeting3", "location3", n.start.plusHours(24), n.end.plusHours(48), repeats, guests));
+    
+    Event n = new Event();
+    n.title = "Lunch";
+    n.start = n.start.withHour(12);
+    n.end = n.start.withHour(13);
+    n.start = n.start.plusDays(-7);
+    n.end = n.end.plusDays(-7);
+    for (int i = 0 ; i < 14; i++) {
+      n.start = n.start.plusDays(1);
+      n.end = n.end.plusDays(1);
+    	this.allitems.add(n.clone());
+    }
+    
+    n = new Event();
+    n.title = "Dinner";
+    n.start = n.start.withHour(19);
+    n.end = n.start.withHour(20);
+    n.end = n.end.withMinute(30);
+    n.start = n.start.plusDays(-7);
+    n.end = n.end.plusDays(-7);
+    for (int i = 0 ; i < 14; i++) {
+      n.start = n.start.plusDays(1);
+      n.end = n.end.plusDays(1);
+    	this.allitems.add(n.clone());
+    }
+    
+    n = new Event();
+    n.title = "Meeting1";
+    n.start = n.start.withHour(9);
+    n.end = n.start.withHour(10);
+    n.end = n.end.withMinute(45);
+    n.start = n.start.plusDays(-7);
+    n.end = n.end.plusDays(-7);
+    for (int i = 0 ; i < 7; i++) {
+      n.start = n.start.plusDays(3);
+      n.end = n.end.plusDays(3);
+    	this.allitems.add(n.clone());
+    }
+
+    n = new Event();
+    n.title = "Meeting2";
+    n.start = n.start.withHour(14);
+    n.end = n.start.withHour(16);
+    n.start = n.start.plusDays(-7);
+    n.end = n.end.plusDays(-7);
+    for (int i = 0 ; i < 7; i++) {
+      n.start = n.start.plusDays(2);
+      n.end = n.end.plusDays(2);
+    	this.allitems.add(n.clone());
+    }
+    
+    
+    
+//    this.allitems.add(new Event("meeting2", "location2", n.start.plusMinutes(120), n.end.plusMinutes(180), n.repeats, n.guests));
+//    this.allitems.add(new Event("meeting3", "location3", n.start.plusHours(24), n.end.plusHours(48), n.repeats, n.guests));
     
   }
   
@@ -313,7 +377,7 @@ public class EventsWorld extends FlatWorld {
 //    LocalDateTime start = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
 //    Event e = new Event("new_meeting", "new_location", start, start.plusMinutes(120), repeats, guests);
   	Event e = new Event();
-  	e.title = e.title + "_1";
+  	e.title = e.title;
     this.allitems.add(e);
     this.selected.clear();
     this.selected.add(e); 

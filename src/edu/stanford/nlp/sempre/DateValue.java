@@ -3,6 +3,9 @@ package edu.stanford.nlp.sempre;
 import fig.basic.LispTree;
 import fig.basic.LogInfo;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
 public class DateValue extends Value {
@@ -15,9 +18,47 @@ public class DateValue extends Value {
   public static DateValue parseDateValue(String dateStr) {
   	LogInfo.log("dateStr: " + dateStr);
   	
-  	if (dateStr.charAt(5) == 'W') return null; // Nadav: don't handle week days 
-    if (dateStr.equals("PRESENT_REF")) return null;
-    if (dateStr.startsWith("OFFSET")) return null;
+//  	if (dateStr.charAt(5) == 'W') return null; // Nadav: don't handle week days 
+	    if (dateStr.equals("PRESENT_REF")) return null;
+	    if (dateStr.startsWith("OFFSET P")) { //OFFSET P1D "tomorrow"
+	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+	  		Character unit = dateStr.charAt(dateStr.length() - 1);
+	  		int value = Integer.parseInt(dateStr.substring(8, dateStr.length() - 1));
+	  		if (unit.equals('M')) // coreNLP gives M to both months and minutes
+					d = d.plusHours(value);
+	  		else if (unit.equals('H'))
+	  			d = d.plusHours(value);
+	  		else if (unit.equals('D'))
+					d = d.plusDays(value);
+	  		else if (unit.equals('W'))
+					d = d.plusDays(7 * value);
+	  		else if (unit.equals('Y'))
+					d = d.plusYears(value);
+	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
+	    }
+	    if (dateStr.startsWith("THIS P1D")) { // today
+	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
+	    }
+	    if (dateStr.startsWith("THIS")) dateStr.substring(5, dateStr.length());
+	    if (dateStr.startsWith("XXXX-WXX-")) { // day of week
+	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+	  		int weekday = Integer.parseInt(dateStr.substring(9, 10));
+	  		d = d.plusDays(weekday - d.getDayOfWeek().getValue());
+	  		if (dateStr.endsWith("W")) {
+	  			int week = Integer.parseInt(dateStr.substring(19, dateStr.length() - 1));
+	  			d = d.plusDays(7 * week);
+	  		}
+	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
+	    }
+    
+    
+    //XXXX-WXX-5 "friday"
+    //THIS XXXX-WXX-5 "this friday"
+    //XXXX-WXX-5 OFFSET P1W "next friday"
+    //THIS P1D "today"
+    //OFFSET P1D "tomorrow" 
+    //XXXX-WXX-5 OFFSET P1W
 
     // We don't handle the following things:
     //   - "30 A.D" since its value is "+0030"
