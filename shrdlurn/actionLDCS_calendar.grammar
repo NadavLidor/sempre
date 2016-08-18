@@ -14,7 +14,10 @@
 (rule $Select ($Sets) (lambda s (: select (var s))) (floating 1))
 (rule $Select (all) (ConstantFn (: select *)) (anchored 1))
 
+# (rule $ROOT ($Select $Remove) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
+
 # (rule $ROOT ($Select $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1)) # chain a select and an action
+
 
 # augmenting set operation to include 'and' as 'or' --has bug
 # (rule $Sets ($Sets and $Sets) (lambda s1 (lambda s2 (or (var s1) (var s2)))) (anchored 1))
@@ -100,8 +103,6 @@
 (rule $Unit (year) (ConstantFn (string years)) (anchored 1))
 
 (rule $Duration ($Number $Unit) (lambda n (lambda u (call numberunit (var n) (var u)))) (anchored 1))
-
-(rule $ROOT ($Select $Remove) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
 
 # duration
 
@@ -195,11 +196,18 @@
 (rule $Sets ($Set) (lambda s (call pick_next start_datetime (var s))) (anchored 1))
 (rule $Sets ($Set) (lambda s (call pick_next end_datetime (var s))) (anchored 1))
 
-(rule $Set ($First $Sets) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
-(rule $Set ($First $Sets) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
+(for @setsType ($Sets, $AfterSet, $BeforeSet)
 
-(rule $Set ($Last $Sets) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
-(rule $Set ($Last $Sets) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
+(rule $Sets (@setsType) (lambda s (call pick_next start_datetime (var s))) (anchored 1))
+(rule $Sets (@setsType) (lambda s (call pick_next end_datetime (var s))) (anchored 1))
+
+(rule $Set ($First @setsType) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
+(rule $Set ($First @setsType) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
+
+(rule $Set ($Last @setsType) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
+(rule $Set ($Last @setsType) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
+
+)
 
 # anchored times
 

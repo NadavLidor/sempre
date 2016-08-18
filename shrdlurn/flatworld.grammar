@@ -57,7 +57,7 @@
 (rule $ValueSets ($ValueSet) (IdentityFn) (anchored 1))
 (rule $ValueSet ([ $ValueSets ]) (IdentityFn) (anchored 1))
 
-(rule $Sets ($Set) (IdentityFn) (floating 1))
+(rule $Sets ($Set) (IdentityFn) (floating 1)) #Nadav
 (rule $Sets ($Set) (IdentityFn) (anchored 1))
 (rule $Set ([ $Sets ]) (IdentityFn) (anchored 1))
 
@@ -97,6 +97,7 @@
 # (rule $Action ($Sets $Action) (lambda s (lambda a (:for (var s) (var a)))) (floating 1))
 # (rule $Action ($Sets $Action) (lambda s (lambda a (:foreach (var s) (var a)))) (floating 1)) Nadav, and next
 (rule $ROOT ($Sets $Action) (lambda s (lambda a (:foreach (var s) (var a)))) (floating 1)) 
+(rule $ROOT ($Sets $Remove) (lambda s (lambda a (:foreach (var s) (var a)))) (floating 1)) 
 
 # add red top then remove them
 (rule $Actions ($Action $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (floating 1))
