@@ -56,8 +56,8 @@ public class NumberValue extends Value {
     NumberValue that = (NumberValue) o;
     
     // convert to minutes from hours, days and years
-    if ((this.unit.equals("minutes") || this.unit.equals("hours") || this.unit.equals("days") || this.unit.equals("years")) &&
-    		(that.unit.equals("minutes") || that.unit.equals("hours") || that.unit.equals("days") || that.unit.equals("years")) &&
+    if ((this.unit.equals("minutes") || this.unit.equals("hours") || this.unit.equals("days") || this.unit.equals("weeks") || this.unit.equals("years")) &&
+    		(that.unit.equals("minutes") || that.unit.equals("hours") || that.unit.equals("days") || that.unit.equals("weeks") || that.unit.equals("years")) &&
     		inMinutes(that) == inMinutes(this))
     	return true;
     
@@ -72,6 +72,7 @@ public class NumberValue extends Value {
   	
   	if (n.unit.equals("hours")) return n.value * 60;
     else if (n.unit.equals("days")) return n.value * 60 * 24;
+    else if (n.unit.equals("weeks")) return n.value * 60 * 24 * 7;
     else if (n.unit.equals("years")) return n.value * 60 * 24 * 365;
   	
   	return n.value;

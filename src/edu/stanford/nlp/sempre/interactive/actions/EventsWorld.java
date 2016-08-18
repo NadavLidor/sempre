@@ -73,7 +73,7 @@ public class EventsWorld extends FlatWorld {
 
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
-    LogInfo.log("HAS EVENTWORLD: " + values);
+//    LogInfo.log("HAS EVENTWORLD: " + values);
     if (rel.equals("repeat")) {
       return this.allitems.stream().filter(i -> !Collections.disjoint(values, (Collection<?>) i.get(rel)))
           .collect(Collectors.toSet());
@@ -129,7 +129,29 @@ public class EventsWorld extends FlatWorld {
     			t = i;
     		}
     	}
-    	res.add(t);
+    	if (t != null) res.add(t);
+    	return res;
+//    	return t;
+  	}
+  	throw new RuntimeException("EventsWorlds: cannot pick the first from ItemSet " + s.toString() + " based on attribute " + rel);
+  }
+  
+  // custom functions
+  public Set<Item> pick_next(String rel, Set<Item> s) {
+  	Set<Item> res = new HashSet<Item>();
+  	if (s.isEmpty()) return res;
+  	LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+  	if (rel.equals("start_datetime") || rel.equals("end_datetime")) {
+  		LocalDateTime last = LocalDateTime.MAX;
+    	Item t = null;
+    	for (Item i : s) {
+    		LocalDateTime temp = ((LocalDateTime)i.get(rel));
+    		if (temp.isBefore(last) && temp.isAfter(now)) {
+    			last = temp;
+    			t = i;
+    		}
+    	}
+    	if (t != null) res.add(t);
     	return res;
 //    	return t;
   	}
@@ -150,7 +172,27 @@ public class EventsWorld extends FlatWorld {
     			t = i;
     		}
     	}
-    	res.add(t);
+    	if (t != null) res.add(t);
+    	return res;
+  	}
+  	throw new RuntimeException("EventsWorlds: cannot pick the last from ItemSet " + s.toString() + " based on attribute " + rel);
+  }
+  
+  public Set<Item> pick_prev(String rel, Set<Item> s) {
+  	Set<Item> res = new HashSet<Item>();
+  	if (s.isEmpty()) return res;
+  	LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+  	if (rel.equals("start_datetime") || rel.equals("end_datetime")) {
+  		LocalDateTime last = LocalDateTime.MIN;
+    	Item t = null;
+    	for (Item i : s) {
+    		LocalDateTime temp = ((LocalDateTime)i.get(rel));
+    		if (temp.isAfter(last) && temp.isBefore(now)) {
+    			last = temp;
+    			t = i;
+    		}
+    	}
+    	if (t != null) res.add(t);
     	return res;
   	}
   	throw new RuntimeException("EventsWorlds: cannot pick the last from ItemSet " + s.toString() + " based on attribute " + rel);
@@ -313,6 +355,7 @@ public class EventsWorld extends FlatWorld {
     Event n = new Event();
     n.title = "Lunch";
     n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(0);
     n.end = n.start.withHour(13);
     n.start = n.start.plusDays(-7);
     n.end = n.end.plusDays(-7);
@@ -325,8 +368,8 @@ public class EventsWorld extends FlatWorld {
     n = new Event();
     n.title = "Dinner";
     n.start = n.start.withHour(19);
+    n.start = n.start.withMinute(0);
     n.end = n.start.withHour(20);
-    n.end = n.end.withMinute(30);
     n.start = n.start.plusDays(-7);
     n.end = n.end.plusDays(-7);
     for (int i = 0 ; i < 14; i++) {
@@ -338,6 +381,7 @@ public class EventsWorld extends FlatWorld {
     n = new Event();
     n.title = "Meeting1";
     n.start = n.start.withHour(9);
+    n.start = n.start.withMinute(0);
     n.end = n.start.withHour(10);
     n.end = n.end.withMinute(45);
     n.start = n.start.plusDays(-7);
@@ -351,6 +395,7 @@ public class EventsWorld extends FlatWorld {
     n = new Event();
     n.title = "Meeting2";
     n.start = n.start.withHour(14);
+    n.start = n.start.withMinute(0);
     n.end = n.start.withHour(16);
     n.start = n.start.plusDays(-7);
     n.end = n.end.plusDays(-7);

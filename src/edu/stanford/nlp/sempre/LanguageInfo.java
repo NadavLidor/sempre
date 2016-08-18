@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Joiner;
 import fig.basic.IntPair;
 import fig.basic.LispTree;
+import fig.basic.LogInfo;
 import fig.basic.MemUsage;
 
 import java.util.*;
@@ -134,6 +135,29 @@ public class LanguageInfo implements MemUsage.Instrumented {
     if (end < nerValues.size() && value.equals(nerValues.get(end))) return null;
     for (int i = start + 1; i < end; i++)
       if (!value.equals(nerValues.get(i))) return null;
+    value = omitComparative(value);
+    return value;
+  }
+  
+  // NormalizedNerSpan for multiple NER tags
+  public String getNormalizedNerSpan(Set<String> queryTag, int start, int end) {
+    String value = nerValues.get(start);
+    if (value == null) {LogInfo.log("1");return null;}
+    if (!queryTag.contains(nerTags.get(start))) {
+    	LogInfo.log(queryTag.toString());
+    	LogInfo.log(nerTags.get(start));
+    	LogInfo.log("2");
+    	return null;
+    	}
+    if (start - 1 >= 0 && queryTag.contains(nerValues.get(start - 1))) {LogInfo.log("3");return null;}
+    if (end < nerValues.size() && queryTag.contains(nerValues.get(end))) {LogInfo.log("4");return null;}
+    for (int i = start + 1; i < end; i++)
+      if (!queryTag.contains(nerValues.get(i))) {
+      	LogInfo.log(queryTag.toString());
+      	LogInfo.log(nerTags.get(i));
+      	LogInfo.log("5");
+      	return null;
+      	}
     value = omitComparative(value);
     return value;
   }

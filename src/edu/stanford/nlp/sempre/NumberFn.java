@@ -17,7 +17,7 @@ import fig.basic.*;
  */
 public class NumberFn extends SemanticFn {
 	
-	public static final String[] TO_FILTER = new String[] { "seconds", "second", "hours", "hours", "days", "day", "weeks", "week", "months", "month", "year", "years" };  
+	public static final String[] TO_FILTER = new String[] { "seconds", "second", "minute", "minutes", "hours", "hours", "days", "day", "weeks", "week", "months", "month", "year", "years" };  
 	public static final Set<String> FILTER_SET = new HashSet<String>(Arrays.asList(TO_FILTER));
 	
   public static class Options {
@@ -91,7 +91,7 @@ public class NumberFn extends SemanticFn {
         // Numbers: If it is an integer, set its type to integer.  Otherwise, use float.
         if (request("NUMBER")) {
           String value = languageInfo.getNormalizedNerSpan("NUMBER", start, end);
-          LogInfo.log("value: " + value);
+          LogInfo.log("NumberFn.check number: " + value);
           if (value != null) {
             try {
               NumberValue numberValue = new NumberValue(Double.parseDouble(value));
@@ -106,72 +106,72 @@ public class NumberFn extends SemanticFn {
             }
           }
         }
-/*
-        // Ordinals
-        if (request("ORDINAL")) {
-          String value = languageInfo.getNormalizedNerSpan("ORDINAL", start, end);
-          if (value != null) {
-            try {
-              NumberValue numberValue = (opts.unitless ?
-                  new NumberValue(Double.parseDouble(value)) :
-                    new NumberValue(Double.parseDouble(value), "fb:en.ordinal_number"));
-              SemType type = SemType.intType;
-              return new Derivation.Builder()
-                      .withCallable(c)
-                      .formula(new ValueFormula<>(numberValue))
-                      .type(type)
-                      .createDerivation();
-            } catch (NumberFormatException e) {
-              LogInfo.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
-            }
-          }
-        }
 
-        // Percents
-        if (request("PERCENT")) {
-          String value = languageInfo.getNormalizedNerSpan("PERCENT", start, end);
-          if (value != null) {
-            try {
-              NumberValue numberValue = (opts.unitless ?
-                  new NumberValue(Double.parseDouble(value.substring(1))) :
-                    new NumberValue(0.01 * Double.parseDouble(value.substring(1))));
-              SemType type = SemType.floatType;
-              return new Derivation.Builder()
-                      .withCallable(c)
-                      .formula(new ValueFormula<>(numberValue))
-                      .type(type)
-                      .createDerivation();
-            } catch (NumberFormatException e) {
-              LogInfo.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
-            }
-          }
-        }
+//        Ordinals
+//        if (request("ORDINAL")) {
+//          String value = languageInfo.getNormalizedNerSpan("ORDINAL", start, end);
+//          if (value != null) {
+//            try {
+//              NumberValue numberValue = (opts.unitless ?
+//                  new NumberValue(Double.parseDouble(value)) :
+//                    new NumberValue(Double.parseDouble(value), "fb:en.ordinal_number"));
+//              SemType type = SemType.intType;
+//              return new Derivation.Builder()
+//                      .withCallable(c)
+//                      .formula(new ValueFormula<>(numberValue))
+//                      .type(type)
+//                      .createDerivation();
+//            } catch (NumberFormatException e) {
+//              LogInfo.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
+//            }
+//          }
+//        }
+//
+//        // Percents
+//        if (request("PERCENT")) {
+//          String value = languageInfo.getNormalizedNerSpan("PERCENT", start, end);
+//          if (value != null) {
+//            try {
+//              NumberValue numberValue = (opts.unitless ?
+//                  new NumberValue(Double.parseDouble(value.substring(1))) :
+//                    new NumberValue(0.01 * Double.parseDouble(value.substring(1))));
+//              SemType type = SemType.floatType;
+//              return new Derivation.Builder()
+//                      .withCallable(c)
+//                      .formula(new ValueFormula<>(numberValue))
+//                      .type(type)
+//                      .createDerivation();
+//            } catch (NumberFormatException e) {
+//              LogInfo.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
+//            }
+//          }
+//        }
+//
+//        // Money
+//        if (request("MONEY")) {
+//          String value = languageInfo.getNormalizedNerSpan("MONEY", start, end);
+//          if (value != null) {
+//            try {
+//              NumberValue numberValue = (opts.unitless ?
+//                  new NumberValue(Double.parseDouble(value.substring(1))) :
+//                    new NumberValue(Double.parseDouble(value.substring(1)), "fb:en.dollar"));
+//              SemType type = SemType.floatType;
+//              return new Derivation.Builder()
+//                      .withCallable(c)
+//                      .formula(new ValueFormula<>(numberValue))
+//                      .type(type)
+//                      .createDerivation();
+//            } catch (NumberFormatException e) {
+//              LogInfo.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
+//            }
+//          }
+//        }
 
-        // Money
-        if (request("MONEY")) {
-          String value = languageInfo.getNormalizedNerSpan("MONEY", start, end);
-          if (value != null) {
-            try {
-              NumberValue numberValue = (opts.unitless ?
-                  new NumberValue(Double.parseDouble(value.substring(1))) :
-                    new NumberValue(Double.parseDouble(value.substring(1)), "fb:en.dollar"));
-              SemType type = SemType.floatType;
-              return new Derivation.Builder()
-                      .withCallable(c)
-                      .formula(new ValueFormula<>(numberValue))
-                      .type(type)
-                      .createDerivation();
-            } catch (NumberFormatException e) {
-              LogInfo.warnings("NumberFn: Cannot convert NerSpan \"%s\" to a number", value);
-            }
-          }
-        }
-*/  
         // Duration
         if (request("DURATION")) {
           String value = languageInfo.getNormalizedNerSpan("DURATION", start, end);
           if (value != null) {
-          	LogInfo.log("duration: " + value);
+          	LogInfo.log("NumberFn.check duration: " + value);
             try {
               NumberValue numberValue = (opts.unitless ?
                   new NumberValue(Double.parseDouble(value.substring(0))) :

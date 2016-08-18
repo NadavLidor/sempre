@@ -16,6 +16,7 @@ public class DateTimeFn extends SemanticFn {
 //        LogInfo.log("dateTimeValue value1 :" + value);
 //        String value2 = ex.languageInfo.tokens.get(c.getStart());
 //        LogInfo.log("TimeFn value2 :" + value2);
+        if (value == null) value = ex.languageInfo.getNormalizedNerSpan("DATE", c.getStart(), c.getEnd());
         if (value == null)
           return null;
         DateTimeValue dateTimeValue = DateTimeValue.parseDateTimeValue(value);

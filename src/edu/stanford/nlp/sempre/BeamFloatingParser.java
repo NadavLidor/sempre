@@ -182,7 +182,8 @@ class BeamFloatingParserState extends ChartParserState {
 
   // Return number of new derivations added
   private int applyRule(int start, int end, Rule rule, List<Derivation> children) {
-    if (Parser.opts.verbose >= 5) LogInfo.logs("applyRule %s %s %s %s", start, end, rule, children);
+    if (Parser.opts.verbose >= 5)
+    	LogInfo.logs("applyRule %s %s %s %s", start, end, rule, children);
     try {
       if (mode == Mode.full) {
         StopWatchSet.begin(rule.getSemRepn());
@@ -309,6 +310,8 @@ class BeamFloatingParserState extends ChartParserState {
 
         if (derivs == null) continue;
 
+//        LogInfo.logs("applyFLOATINGCatUnaryRules %s %s %s %s", start, end, rule, chart[start][end]);
+        
         for (Derivation deriv : derivs)
           applyRule(start, end, rule, Collections.singletonList(deriv));
       } else {
@@ -318,6 +321,9 @@ class BeamFloatingParserState extends ChartParserState {
           derivsCreated += applyFloatingRule(rule, start, end, chart[start][i], chart[i][end]);
           derivsCreated += applyFloatingRule(rule, start, end, chart[i][end], chart[start][i]);
         }
+        
+//        LogInfo.logs("applyFLOATINGNonCatUnaryRules %s %s %s %s", start, end, rule, chart[start][end]);
+
 
         /* If no derivs created, propagate up */
 //        if (derivsCreated == 0) {

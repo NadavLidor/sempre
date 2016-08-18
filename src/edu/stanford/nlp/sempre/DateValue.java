@@ -16,11 +16,15 @@ public class DateValue extends Value {
   // Format: YYYY-MM-DD (from Freebase).
   // Return null if it's not a valid date string.
   public static DateValue parseDateValue(String dateStr) {
-  	LogInfo.log("dateStr: " + dateStr);
+  	
+  	
+  	if (dateStr.contains(" T1") || dateStr.contains(" T0")) return null; // don't handle datetime
+  	LogInfo.log("DateValue dateStr: " + dateStr);
   	
 //  	if (dateStr.charAt(5) == 'W') return null; // Nadav: don't handle week days 
 	    if (dateStr.equals("PRESENT_REF")) return null;
 	    if (dateStr.startsWith("OFFSET P")) { //OFFSET P1D "tomorrow"
+//	    	if (dateStr.contains("INTERSECT")) return null; // but not datetime, e.g. OFFSET P1D INTERSECT T13:50
 	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
 	  		Character unit = dateStr.charAt(dateStr.length() - 1);
 	  		int value = Integer.parseInt(dateStr.substring(8, dateStr.length() - 1));
@@ -40,7 +44,8 @@ public class DateValue extends Value {
 	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
 	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
 	    }
-	    if (dateStr.startsWith("THIS")) dateStr.substring(5, dateStr.length());
+	    if (dateStr.startsWith("THIS")) 
+	    	dateStr = dateStr.substring(5, dateStr.length());
 	    if (dateStr.startsWith("XXXX-WXX-")) { // day of week
 	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
 	  		int weekday = Integer.parseInt(dateStr.substring(9, 10));
@@ -159,7 +164,6 @@ public class DateValue extends Value {
   	if (this_year == -1 || other_year == -1) {this_year = -1; other_year = -1;}
   	if (this_month == -1 || other_month == -1) {this_month = -1; other_month = -1;}
   	if (this_day == -1 || other_day == -1) {this_day = -1; other_day = -1;}
-  	LogInfo.log((this_year > other_year) || (this_year == other_year && this_month > other_month) || (this_year == other_year && this_month == other_month && this_day > other_day)); // TODO
   	return ((this_year > other_year) || (this_year == other_year && this_month > other_month) || (this_year == other_year && this_month == other_month && this_day > other_day));
   }
   // return true if this DateValue is after other DateValue
@@ -170,7 +174,6 @@ public class DateValue extends Value {
   	if (this_year == -1 || other_year == -1) {this_year = -1; other_year = -1;}
   	if (this_month == -1 || other_month == -1) {this_month = -1; other_month = -1;}
   	if (this_day == -1 || other_day == -1) {this_day = -1; other_day = -1;}
-  	LogInfo.log((this_year < other_year) || (this_year == other_year && this_month < other_month) || (this_year == other_year && this_month == other_month && this_day < other_day)); // TODO
   	return ((this_year < other_year) || (this_year == other_year && this_month < other_month) || (this_year == other_year && this_month == other_month && this_day < other_day));
   }
 }

@@ -119,7 +119,7 @@ public class  Event extends Item {
     else
       throw new RuntimeException("EVENT GET property " + property + " is not supported.");
     
-    LogInfo.log("EVENT GET: " + propval.toString());
+//    LogInfo.log("EVENT GET: " + propval.toString());
     return propval;
   }
   
@@ -480,7 +480,6 @@ public class  Event extends Item {
 	  
 	  
   	if (weekday < 0) {
-  		LogInfo.log("updateWeekday");
   		if (op.equals("start")) {
   		  while (this.start.getDayOfWeek().getValue() != -weekday) {  
   			  this.start = this.start.plusDays(-1);

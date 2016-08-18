@@ -15,13 +15,11 @@ public class TimeValue extends Value {
   // timeStr format is THH:MM:SS (M and S optional)
   public static TimeValue parseTimeValue(String timeStr) {
 	
+  	if (timeStr.charAt(0) != 'T') return null; // Don't handle dateTime
+  	
   	//extract hour 
   	int hour = -1;
   	int minute = 0;
-  
-//  	if (timeStr.charAt(0) != 'T') LogInfo.log("BAD timeStr: " + timeStr + " returning null");
-  	if (timeStr.charAt(0) != 'T') return null; // Don't handle dateTime
-  	
   	
   	String hourStr = timeStr.substring(timeStr.indexOf('T'), timeStr.length());
   	LogInfo.log("timeStr: " + timeStr);
@@ -29,7 +27,6 @@ public class TimeValue extends Value {
   	try {
   		hour = Integer.parseInt(hourStr.substring(1, 3));
   	} catch (NumberFormatException e) {} // do nothing on exception
-  	
   	
   	// extract minute
   	if (timeStr.length() >= 5) {
