@@ -19,13 +19,13 @@ public class DateValue extends Value {
   	
   	
   	if (dateStr.contains(" T1") || dateStr.contains(" T0")) return null; // don't handle datetime
+  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
   	LogInfo.log("DateValue dateStr: " + dateStr);
   	
 //  	if (dateStr.charAt(5) == 'W') return null; // Nadav: don't handle week days 
 	    if (dateStr.equals("PRESENT_REF")) return null;
-	    if (dateStr.startsWith("OFFSET P")) { //OFFSET P1D "tomorrow"
+	    if (dateStr.startsWith("OFFSET P") && dateStr.charAt(8) != 'T') { //OFFSET P1D "tomorrow", but not time such as OFFSET PT1H  
 //	    	if (dateStr.contains("INTERSECT")) return null; // but not datetime, e.g. OFFSET P1D INTERSECT T13:50
-	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
 	  		Character unit = dateStr.charAt(dateStr.length() - 1);
 	  		int value = Integer.parseInt(dateStr.substring(8, dateStr.length() - 1));
 	  		if (unit.equals('M')) // coreNLP gives M to both months and minutes
@@ -41,13 +41,11 @@ public class DateValue extends Value {
 	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
 	    }
 	    if (dateStr.startsWith("THIS P1D")) { // today
-	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
 	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
 	    }
 	    if (dateStr.startsWith("THIS")) 
 	    	dateStr = dateStr.substring(5, dateStr.length());
 	    if (dateStr.startsWith("XXXX-WXX-")) { // day of week
-	    	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
 	  		int weekday = Integer.parseInt(dateStr.substring(9, 10));
 	  		d = d.plusDays(weekday - d.getDayOfWeek().getValue());
 	  		if (dateStr.endsWith("W")) {
@@ -68,7 +66,7 @@ public class DateValue extends Value {
     // We don't handle the following things:
     //   - "30 A.D" since its value is "+0030"
     //   - "Dec 20, 2009 10:04am" since its value is "2009-12-20T10:04"
-    int year = -1, month = -1, day = -1;
+    int year = d.getYear(), month = d.getMonthValue(), day = d.getDayOfMonth();
     boolean isBC = dateStr.startsWith("-");
     if (isBC) dateStr = dateStr.substring(1);
 
@@ -85,22 +83,22 @@ public class DateValue extends Value {
     if (dateParts.length > 3)
       throw new RuntimeException("Date has more than 3 parts: " + dateStr);
 
-    if (dateParts.length >= 1) year = parseIntRobust(dateParts[0]) * (isBC ? -1 : 1);
-    if (dateParts.length >= 2) month = parseIntRobust(dateParts[1]);
-    if (dateParts.length >= 3) day = parseIntRobust(dateParts[2]);
+    if (dateParts.length >= 1) {try {year = Integer.parseInt(dateParts[0]) * (isBC ? -1 : 1);} catch (NumberFormatException e) {}}
+    if (dateParts.length >= 2) {try {month = Integer.parseInt(dateParts[1]);} catch (NumberFormatException e) {}}
+    if (dateParts.length >= 3) {try {day = Integer.parseInt(dateParts[2]);} catch (NumberFormatException e) {}}
 
     return new DateValue(year, month, day);
   }
 
-  private static int parseIntRobust(String i) {
-    int val;
-    try {
-      val = Integer.parseInt(i);
-    } catch (NumberFormatException ex) {
-      val = -1;
-    }
-    return val;
-  }
+//  private static int parseIntRobust(String i) {
+//    int val;
+//    try {
+//      val = Integer.parseInt(i);
+//    } catch (NumberFormatException ex) {
+//      val = -1;
+//    }
+//    return val;
+//  }
 
   public static DateValue now() {
     Calendar cal = Calendar.getInstance();
@@ -146,15 +144,18 @@ public class DateValue extends Value {
     return hash;
   }
 
+  // disregard -1's //TODO can also change initialization from -1 to current
   @Override public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     DateValue that = (DateValue) o;
-    if (this.year != that.year) return false;
-    if (this.month != that.month) return false;
-    if (this.day != that.day) return false;
+    if (this.year != -1 && that.year != -1 && this.year != that.year) return false;
+    if (this.month != -1 && that.month != -1 && this.month != that.month) return false;
+    if (this.day != -1 && that.day != -1 && this.day != that.day) return false;
     return true;
   }
+  
+  // TODO get rid of -1 checks
   
   // return true if this DateValue is after other DateValue
   public boolean isAfter(DateValue other) {

@@ -1080,7 +1080,7 @@ o('Master.onlineLearnExamples', true),
 o('Master.independentSessions', false),
 
 o('Dataset.inPaths', 'def:./shrdlurn_output/examples/startup.lisp', 'train:./shrdlurn_output/examples/startup.lisp'),
-o('Learner.maxTrainIters', 3),
+o('Learner.maxTrainIters', 1),
 
 o('server', true),
 o('Server.numThreads', 8),

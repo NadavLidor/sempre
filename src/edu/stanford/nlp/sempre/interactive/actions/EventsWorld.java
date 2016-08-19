@@ -340,6 +340,23 @@ public class EventsWorld extends FlatWorld {
   	return addtime_2(random, random_n, selected);
   }
   
+  public LocalDateTime addtimereverse(Set<LocalDateTime> timeset, Set<NumberValue> numbers, Set<Item> selected) {
+  	
+  	if (timeset == null || timeset.isEmpty() || numbers == null || numbers.isEmpty()) return null;
+  	
+  	LocalDateTime random = null;
+  	for (LocalDateTime t : timeset) {
+  		random = t;
+  		break;
+  	}
+  	NumberValue random_n = null;
+  	for (NumberValue n : numbers) {
+  		random_n = new NumberValue(-n.value, n.unit);
+  		break;
+  	}
+  	return addtime_2(random, random_n, selected);
+  }
+  
   public NumberValue numberunit (NumberValue n, String s) {
   	return new NumberValue(n.value, s);
   }

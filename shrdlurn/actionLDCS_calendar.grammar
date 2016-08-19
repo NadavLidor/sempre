@@ -2,6 +2,8 @@
 
 (rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtime ((reverse start_datetime) this) (var d)))))) (floating 1)) 
 
+(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtimereverse ((reverse start_datetime) this) (var d)))))) (floating 1)) 
+
 #(rule $ROOT ($Select) (IdentityFn) (floating 1))
 
 
@@ -17,7 +19,7 @@
 # (rule $ROOT ($Select $Remove) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
 
 # (rule $ROOT ($Select $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1)) # chain a select and an action
-(rule $ROOT ($Add $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
+(rule $Action ($Add $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
 (rule $ROOT ($Add) (IdentityFn))
 
 
@@ -51,6 +53,22 @@
 (rule $Add (add) (ConstantFn (: add)) (anchored 1))
 (rule $Add (new) (ConstantFn (: add)) (anchored 1))
 (rule $Set (next) (ConstantFn (call pick_first start_datetime (call after start_datetime (call now)))) (anchored 1))
+
+(rule $Pick (Pick) (ConstantFn (string pick)) (anchored 1))
+(rule $Remove (Cancel) (ConstantFn (: remove)) (anchored 1))
+(rule $Remove (Delete) (ConstantFn (: remove)) (anchored 1))
+(rule $Remove (Remove) (ConstantFn (: remove)) (anchored 1))
+(rule $Remove (Clear) (ConstantFn (: remove)) (anchored 1))
+(rule $And (And) and (anchored 1))
+(rule $Or (And) or (anchored 1))
+(rule $OR (Ar) or (anchored 1))
+(rule $Or (Either) (ConstantFn (string or)) (anchored 1))
+(rule $Actions (Cancel all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
+(rule $Actions (Delete all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
+(rule $Add (Create) (ConstantFn (: add)) (anchored 1))
+(rule $Add (Add) (ConstantFn (: add)) (anchored 1))
+(rule $Add (New) (ConstantFn (: add)) (anchored 1))
+(rule $Set (Next) (ConstantFn (call pick_first start_datetime (call after start_datetime (call now)))) (anchored 1))
 
 (rule $Duration (5) (ConstantFn (call numberunit (number 5) (string minutes))) (anchored 1))
 (rule $Duration (10) (ConstantFn (call numberunit (number 10) (string minutes))) (anchored 1))
@@ -195,6 +213,7 @@
 
 (rule $DateTimeSet ($DateTime) (IdentityFn) (floating 1))
 (rule $DateTime ($DateTimeSet $Duration) (lambda s (lambda d (call pick (call addtime (var s) (var d))))) (floating 1))
+(rule $DateTime ($DateTimeSet $Duration) (lambda s (lambda d (call pick (call addtimereverse (var s) (var d))))) (floating 1))
 
 #pick
 
@@ -239,6 +258,8 @@
 # time ranges
 
 (rule $Set ($AfterSet $BeforeSet) (lambda r1 (lambda r2 (and (var r1) (var r2)))) (floating 1))
+(rule $Set ($AfterSet $Set) (lambda r1 (lambda r2 (and (var r1) (var r2)))) (floating 1))
+(rule $Set ($BeforeSet $Set) (lambda r1 (lambda r2 (and (var r1) (var r2)))) (floating 1))
 
 ##### debug this
 

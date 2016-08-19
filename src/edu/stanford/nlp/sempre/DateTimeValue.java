@@ -3,6 +3,8 @@ package edu.stanford.nlp.sempre;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fig.basic.LispTree;
 import fig.basic.LogInfo;
@@ -18,36 +20,63 @@ public class DateTimeValue extends Value {
 	// format 2000-08-18T15:00, with possible Xs
   public static DateTimeValue parseDateTimeValue(String timeStr) {
   	LogInfo.log("DateTimeValue dateStr: " + timeStr);
-  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.HOURS);
+  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00"));
+  	if (d.getMinute() > 30) {
+  		d = d.plusMinutes(30);
+  		d = d.truncatedTo(ChronoUnit.HOURS);
+  	}
+  	else {
+  		d = d.withMinute(30);
+  		d = d.truncatedTo(ChronoUnit.MINUTES);
+  	}
   	
-  	LogInfo.log("timeStr: " + timeStr);
   	
-  	String timeS = "T1";
-  	int Tindex = timeStr.indexOf(timeS);
-  	if (Tindex == -1) {
-  		timeS = "T0";
-  		Tindex = timeStr.indexOf(timeS);
+  	Pattern PATTERN = Pattern.compile("(T\\d+)");
+  	
+  	String timeS = "";
+  	int Tindex = -1;
+  	Matcher m = PATTERN.matcher(timeStr);
+  	if (m.find()) {
+  	    timeS = m.group(1);
+  	    Tindex = timeStr.indexOf(timeS);
   	}
   	
   	if (Tindex > 0) { // only handle datetimes
 
   		String dateStr = timeStr.substring(0, Tindex);
-  		
-  		if (dateStr.startsWith("OFFSET P")) { //OFFSET P1D "tomorrow"
+  		// XXXX-WXX-3 OFFSET P1W INTERSECT T15
+
+  		if (timeStr.contains("OFFSET P")) {
+  			int index = timeStr.indexOf("OFFSET P");
+  			int end = ((timeStr.length() < index + 13) ? timeStr.length() : timeStr.indexOf(' ', index + 8));
+  			String offset = timeStr.substring(index, end);
+  			end--; // point to unit
 	  		
-	  		int end = ((Character.isDigit(dateStr.charAt(9))) ? 10 : 9);
-	  		Character unit = dateStr.charAt(end);
-	  		int value = Integer.parseInt(dateStr.substring(8, end));
-	  		if (unit.equals('M')) // coreNLP gives M to both months and minutes
-					d = d.plusHours(value);
-	  		else if (unit.equals('H'))
-	  			d = d.plusHours(value);
-	  		else if (unit.equals('D'))
-					d = d.plusDays(value);
-	  		else if (unit.equals('W'))
-					d = d.plusDays(7 * value);
-	  		else if (unit.equals('Y'))
-					d = d.plusYears(value);
+  			if (offset.charAt(8) == 'T') { //OFFSET PT3H "three hours from now"
+		  		Character unit = offset.charAt(end);
+		  		int value = Integer.parseInt(offset.substring(9, end));
+		  		if (unit.equals('M')) // 
+						d = d.plusMinutes(value);
+		  		else if (unit.equals('H'))
+		  			d = d.plusHours(value);
+		  		return new DateTimeValue(d); // skip time extraction
+	  		}
+	  		
+	  		else { 	//OFFSET P1D "tomorrow" 
+	  						//XXXX-WXX-3 OFFSET P1W INTERSECT T15 "next wed at 3pm"
+		  		Character unit = offset.charAt(end);
+		  		int value = Integer.parseInt(offset.substring(8, end));
+		  		if (unit.equals('M')) // coreNLP gives M to both months and minutes
+						d = d.plusMinutes(value);
+		  		else if (unit.equals('H'))
+		  			d = d.plusHours(value);
+		  		else if (unit.equals('D'))
+						d = d.plusDays(value);
+		  		else if (unit.equals('W'))
+						d = d.plusDays(7 * value);
+		  		else if (unit.equals('Y'))
+						d = d.plusYears(value);
+	  		}
   		}
   		else if (dateStr.startsWith("THIS P1D")) {
   			// do nothing, today

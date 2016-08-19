@@ -18,7 +18,7 @@ public class TimeValue extends Value {
   	if (timeStr.charAt(0) != 'T') return null; // Don't handle dateTime
   	
   	//extract hour 
-  	int hour = -1;
+  	int hour = 0;
   	int minute = 0;
   	
   	String hourStr = timeStr.substring(timeStr.indexOf('T'), timeStr.length());
