@@ -1047,7 +1047,7 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
   selo(2, 'Grammar.inPaths', './shrdlurn/magnetic.grammar', './shrdlurn/blocksworld.grammar', './shrdlurn/actionLDCS_calendar.grammar'),
   o('Grammar.binarizeRules', false),
   o('Grammar.useApplyFn', 'interactive.ApplyFn'),
-  o('LanguageAnalyzer.lowerCaseTokens', true),
+  o('LanguageAnalyzer.lowerCaseTokens', false),
   o('LanguageAnalyzer.useLemmaTokens', false),
 
   o('Parser.pruneErrorValues', true),
@@ -1064,7 +1064,7 @@ o('Parser.beamSize', 50),
 o('Params.initStepSize', 0.1),
 o('Params.adaptiveStepSize', true),
 
-# o('FeatureExtractor.featureComputers', 'interactive.blocks.RicherStacksWorldFeatureComputer'),
+o('FeatureExtractor.featureComputers', 'interactive.blocks.RicherStacksWorldFeatureComputer'),
 o('FeatureExtractor.featureDomains', 'rule'),
 o('RicherStacksWorldFeatureComputer.ngramN', 2),
 o('RicherStacksWorldFeatureComputer.parameterizeCats', 'Number','Color', 'Date', 'Time'),
@@ -1079,8 +1079,8 @@ o('Master.newGrammarPath', './shrdlurn_output/grammar/'),
 o('Master.onlineLearnExamples', true),
 o('Master.independentSessions', false),
 
-o('Dataset.inPaths', 'def:./shrdlurn/sidaw.lisp'),
-o('Learner.maxTrainIters', 1),
+o('Dataset.inPaths', 'def:./shrdlurn_output/examples/startup.lisp', 'train:./shrdlurn_output/examples/startup.lisp'),
+o('Learner.maxTrainIters', 3),
 
 o('server', true),
 o('Server.numThreads', 8),

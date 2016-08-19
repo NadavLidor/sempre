@@ -17,6 +17,8 @@
 # (rule $ROOT ($Select $Remove) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
 
 # (rule $ROOT ($Select $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1)) # chain a select and an action
+(rule $ROOT ($Add $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
+(rule $ROOT ($Add) (IdentityFn))
 
 
 # augmenting set operation to include 'and' as 'or' --has bug
@@ -45,9 +47,9 @@
 (rule $Or (either) (ConstantFn (string or)) (anchored 1))
 (rule $Actions (cancel all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
 (rule $Actions (delete all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
-(rule $Select (create) (ConstantFn (: add)) (anchored 1))
-(rule $Select (add) (ConstantFn (: add)) (anchored 1))
-(rule $Select (new) (ConstantFn (: add)) (anchored 1))
+(rule $Add (create) (ConstantFn (: add)) (anchored 1))
+(rule $Add (add) (ConstantFn (: add)) (anchored 1))
+(rule $Add (new) (ConstantFn (: add)) (anchored 1))
 (rule $Set (next) (ConstantFn (call pick_first start_datetime (call after start_datetime (call now)))) (anchored 1))
 
 (rule $Duration (5) (ConstantFn (call numberunit (number 5) (string minutes))) (anchored 1))
@@ -144,11 +146,22 @@
 
 ### title and location
 
-(rule $Word ("$TOKEN") (IdentityFn))
-#(rule $Set ($Word) (lambda t (title (var t))) (anchored 1)) 
-#(rule $Action ($Word) (lambda t (: update title (var t))) (anchored 1))
-#(rule $Set ($Word) (lambda t (location (var t))) (anchored 1))
-#(rule $Action ($Word) (lambda t (: update location (var t))) (anchored 1))
+
+# (rule $Word ($PHRASE) (QuoteFn)) # probably not needed
+
+(rule $Word ($PHRASE) (IdentityFn))
+
+(rule $Set (`` $Word '') (lambda t (title (var t))) (anchored 1)) 
+(rule $Action (`` $Word '') (lambda t (: update title (var t))) (anchored 1))
+(rule $Set (`` $Word '') (lambda t (location (var t))) (anchored 1))
+(rule $Action (`` $Word '') (lambda t (: update location (var t))) (anchored 1))
+
+
+
+#(rule $Set (`` $Word '') (lambda t (title (var t))) (anchored 1)) 
+#(rule $Action (`` $Word '') (lambda t (: update title (var t))) (anchored 1))
+#(rule $Set (`` $Word '') (lambda t (location (var t))) (anchored 1))
+#(rule $Action (`` $Word '') (lambda t (: update location (var t))) (anchored 1))
 
 
 ### time
@@ -196,18 +209,24 @@
 (rule $Sets ($Set) (lambda s (call pick_next start_datetime (var s))) (anchored 1))
 (rule $Sets ($Set) (lambda s (call pick_next end_datetime (var s))) (anchored 1))
 
-(for @setsType ($Sets, $AfterSet, $BeforeSet)
+(rule $Sets ($Last $Set) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
+(rule $Sets ($Last $Set) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
 
-(rule $Sets (@setsType) (lambda s (call pick_next start_datetime (var s))) (anchored 1))
-(rule $Sets (@setsType) (lambda s (call pick_next end_datetime (var s))) (anchored 1))
+(rule $Sets ($Last $AfterSet) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
+(rule $Sets ($Last $AfterSet) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
 
-(rule $Set ($First @setsType) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
-(rule $Set ($First @setsType) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
+(rule $Sets ($Last $BeforeSet) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
+(rule $Sets ($Last $BeforeSet) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
 
-(rule $Set ($Last @setsType) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
-(rule $Set ($Last @setsType) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
+(rule $Sets ($First $Set) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
+(rule $Sets ($First $Set) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
 
-)
+(rule $Sets ($First $BeforeSet) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
+(rule $Sets ($First $BeforeSet) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
+
+(rule $Sets ($First $AfterSet) (lambda w (lambda s (call (var w) start_datetime (var s)))) (floating 1))
+(rule $Sets ($First $AfterSet) (lambda w (lambda s (call (var w) end_datetime (var s)))) (floating 1))
+
 
 # anchored times
 

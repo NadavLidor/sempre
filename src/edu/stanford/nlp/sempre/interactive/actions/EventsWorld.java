@@ -44,8 +44,6 @@ public class EventsWorld extends FlatWorld {
       return fromJSON(defaultEvents);
     }
     
-//    LogInfo.log("context.toString()==================================");
-//    LogInfo.log(context.toString());
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
     return fromJSON(wallString);
@@ -64,7 +62,7 @@ public class EventsWorld extends FlatWorld {
   }
 
   public static EventsWorld fromJSON(String wallString) {
-    @SuppressWarnings("unchecked")
+  	@SuppressWarnings("unchecked")
     List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
     Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
         .collect(Collectors.toSet());

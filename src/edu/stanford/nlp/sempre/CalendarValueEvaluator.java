@@ -13,13 +13,11 @@ public class CalendarValueEvaluator implements ValueEvaluator {
   public double getCompatibility(Value target, Value pred) {
 
   	// target
-  	String targetEvents = target.toString().replace("\\", "");
-  	targetEvents = targetEvents.substring(8, targetEvents.length() - 1);
+  	String targetEvents = ((StringValue)target).value;
   	EventsWorld targetWorld = EventsWorld.fromJSON(targetEvents);
   	
-  	// prev
-  	String predEvents = pred.toString().replace("\\", "");
-  	predEvents = predEvents.substring(8, predEvents.length() - 1);
+  	// prev  	
+  	String predEvents = ((StringValue)pred).value;
   	EventsWorld predWorld = EventsWorld.fromJSON(predEvents);
   	
   	if (targetWorld.allitems.size() != predWorld.allitems.size()) {

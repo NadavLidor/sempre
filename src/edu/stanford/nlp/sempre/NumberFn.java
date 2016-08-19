@@ -107,7 +107,7 @@ public class NumberFn extends SemanticFn {
           }
         }
 
-//        Ordinals
+//        // Ordinals
 //        if (request("ORDINAL")) {
 //          String value = languageInfo.getNormalizedNerSpan("ORDINAL", start, end);
 //          if (value != null) {
