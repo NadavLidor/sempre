@@ -1060,14 +1060,16 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
 o('ParserState.customExpectedCounts', 'UNIFORM'),
 o('Params.l1Reg', 'lazy'),
 o('Params.l1RegCoeff', 0.001),
-o('Parser.beamSize', 50),
+o('Parser.beamSize', 3),
 o('Params.initStepSize', 0.1),
 o('Params.adaptiveStepSize', true),
 
-o('FeatureExtractor.featureComputers', 'interactive.blocks.RicherStacksWorldFeatureComputer'),
+o('FeatureExtractor.featureComputers', 'interactive.actions.BeamFloatingFeatureComputer'),
+# o('FeatureExtractor.featureDomains', 'rule', 'subtree'),
 o('FeatureExtractor.featureDomains', 'rule'),
-o('RicherStacksWorldFeatureComputer.ngramN', 2),
-o('RicherStacksWorldFeatureComputer.parameterizeCats', 'Number','Color', 'Date', 'Time'),
+o('BeamFloatingFeatureComputer.ngramN', 2),
+o('BeamFloatingFeatureComputer.parameterizeCats', 'Number','Color', 'Date', 'Time'),
+
 
 lambda { |e| system 'mkdir -p ./shrdlurn_output/examples/'},
 lambda { |e| system 'mkdir -p ./shrdlurn_output/logs/'},
@@ -1079,8 +1081,8 @@ o('Master.newGrammarPath', './shrdlurn_output/grammar/'),
 o('Master.onlineLearnExamples', true),
 o('Master.independentSessions', false),
 
-o('Dataset.inPaths', 'def:./shrdlurn_output/examples/startup.lisp', 'train:./shrdlurn_output/examples/startup.lisp'),
-o('Learner.maxTrainIters', 1),
+# o('Dataset.inPaths', 'train:./shrdlurn_output/examples/startup.lisp'),
+# o('Learner.maxTrainIters', 3),
 
 o('server', true),
 o('Server.numThreads', 8),

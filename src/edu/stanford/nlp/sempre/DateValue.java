@@ -8,6 +8,8 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
+import edu.stanford.nlp.sempre.interactive.actions.EventsWorld;
+
 public class DateValue extends Value {
   public final int year;
   public final int month;
@@ -19,7 +21,8 @@ public class DateValue extends Value {
   	
   	
   	if (dateStr.contains(" T1") || dateStr.contains(" T0")) return null; // don't handle datetime
-  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+  	LocalDateTime d = EventsWorld.calendarTime();
+//  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
   	LogInfo.log("DateValue dateStr: " + dateStr);
   	
 //  	if (dateStr.charAt(5) == 'W') return null; // Nadav: don't handle week days 
@@ -100,6 +103,7 @@ public class DateValue extends Value {
 //    return val;
 //  }
 
+  // used by Session.java:45
   public static DateValue now() {
     Calendar cal = Calendar.getInstance();
     int year = cal.get(Calendar.YEAR);

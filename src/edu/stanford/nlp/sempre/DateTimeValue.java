@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.stanford.nlp.sempre.interactive.actions.EventsWorld;
 import fig.basic.LispTree;
 import fig.basic.LogInfo;
 
@@ -20,12 +21,13 @@ public class DateTimeValue extends Value {
 	// format 2000-08-18T15:00, with possible Xs
   public static DateTimeValue parseDateTimeValue(String timeStr) {
   	LogInfo.log("DateTimeValue dateStr: " + timeStr);
-  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00"));
+//  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00"));
+  	LocalDateTime d = EventsWorld.calendarTime();
   	if (d.getMinute() > 30) {
   		d = d.plusMinutes(30);
   		d = d.truncatedTo(ChronoUnit.HOURS);
   	}
-  	else {
+  	else if (d.getMinute() > 0) {
   		d = d.withMinute(30);
   		d = d.truncatedTo(ChronoUnit.MINUTES);
   	}

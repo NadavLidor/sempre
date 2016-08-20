@@ -44,12 +44,12 @@ public class  Event extends Item {
 		this.guests = new HashSet<Person>();
 		this.names = new HashSet<>();
 			
-		this.start = LocalDateTime.now(ZoneId.of("UTC+00:00"));
+		this.start = EventsWorld.calendarTime();
 		if (this.start.getMinute() > 30) {
 			this.start = this.start.plusHours(1);
 			this.start = this.start.truncatedTo(ChronoUnit.HOURS);
 		}
-		else {
+		else if (this.start.getMinute() > 0) {
 			this.start = this.start.truncatedTo(ChronoUnit.HOURS);
 			this.start = this.start.plusMinutes(30);
 		}
@@ -244,7 +244,7 @@ public class  Event extends Item {
   
   public void updateDateTime(Set<LocalDateTime> value, String op) {
   	
-  	LocalDateTime sample = LocalDateTime.now();
+  	LocalDateTime sample = EventsWorld.calendarTime();
   	for (LocalDateTime i : value) {sample = i; break;}
   	
 	  if (op.equals("start")) this.start = sample;
@@ -294,7 +294,7 @@ public class  Event extends Item {
   public void moveDateTime(Set<LocalDateTime> value, String op) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 //  	LogInfo.log("moveDateTime EVENT: " + value.toString());
-  	LocalDateTime sample = LocalDateTime.now();
+  	LocalDateTime sample = EventsWorld.calendarTime();
   	for (LocalDateTime i : value) {sample = i; break;}
   	
 	  if (op.equals("start")) {
@@ -582,7 +582,7 @@ public class  Event extends Item {
     result = prime * result + this.end.hashCode();
     return result; // TODO why not return only this.start.hashCode() ??
   }
-  @Override
+  @Override // note that names (i.e. "S", "N" is not included
   public boolean equals(Object obj) {
   	if (this == obj)
       return true;
@@ -601,7 +601,9 @@ public class  Event extends Item {
 	  if (!end.equals(other.end))
 	      return false;
 	  
-	  // TODO repeats, guests, names
+	  
+	  
+	  // TODO repeats, guests,
 	  
     return true;
   }
