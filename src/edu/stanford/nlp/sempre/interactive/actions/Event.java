@@ -539,11 +539,11 @@ public class  Event extends Item {
     retcube.location = ((String)props.get(1));
     retcube.start = LocalDateTime.parse(((String)props.get(2)));
     retcube.end = LocalDateTime.parse(((String)props.get(3)));
-    List<Boolean> temp = (List<Boolean>)props.get(4);
+//    List<Boolean> temp = (List<Boolean>)props.get(4);
 //    for (int i = 0; i < retcube.repeats.size(); i++) retcube.repeats.set(i, temp.get(i));
 //    retcube.guests = ((HashSet<Person>)props.get(5));
 
-    retcube.names.addAll((List<String>)props.get(5));
+    retcube.names.addAll((List<String>)props.get(4));
     return retcube;
   }
   public Object toJSON() {
