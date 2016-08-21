@@ -68,7 +68,7 @@ public class  Event extends Item {
   	this.location = location;
   	this.start = start;
   	this.end = end;
-  	for (int i = 0 ; i < repeats.size(); i++) this.repeats.set(i, repeats.get(i));
+//  	for (int i = 0 ; i < repeats.size(); i++) this.repeats.set(i, repeats.get(i));
   	// TODO guests
 
   }
@@ -205,10 +205,6 @@ public class  Event extends Item {
     	moveDateTime((Set<LocalDateTime>)value, "start");
     else if (property.equals("end_datetime") && value instanceof Set<?>)
     	moveDateTime((Set<LocalDateTime>)value, "end");
-    
-    
-    //TODO continue
-    
     else
       throw new RuntimeException("EVENT MOVE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double));
   }
@@ -373,7 +369,6 @@ public class  Event extends Item {
 		
 		this.end = this.start;
 		if (n.unit.equals("hours")) { 
-//			this.end = this.end.plusHours(d - start.until(end, ChronoUnit.HOURS)); //TODO ???
 			this.end = this.end.plusHours(d);
 			
 			// handle fractions only for hours
@@ -385,7 +380,6 @@ public class  Event extends Item {
 			}
 		}
 		else if (n.unit.equals("minutes"))
-//			this.end = this.end.plusMinutes(d - start.until(end, ChronoUnit.MINUTES));//TODO ???
 			this.end = this.end.plusMinutes(d);
 		
 		else if (n.unit.equals("days"))
@@ -546,7 +540,7 @@ public class  Event extends Item {
     retcube.start = LocalDateTime.parse(((String)props.get(2)));
     retcube.end = LocalDateTime.parse(((String)props.get(3)));
     List<Boolean> temp = (List<Boolean>)props.get(4);
-    for (int i = 0; i < retcube.repeats.size(); i++) retcube.repeats.set(i, temp.get(i));
+//    for (int i = 0; i < retcube.repeats.size(); i++) retcube.repeats.set(i, temp.get(i));
 //    retcube.guests = ((HashSet<Person>)props.get(5));
 
     retcube.names.addAll((List<String>)props.get(5));
@@ -554,9 +548,9 @@ public class  Event extends Item {
   }
   public Object toJSON() {
   	List<String> globalNames = names.stream().collect(Collectors.toList());
-  	List<Boolean> globalRepeats = repeats.stream().collect(Collectors.toList());
+//  	List<Boolean> globalRepeats = repeats.stream().collect(Collectors.toList());
 //    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), repeats.toString(), guests.toString(), globalNames);
-    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), globalRepeats, globalNames);
+    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), globalNames);
     return event;
   }
 
