@@ -41,10 +41,16 @@ public class EventsWorld extends FlatWorld {
   public static EventsWorld fromContext(ContextValue context) {
     if (context == null || context.graph == null) {
     	
+//    	String defaultEvents = "["
+//      		+ "[\"Meeting_Today_1\",\"office\",\"2016-08-08T10:15\",\"2016-08-08T11:15\",[false,false,false,false,false,false,false,false,false],[]],"
+//      		+ "[\"Meeting_Today_2\",\"cafe\",\"2016-08-08T13:00\",\"2016-08-08T14:30\",[false,false,false,false,false,false,false,false,false],[]],"
+//      		+ "[\"Meeting_Tomorrow\",\"bar\",\"2016-08-09T15:00\",\"2016-08-10T16:00\",[false,false,false,true,false,false,false,false,false],[]]" //repeats on Thu.
+//      		+ "]";
+    	
     	String defaultEvents = "["
-      		+ "[\"Meeting_Today_1\",\"office\",\"2016-08-08T10:15\",\"2016-08-08T11:15\",[false,false,false,false,false,false,false,false,false],[]],"
-      		+ "[\"Meeting_Today_2\",\"cafe\",\"2016-08-08T13:00\",\"2016-08-08T14:30\",[false,false,false,false,false,false,false,false,false],[]],"
-      		+ "[\"Meeting_Tomorrow\",\"bar\",\"2016-08-09T15:00\",\"2016-08-10T16:00\",[false,false,false,true,false,false,false,false,false],[]]" //repeats on Thu.
+      		+ "[\"Meeting_Today_1\",\"office\",\"2016-08-08T10:15\",\"2016-08-08T11:15\",[]],"
+      		+ "[\"Meeting_Today_2\",\"cafe\",\"2016-08-08T13:00\",\"2016-08-08T14:30\",[]],"
+      		+ "[\"Meeting_Tomorrow\",\"bar\",\"2016-08-09T15:00\",\"2016-08-10T16:00\",[]]" //repeats on Thu.
       		+ "]";
       return fromJSON(defaultEvents);
     }
