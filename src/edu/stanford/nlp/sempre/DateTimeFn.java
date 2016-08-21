@@ -13,14 +13,9 @@ public class DateTimeFn extends SemanticFn {
       @Override
       public Derivation createDerivation() {
         String value = ex.languageInfo.getNormalizedNerSpan("TIME", c.getStart(), c.getEnd());
-//        LogInfo.log("dateTimeValue value1 :" + value);
-//        String value2 = ex.languageInfo.tokens.get(c.getStart());
-//        LogInfo.log("TimeFn value2 :" + value2);
         if (value == null) value = ex.languageInfo.getNormalizedNerSpan("DATE", c.getStart(), c.getEnd());
-        if (value == null)
-          return null;
+        if (value == null) return null;
         DateTimeValue dateTimeValue = DateTimeValue.parseDateTimeValue(value);
-//        LogInfo.log("dateTimeValue dateTimeValue :" + dateTimeValue);
         if (dateTimeValue == null)
           return null;
         return new Derivation.Builder()

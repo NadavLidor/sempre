@@ -66,8 +66,8 @@ public class  Event extends Item {
   	this();
   	this.title = title;
   	this.location = location;
-  	this.start = start.plusMinutes(0); //TODO better way?
-  	this.end = end.plusMinutes(0);
+  	this.start = start;
+  	this.end = end;
   	for (int i = 0 ; i < repeats.size(); i++) this.repeats.set(i, repeats.get(i));
   	// TODO guests
 
@@ -172,16 +172,7 @@ public class  Event extends Item {
     	updateDateTime((Set<LocalDateTime>)value, "end");
     else if (property.equals("repeat") && value instanceof NumberValue)
     	updateRepeat((NumberValue)value);
-    	
-    //TODO continue
-
     else {
-      LogInfo.log(value instanceof TimeValue); // TODO
-      LogInfo.log(value instanceof LocalDateTime); // TODO
-      LogInfo.log(value instanceof Item);
-      LogInfo.log(value instanceof DateValue);
-      LogInfo.log(value instanceof String);
-      LogInfo.log(value instanceof Object);
       throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double));
     }
       

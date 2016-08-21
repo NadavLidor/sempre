@@ -3,6 +3,7 @@ package edu.stanford.nlp.sempre;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -191,6 +192,12 @@ public class DateTimeValue extends Value {
     }
     return false;
     
+  }
+  
+  public static DateTimeValue now() {
+//  	LocalDateTime d = EventsWorld.calendarTime();
+  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
+    return new DateTimeValue(d);
   }
 
   @Override

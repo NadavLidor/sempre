@@ -24,8 +24,7 @@ public class DateValue extends Value {
   	LocalDateTime d = EventsWorld.calendarTime();
 //  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
   	LogInfo.log("DateValue dateStr: " + dateStr);
-  	
-//  	if (dateStr.charAt(5) == 'W') return null; // Nadav: don't handle week days 
+  	 
 	    if (dateStr.equals("PRESENT_REF")) return null;
 	    if (dateStr.startsWith("OFFSET P") && dateStr.charAt(8) != 'T') { //OFFSET P1D "tomorrow", but not time such as OFFSET PT1H  
 //	    	if (dateStr.contains("INTERSECT")) return null; // but not datetime, e.g. OFFSET P1D INTERSECT T13:50
@@ -117,7 +116,7 @@ public class DateValue extends Value {
     this.month = month;
     this.day = day;
   }
-
+  
   public DateValue(LispTree tree) {
     this.year = Integer.valueOf(tree.child(1).value);
     this.month = Integer.valueOf(tree.child(2).value);

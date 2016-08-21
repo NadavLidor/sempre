@@ -40,31 +40,32 @@ public class ContextValue extends Value {
   }
 
   public final String user;
-  public final DateValue date;
+//  public final DateValue date;
+  public final DateTimeValue datetime;
   public final List<Exchange> exchanges;  // List of recent exchanges with the user
   public final KnowledgeGraph graph;  // Mini-knowledge graph that captures the context
 
-  public ContextValue withDate(DateValue newDate) {
+  public ContextValue withDate(DateTimeValue newDate) {
     return new ContextValue(user, newDate, exchanges, graph);
   }
 
   public ContextValue withNewExchange(List<Exchange> newExchanges) {
-    return new ContextValue(user, date, newExchanges, graph);
+    return new ContextValue(user, datetime, newExchanges, graph);
   }
 
   public ContextValue withGraph(KnowledgeGraph newGraph) {
-    return new ContextValue(user, date, exchanges, newGraph);
+    return new ContextValue(user, datetime, exchanges, newGraph);
   }
 
-  public ContextValue(String user, DateValue date, List<Exchange> exchanges, KnowledgeGraph graph) {
+  public ContextValue(String user, DateTimeValue datetime, List<Exchange> exchanges, KnowledgeGraph graph) {
     this.user = user;
-    this.date = date;
+    this.datetime = datetime;
     this.exchanges = exchanges;
     this.graph = graph;
   }
 
-  public ContextValue(String user, DateValue date, List<Exchange> exchanges) {
-    this(user, date, exchanges, null);
+  public ContextValue(String user, DateTimeValue datetime, List<Exchange> exchanges) {
+    this(user, datetime, exchanges, null);
   }
 
   public ContextValue(KnowledgeGraph graph) {
@@ -78,15 +79,15 @@ public class ContextValue extends Value {
   //            (graph NaiveKnowledgeGraph ((string Obama) (string "born in") (string Hawaii)) ...))
   public ContextValue(LispTree tree) {
     String user = null;
-    DateValue date = null;
+    DateTimeValue datetime = null;
     KnowledgeGraph graph = null;
     exchanges = new ArrayList<Exchange>();
     for (int i = 1; i < tree.children.size(); i++) {
       String key = tree.child(i).child(0).value;
       if (key.equals("user")) {
         user = tree.child(i).child(1).value;
-      } else if (key.equals("date")) {
-        date = new DateValue(tree.child(i));
+      } else if (key.equals("datetime")) {
+        datetime = new DateTimeValue(tree.child(i));
       } else if (key.equals("graph")) {
         graph = KnowledgeGraph.fromLispTree(tree.child(i));
       } else if (key.equals("exchange")) {
@@ -96,7 +97,7 @@ public class ContextValue extends Value {
       }
     }
     this.user = user;
-    this.date = date;
+    this.datetime = datetime;
     this.graph = graph;
   }
 
@@ -105,8 +106,8 @@ public class ContextValue extends Value {
     tree.addChild("context");
     if (user != null)
       tree.addChild(LispTree.proto.newList("user", user));
-    if (date != null)
-      tree.addChild(date.toLispTree());
+    if (datetime != null)
+      tree.addChild(datetime.toLispTree());
     if (graph != null)
       tree.addChild(graph.toLispTree());
     for (Exchange e : exchanges)
@@ -117,7 +118,7 @@ public class ContextValue extends Value {
   @Override public int hashCode() {
     int hash = 0x7ed55d16;
     hash = hash * 0xd3a2646c + user.hashCode();
-    hash = hash * 0xd3a2646c + date.hashCode();
+    hash = hash * 0xd3a2646c + datetime.hashCode();
     hash = hash * 0xd3a2646c + exchanges.hashCode();
     hash = hash * 0xd3a2646c + graph.hashCode();
     return hash;
@@ -128,7 +129,7 @@ public class ContextValue extends Value {
     if (o == null || getClass() != o.getClass()) return false;
     ContextValue that = (ContextValue) o;
     if (!this.user.equals(that.user)) return false;
-    if (!this.date.equals(that.date)) return false;
+    if (!this.datetime.equals(that.datetime)) return false;
     if (!this.exchanges.equals(that.exchanges)) return false;
     if (!this.graph.equals(that.graph)) return false;
     return true;

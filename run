@@ -1047,7 +1047,7 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
   selo(2, 'Grammar.inPaths', './shrdlurn/magnetic.grammar', './shrdlurn/blocksworld.grammar', './shrdlurn/actionLDCS_calendar.grammar'),
   o('Grammar.binarizeRules', false),
   o('Grammar.useApplyFn', 'interactive.ApplyFn'),
-  o('LanguageAnalyzer.lowerCaseTokens', false),
+  o('LanguageAnalyzer.lowerCaseTokens', true),
   o('LanguageAnalyzer.useLemmaTokens', false),
 
   o('Parser.pruneErrorValues', true),
@@ -1081,8 +1081,8 @@ o('Master.newGrammarPath', './shrdlurn_output/grammar/'),
 o('Master.onlineLearnExamples', true),
 o('Master.independentSessions', false),
 
-# o('Dataset.inPaths', 'train:./shrdlurn_output/examples/startup.lisp'),
-# o('Learner.maxTrainIters', 3),
+o('Dataset.inPaths', 'train:./shrdlurn_output/examples/startup.lisp'),
+o('Learner.maxTrainIters', 3),
 
 o('server', true),
 o('Server.numThreads', 8),

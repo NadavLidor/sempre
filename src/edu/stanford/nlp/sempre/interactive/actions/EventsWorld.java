@@ -27,12 +27,16 @@ import fig.basic.LogInfo;
 // the world of stacks
 public class EventsWorld extends FlatWorld {
   
-//	private int counter = 1;
+	private LocalDateTime datetime;
 	
 	public void select(Set<Item> set) {
 //		this.selected().forEach(ev -> ((Event)ev).names.clear()); TODO?
 		this.selected = set;
 	} //TODO
+	
+  public static LocalDateTime calendarTime() {
+  	return LocalDateTime.parse("2015-11-11T12:59:00");
+  }
 	
   public static EventsWorld fromContext(ContextValue context) {
     if (context == null || context.graph == null) {
@@ -44,7 +48,7 @@ public class EventsWorld extends FlatWorld {
       		+ "]";
       return fromJSON(defaultEvents);
     }
-    
+
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
     return fromJSON(wallString);
@@ -281,9 +285,6 @@ public class EventsWorld extends FlatWorld {
   	return false;
   }
   
-  public static LocalDateTime calendarTime() {
-  	return LocalDateTime.parse("2015-11-11T12:59:00");
-  }
   
   public LocalDateTime now(){
   	return calendarTime();
@@ -366,114 +367,381 @@ public class EventsWorld extends FlatWorld {
     this.selected.clear();
     
     Event n = new Event();
-    n.title = "Lunch";
+    n.title = "lunch with jack";
+    n.location = "the usual";
     n.start = n.start.withHour(12);
     n.start = n.start.withMinute(0);
     n.end = n.start.withHour(13);
-    n.start = n.start.plusDays(-7);
+    n.start = n.start.plusDays(-7); // wed
     n.end = n.end.plusDays(-7);
-    for (int i = 0 ; i < 14; i++) {
-      n.start = n.start.plusDays(1);
-      n.end = n.end.plusDays(1);
-      if (n.start.getDayOfWeek().getValue() < 6)
-      	this.allitems.add(n.clone());
-    }
+    this.allitems.add(n.clone());
     
-    n = new Event();
-    n.title = "dinner";
-    n.start = n.start.withHour(19);
-    n.start = n.start.withMinute(0);
+    n.title = "meeting with sam";
+    n.location = "";
+    n.start = n.start.withHour(14);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(16);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "dinner with friends";
+    n.location = "main street";
+    n.start = n.start.withHour(18);
+    n.start = n.start.withMinute(30);
     n.end = n.start.withHour(20);
-    n.start = n.start.plusDays(-7);
-    n.end = n.end.plusDays(-7);
-    for (int i = 0 ; i < 14; i++) {
-      n.start = n.start.plusDays(1);
-      n.end = n.end.plusDays(1);
-      if (n.start.getDayOfWeek().getValue() < 6)
-      	this.allitems.add(n.clone());
-    }
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
     
-    n = new Event();
-    n.title = "meeting with john";
-    n.start = n.start.withHour(9);
-    n.start = n.start.withMinute(0);
-    n.end = n.start.withHour(10);
-    n.end = n.end.withMinute(45);
-    n.start = n.start.plusDays(-7);
-    n.end = n.end.plusDays(-7);
-    for (int i = 0 ; i < 4; i++) {
-      n.start = n.start.plusDays(4);
-      n.end = n.end.plusDays(4);
-      if (n.start.getDayOfWeek().getValue() > 5) {
-        n.start = n.start.plusDays(2);
-        n.end = n.end.plusDays(2);
-      }
-    	this.allitems.add(n.clone());
-    }
+    n.start = n.start.plusDays(1); //thu
+    n.end = n.end.plusDays(1);
 
-    n = new Event();
-    n.title = "group meeting";
+    n.title = "morning sync";
+    n.location = "office";
+    n.start = n.start.withHour(10);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(11);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "lunch with sida";
+    n.location = "nexus";
+    n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(13);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "work on project";
+    n.location = "";
     n.start = n.start.withHour(14);
     n.start = n.start.withMinute(0);
     n.end = n.start.withHour(16);
-    n.start = n.start.plusDays(-7);
-    n.end = n.end.plusDays(-7);
-    for (int i = 0 ; i < 7; i++) {
-      n.start = n.start.plusDays(2);
-      n.end = n.end.plusDays(2);
-      if (n.start.getDayOfWeek().getValue() > 5) {
-        n.start = n.start.plusDays(2);
-        n.end = n.end.plusDays(2);
-      }
-    	this.allitems.add(n.clone());
-    }
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
     
-    n = new Event();
-    n.title = "hiking";
-    n.start = n.start.plusDays(6 - n.start.getDayOfWeek().getValue());
+    n.title = "gym";
+    n.location = "main street";
+    n.start = n.start.withHour(19);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(20);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //fri
+    n.end = n.end.plusDays(1);
+    
+    n.title = "meeting with chris";
+    n.location = "chris office";
     n.start = n.start.withHour(11);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(12);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "group lunch";
+    n.location = "room 214";
+    n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(13);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "dinner with family";
+    n.location = "italian cafe";
+    n.start = n.start.withHour(18);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(20);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //sat
+    n.end = n.end.plusDays(1);
+    
+    n.title = "brunch";
+    n.location = "our place";
+    n.start = n.start.withHour(9);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(12);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "park with kids";
+    n.location = "";
+    n.start = n.start.withHour(13);
     n.start = n.start.withMinute(0);
     n.end = n.start.withHour(15);
-    n.start = n.start.plusDays(-14);
-    n.end = n.end.plusDays(-14);
-    for (int i = 0 ; i < 5; i++) {
-      n.start = n.start.plusDays(7);
-      n.end = n.end.plusDays(7);
-    	this.allitems.add(n.clone());
-    }
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
     
-    n = new Event();
-    n.title = "weekly soccer";
-    n.start = n.start.plusDays(7 - n.start.getDayOfWeek().getValue());
-    n.start = n.start.withHour(15);
+    n.start = n.start.plusDays(1); //sun
+    n.end = n.end.plusDays(1);
+    
+    n.title = "hike";
+    n.location = "tbd";
+    n.start = n.start.withHour(11);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(15);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.title = "basketball";
+    n.location = "";
+    n.start = n.start.withHour(18);
     n.start = n.start.withMinute(0);
-    n.end = n.start.withHour(17);
-    n.start = n.start.plusDays(-14);
-    n.end = n.end.plusDays(-14);
-    for (int i = 0 ; i < 5; i++) {
-      n.start = n.start.plusDays(7);
-      n.end = n.end.plusDays(7);
-    	this.allitems.add(n.clone());
-    }
+    n.end = n.start.withHour(19);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
     
-    n = new Event();
-    n.title = "brunch";
-    n.start = n.start.plusDays(7 - n.start.getDayOfWeek().getValue());
+    n.start = n.start.plusDays(1); //mon
+    n.end = n.end.plusDays(1);
+    
+    n.title = "project sync";
+    n.location = "";
     n.start = n.start.withHour(9);
     n.start = n.start.withMinute(30);
     n.end = n.start.withHour(11);
     n.end = n.end.withMinute(0);
-    n.start = n.start.plusDays(-14);
-    n.end = n.end.plusDays(-14);
-    for (int i = 0 ; i < 5; i++) {
-      n.start = n.start.plusDays(7);
-      n.end = n.end.plusDays(7);
-    	this.allitems.add(n.clone());
-    }
+    this.allitems.add(n.clone());
     
-    // individual events
-//    this.allitems.add(new Event("meeting2", "location2", n.start.plusMinutes(120), n.end.plusMinutes(180), n.repeats, n.guests));
-//    this.allitems.add(new Event("meeting3", "location3", n.start.plusHours(24), n.end.plusHours(48), n.repeats, n.guests));
+    n.title = "team lunch";
+    n.location = "room 300";
+    n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(13);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "dinner with dan";
+    n.location = "tbd";
+    n.start = n.start.withHour(18);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(19);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //tue
+    n.end = n.end.plusDays(1);
+    
+    n.title = "meeting with will";
+    n.location = "office";
+    n.start = n.start.withHour(10);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(11);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "gym with nihil";
+    n.location = "";
+    n.start = n.start.withHour(19);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(20);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //wed
+    n.end = n.end.plusDays(1);
+    
+    n.title = "take matthew to dentist";
+    n.location = "";
+    n.start = n.start.withHour(9);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(11);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "family dinner";
+    n.location = "home";
+    n.start = n.start.withHour(18);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(19);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //thu
+    n.end = n.end.plusDays(1);
+    
+    n.title = "project status";
+    n.location = "conference room";
+    n.start = n.start.withHour(9);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(11);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.title = "lunch with new hire";
+    n.location = "";
+    n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(13);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.title = "ideas dinner";
+    n.location = "tressider";
+    n.start = n.start.withHour(17);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(19);
+    n.end = n.end.withMinute(00);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //fri
+    n.end = n.end.plusDays(1);
+    
+    n.title = "team lunch";
+    n.location = "";
+    n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(13);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "work with katie";
+    n.location = "office";
+    n.start = n.start.withHour(15);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(16);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.title = "anniversary";
+    n.location = "tbd";
+    n.start = n.start.withHour(18);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(20);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //sat
+    n.end = n.end.plusDays(1);
+    
+    n.title = "burnch with parents";
+    n.location = "parents home";
+    n.start = n.start.withHour(10);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(12);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.title = "meeting bobby!";
+    n.location = "";
+    n.start = n.start.withHour(16);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(17);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //sun
+    n.end = n.end.plusDays(1);
+    
+    n.title = "pool with kids";
+    n.location = "";
+    n.start = n.start.withHour(11);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(14);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.title = "wash car";
+    n.location = "";
+    n.start = n.start.withHour(15);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(15);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.title = "soccer";
+    n.location = "";
+    n.start = n.start.withHour(18);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(20);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //next mon
+    n.end = n.end.plusDays(1);
+    
+    n.title = "meeting chris";
+    n.location = "chris office";
+    n.start = n.start.withHour(11);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(12);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.title = "new team lunch";
+    n.location = "";
+    n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(13);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //next tue
+    n.end = n.end.plusDays(1);
+    
+    n.title = "dinner with charlie";
+    n.location = "italian cafe";
+    n.start = n.start.withHour(18);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(19);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //next wed
+    n.end = n.end.plusDays(1);
+    
+    n.title = "meeting sam";
+    n.location = "office";
+    n.start = n.start.withHour(11);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(13);
+    n.end = n.end.withMinute(45);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //next thu
+    n.end = n.end.plusDays(1);
+    
+    n.title = "dinner with jan";
+    n.location = "home";
+    n.start = n.start.withHour(18);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(19);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    
+    n.start = n.start.plusDays(1); //next fri
+    n.end = n.end.plusDays(1);
+    
+    n.title = "lunch with anthony";
+    n.location = "bytes maybe";
+    n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(0);
+    n.end = n.start.withHour(13);
+    n.end = n.end.withMinute(0);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //next sat
+    n.end = n.end.plusDays(1);
+    
+    n.title = "hiking";
+    n.location = "park";
+    n.start = n.start.withHour(12);
+    n.start = n.start.withMinute(30);
+    n.end = n.start.withHour(16);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
+    
+    n.start = n.start.plusDays(1); //next sun
+    n.end = n.end.plusDays(1);
+    
+    n.title = "kids";
+    n.location = "home";
+    n.start = n.start.withHour(11);
+    n.start = n.start.withMinute(00);
+    n.end = n.start.withHour(15);
+    n.end = n.end.withMinute(30);
+    this.allitems.add(n.clone());
     
   }
   

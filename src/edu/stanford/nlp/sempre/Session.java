@@ -35,14 +35,14 @@ public class Session {
   // per session parameters
   public Session(String id) {
     this.id = id;
-    context = new ContextValue(id, DateValue.now(), new ArrayList<ContextValue.Exchange>());
+    context = new ContextValue(id, DateTimeValue.now(), new ArrayList<ContextValue.Exchange>());
   }
 
   public Example getLastExample() { return lastEx; }
   public String getLastQuery() { return lastEx == null ? null : lastEx.utterance; }
 
   public void updateContext() {
-    context = context.withDate(DateValue.now());
+    context = context.withDate(DateTimeValue.now());
   }
 
   public void updateContext(Example ex, int maxExchanges) {
