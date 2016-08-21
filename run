@@ -1049,6 +1049,7 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
   o('Grammar.useApplyFn', 'interactive.ApplyFn'),
   o('LanguageAnalyzer.lowerCaseTokens', true),
   o('LanguageAnalyzer.useLemmaTokens', false),
+  o('LanguageAnalyzer.languageAnalyzer', 'corenlp.CoreNLPAnalyzer'),
 
   o('Parser.pruneErrorValues', true),
   o('Parser', 'BeamFloatingParser'),
