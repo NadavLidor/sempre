@@ -68,7 +68,7 @@ public class  Event extends Item {
   	this.location = location;
   	this.start = start;
   	this.end = end;
-//  	for (int i = 0 ; i < repeats.size(); i++) this.repeats.set(i, repeats.get(i));
+  	for (int i = 0 ; i < repeats.size(); i++) this.repeats.set(i, repeats.get(i));
   	// TODO guests
 
   }
@@ -539,18 +539,18 @@ public class  Event extends Item {
     retcube.location = ((String)props.get(1));
     retcube.start = LocalDateTime.parse(((String)props.get(2)));
     retcube.end = LocalDateTime.parse(((String)props.get(3)));
-//    List<Boolean> temp = (List<Boolean>)props.get(4);
-//    for (int i = 0; i < retcube.repeats.size(); i++) retcube.repeats.set(i, temp.get(i));
+    List<Boolean> temp = (List<Boolean>)props.get(4);
+    for (int i = 0; i < retcube.repeats.size(); i++) retcube.repeats.set(i, temp.get(i));
 //    retcube.guests = ((HashSet<Person>)props.get(5));
 
-    retcube.names.addAll((List<String>)props.get(4));
+    retcube.names.addAll((List<String>)props.get(5));
     return retcube;
   }
   public Object toJSON() {
   	List<String> globalNames = names.stream().collect(Collectors.toList());
-//  	List<Boolean> globalRepeats = repeats.stream().collect(Collectors.toList());
+  	List<Boolean> globalRepeats = repeats.stream().collect(Collectors.toList());
 //    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), repeats.toString(), guests.toString(), globalNames);
-    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), globalNames);
+    List<Object> event = Lists.newArrayList(title, location, start.toString(), end.toString(), globalRepeats, globalNames);
     return event;
   }
 
