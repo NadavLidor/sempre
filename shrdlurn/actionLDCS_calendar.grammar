@@ -107,7 +107,24 @@
 
 ### numbers
 
-(rule $Number ($TOKEN) (NumberFn) (anchored 1))
+(rule $NumberD ($TOKEN) (NumberFn) (anchored 1))
+
+(rule $Number (1) (ConstantFn (time 13 0)) (anchored 1))
+(rule $Number (2) (ConstantFn (time 14 0)) (anchored 1))
+(rule $Number (3) (ConstantFn (time 15 0)) (anchored 1))
+(rule $Number (4) (ConstantFn (time 16 0)) (anchored 1))
+(rule $Number (5) (ConstantFn (time 17 0)) (anchored 1))
+(rule $Number (6) (ConstantFn (time 18 0)) (anchored 1))
+(rule $Number (7) (ConstantFn (time 19 0)) (anchored 1))
+(rule $Number (8) (ConstantFn (time 20 0)) (anchored 1))
+(rule $Number (9) (ConstantFn (time 21 0)) (anchored 1))
+(rule $Number (9) (ConstantFn (time 9 0)) (anchored 1))
+(rule $Number (10) (ConstantFn (time 22 0)) (anchored 1))
+(rule $Number (10) (ConstantFn (time 10 0)) (anchored 1))
+(rule $Number (11) (ConstantFn (time 23 0)) (anchored 1))
+(rule $Number (11) (ConstantFn (time 11 0)) (anchored 1))
+(rule $Number (12) (ConstantFn (time 0 0)) (anchored 1))
+(rule $Number (12) (ConstantFn (time 12 0)) (anchored 1))
 
 (rule $Unit (minutes) (ConstantFn (string minutes)) (anchored 1))
 (rule $Unit (minute) (ConstantFn (string minutes)) (anchored 1))
@@ -122,7 +139,7 @@
 (rule $Unit (years) (ConstantFn (string years)) (anchored 1))
 (rule $Unit (year) (ConstantFn (string years)) (anchored 1))
 
-(rule $Duration ($Number $Unit) (lambda n (lambda u (call numberunit (var n) (var u)))) (anchored 1))
+(rule $Duration ($NumberD $Unit) (lambda n (lambda u (call numberunit (var n) (var u)))) (anchored 1))
 
 # duration
 
