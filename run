@@ -1086,6 +1086,7 @@ o('Learner.maxTrainIters', 3),
 
 o('server', true),
 o('Server.numThreads', 8),
+o('Server.port', 8407),
 nil) })
 
 
