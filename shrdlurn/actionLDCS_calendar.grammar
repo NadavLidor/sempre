@@ -54,6 +54,8 @@
 (rule $Add (create) (ConstantFn (: add)) (anchored 1))
 (rule $Add (add) (ConstantFn (: add)) (anchored 1))
 (rule $Add (new) (ConstantFn (: add)) (anchored 1))
+(rule $Add (make) (ConstantFn (: add)) (anchored 1))
+(rule $Add (meeting) (ConstantFn (: add)) (anchored 1))
 (rule $Set (next) (ConstantFn (call pick_first start_datetime (call after start_datetime (call now)))) (anchored 1))
 
 (rule $Pick (Pick) (ConstantFn (string pick)) (anchored 1))
