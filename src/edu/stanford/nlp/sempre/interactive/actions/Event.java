@@ -32,16 +32,16 @@ public class  Event extends Item {
   public String location;
   public LocalDateTime start;
   public LocalDateTime end;
-  public List<Boolean> repeats; // [0] weekly, [1,7] days of week, [8] monthly, [9] yearly
-  public HashSet<Person> guests;
+//  public List<Boolean> repeats; // [0] weekly, [1,7] days of week, [8] monthly, [9] yearly
+//  public HashSet<Person> guests;
   public Set<String> names;
 	
   
   public Event() {
     this.title = "meeting";
 		this.location = "";
-		this.repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
-		this.guests = new HashSet<Person>();
+//		this.repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
+//		this.guests = new HashSet<Person>();
 		this.names = new HashSet<>();
 			
 		this.start = EventsWorld.calendarTime();
@@ -62,7 +62,8 @@ public class  Event extends Item {
   	this.location = location;
   }
   
-  public Event(String title, String location, LocalDateTime start, LocalDateTime end, List<Boolean> repeats, HashSet<Person> guests) {
+//  public Event(String title, String location, LocalDateTime start, LocalDateTime end, List<Boolean> repeats, HashSet<Person> guests) {
+  public Event(String title, String location, LocalDateTime start, LocalDateTime end) {
   	this();
   	this.title = title;
   	this.location = location;
@@ -107,15 +108,15 @@ public class  Event extends Item {
       propval = this.start;
     else if (property.equals("end_datetime"))
       propval = this.end;
-    else if (property.equals("repeat")) { //return an array of NumberValues of the [index + 1] of 'true' values
-      propval = new HashSet<NumberValue>(); 
-      for (int i = 0; i < this.repeats.size(); i++) {
-      	if (this.repeats.get(i) == true) {
-      		((HashSet<NumberValue>)propval).add(new NumberValue(i + 1));
-        	if (i < 7) ((HashSet<NumberValue>)propval).add(new NumberValue(0));
-      	}
-      }
-    }
+//    else if (property.equals("repeat")) { //return an array of NumberValues of the [index + 1] of 'true' values
+//      propval = new HashSet<NumberValue>(); 
+//      for (int i = 0; i < this.repeats.size(); i++) {
+//      	if (this.repeats.get(i) == true) {
+//      		((HashSet<NumberValue>)propval).add(new NumberValue(i + 1));
+//        	if (i < 7) ((HashSet<NumberValue>)propval).add(new NumberValue(0));
+//      	}
+//      }
+//    }
     else
       throw new RuntimeException("EVENT GET property " + property + " is not supported.");
     
@@ -170,8 +171,8 @@ public class  Event extends Item {
     	updateDateTime((Set<LocalDateTime>)value, "start");
     else if (property.equals("end_datetime") && value instanceof Set<?>)
     	updateDateTime((Set<LocalDateTime>)value, "end");
-    else if (property.equals("repeat") && value instanceof NumberValue)
-    	updateRepeat((NumberValue)value);
+//    else if (property.equals("repeat") && value instanceof NumberValue)
+//    	updateRepeat((NumberValue)value);
     else {
       throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double));
     }
@@ -259,24 +260,24 @@ public class  Event extends Item {
   // toggles values, all saved at [index: v - 1]: 
   // value: 1 = mon -- 7 = sun, 8 = daily, 9 = monthly, 10 = yearly
   // value: 0 = weekly, 11 : clear all
-  public void updateRepeat(NumberValue value) {
-  	int v = (int)value.value;
-  	
-  	// if day, 1 - 7
-  	if (v > 0 && v < 11)
-  		this.repeats.set(v - 1, !this.repeats.get(v - 1));   	
-  	
-  	// set to weekly
-  	else if (v == 0) {
-  		int day = this.start.getDayOfWeek().getValue();
-  		this.repeats.set(day - 1, !this.repeats.get(day - 1)); 
-  	}
-  	
-  	// clear all
-  	else if (v == 11) {
-  		for (int i = 0 ; i < this.repeats.size(); i++) this.repeats.set(i, false);
-  	}
-  }
+//  public void updateRepeat(NumberValue value) {
+//  	int v = (int)value.value;
+//  	
+//  	// if day, 1 - 7
+//  	if (v > 0 && v < 11)
+//  		this.repeats.set(v - 1, !this.repeats.get(v - 1));   	
+//  	
+//  	// set to weekly
+//  	else if (v == 0) {
+//  		int day = this.start.getDayOfWeek().getValue();
+//  		this.repeats.set(day - 1, !this.repeats.get(day - 1)); 
+//  	}
+//  	
+//  	// clear all
+//  	else if (v == 11) {
+//  		for (int i = 0 ; i < this.repeats.size(); i++) this.repeats.set(i, false);
+//  	}
+//  }
   
   public void moveDateTime(Set<LocalDateTime> value, String op) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
@@ -556,7 +557,8 @@ public class  Event extends Item {
 
   @Override
   public Event clone() {
-    return new Event(this.title, this.location, this.start, this.end, this.repeats, this.guests);
+//    return new Event(this.title, this.location, this.start, this.end, this.repeats, this.guests);
+    return new Event(this.title, this.location, this.start, this.end);
   }
   @Override
   public int hashCode() {
