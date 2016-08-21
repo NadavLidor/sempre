@@ -16,6 +16,8 @@
 (rule $Select ($Sets) (lambda s (: select (var s))) (floating 1))
 (rule $Select (all) (ConstantFn (: select *)) (anchored 1))
 
+(rule $ROOT ($Remove) (IdentityFn) (floating 1))
+
 # (rule $ROOT ($Select $Remove) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
 
 # (rule $ROOT ($Select $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1)) # chain a select and an action

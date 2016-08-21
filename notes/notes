@@ -74,7 +74,7 @@ ant core interactive
 npm run local
 
 ./run @mode=interactive-calendar -interactive -server true -LanguageAnalyzer.languageAnalyzer corenlp.CoreNLPAnalyzer
-./run @mode=interactive-calendar -interactive -server true -LanguageAnalyzer.languageAnalyzer corenlp.CoreNLPAnalyzer
+
 
 
 SELECTED
@@ -102,3 +102,4 @@ August 5th
   - check equality collapsing of idential results (parseSEMPRE in sempre)
 
  - add datetimefn to values
+ - change from static time
