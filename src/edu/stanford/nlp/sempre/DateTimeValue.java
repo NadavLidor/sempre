@@ -56,8 +56,10 @@ public class DateTimeValue extends Value {
   			end--; // point to unit
 	  		
   			if (offset.charAt(8) == 'T') { //OFFSET PT3H "three hours from now"
+  				LogInfo.log("OFFSET in datetimevalue");
 		  		Character unit = offset.charAt(end);
 		  		int value = Integer.parseInt(offset.substring(9, end));
+		  		LogInfo.log("unit, value: " + unit.toString() + ", " + Integer.toString(value));
 		  		if (unit.equals('M')) // 
 						d = d.plusMinutes(value);
 		  		else if (unit.equals('H'))
