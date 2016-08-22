@@ -1051,6 +1051,8 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
   o('LanguageAnalyzer.useLemmaTokens', false),
   o('LanguageAnalyzer.languageAnalyzer', 'corenlp.CoreNLPAnalyzer'),
 
+  o('Server.maxCandidates', 70),
+
   o('Parser.pruneErrorValues', true),
   o('Parser', 'BeamFloatingParser'),
   o('Parser.trackedCats', 'Color', 'Numbers', 'Direction', 'Set', 'Set2', 'Action', 'Actions'),
