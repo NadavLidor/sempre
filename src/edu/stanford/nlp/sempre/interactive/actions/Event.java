@@ -225,7 +225,11 @@ public class  Event extends Item {
 
   public void updateDateTime(DateTimeValue value, String op) {
   	
-	  if (op.equals("start")) this.start = value.datetime;
+  	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
+	  if (op.equals("start")) {
+	  	this.start = value.datetime;
+	  	if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+	  }
 	  else if (op.equals("end")) this.end = value.datetime;
 	  
   }
@@ -235,7 +239,11 @@ public class  Event extends Item {
   	LocalDateTime sample = EventsWorld.calendarTime();
   	for (LocalDateTime i : value) {sample = i; break;}
   	
-	  if (op.equals("start")) this.start = sample;
+  	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
+	  if (op.equals("start")) {
+	  	this.start = sample;
+	  	if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+	  }
 	  else if (op.equals("end")) this.end = sample;
   }
   

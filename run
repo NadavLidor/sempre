@@ -1051,7 +1051,7 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
   o('LanguageAnalyzer.useLemmaTokens', false),
   o('LanguageAnalyzer.languageAnalyzer', 'corenlp.CoreNLPAnalyzer'),
 
-  o('Server.maxCandidates', 80),
+  o('Server.maxCandidates', 120),
 
   o('Parser.pruneErrorValues', true),
   o('Parser', 'BeamFloatingParser'),
