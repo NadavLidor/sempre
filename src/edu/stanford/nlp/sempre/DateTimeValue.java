@@ -21,7 +21,7 @@ public class DateTimeValue extends Value {
 
 	// format 2000-08-18T15:00, with possible Xs
   public static DateTimeValue parseDateTimeValue(String timeStr) {
-  	LogInfo.log("DateTimeValue dateStr: " + timeStr);
+//  	LogInfo.log("DateTimeValue dateStr: " + timeStr);
 //  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00"));
   	LocalDateTime d = EventsWorld.calendarTime();
   	if (d.getMinute() > 30) {
@@ -130,7 +130,7 @@ public class DateTimeValue extends Value {
   	
     	// extract time
 	  	String hourStr = timeStr.substring(Tindex, timeStr.length());
-	  	LogInfo.log("DateTimeValue.hourStr: " + hourStr);
+//	  	LogInfo.log("DateTimeValue.hourStr: " + hourStr);
 	  	try {
 	  		d = d.withHour(Integer.parseInt(hourStr.substring(1, 3)));
 	  	} catch (NumberFormatException e) {} // do nothing on exception
@@ -169,24 +169,16 @@ public class DateTimeValue extends Value {
   @Override
   public boolean equals(Object o) {
   	
-//  	LogInfo.log("here");
-//  	LogInfo.log(this.datetime);
-  	
     if (this == o) return true;
 
     if (o != null) {
     	if (getClass() == o.getClass()) { // if o is DateTimeValue
-//    		LogInfo.log("here2");
     		
         DateTimeValue otherDatetime = (DateTimeValue) o;
-//        LogInfo.log(otherDatetime.datetime);
-//        LogInfo.log(this.datetime.equals(otherDatetime.datetime));
         return this.datetime.equals(otherDatetime.datetime);
     	}
     	if (o instanceof LocalDateTime) { // if o is LocalDateTime
-//    		LogInfo.log("here3");
         LocalDateTime otherDatetime = (LocalDateTime) o;
-//        LogInfo.log(otherDatetime);
         return this.datetime.equals(otherDatetime);    		
     	}
     }

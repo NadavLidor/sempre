@@ -91,7 +91,7 @@ public class NumberFn extends SemanticFn {
         // Numbers: If it is an integer, set its type to integer.  Otherwise, use float.
         if (request("NUMBER")) {
           String value = languageInfo.getNormalizedNerSpan("NUMBER", start, end);
-          LogInfo.log("NumberFn.check number: " + value);
+//          LogInfo.log("NumberFn.check number: " + value);
           if (value != null) {
             try {
               NumberValue numberValue = new NumberValue(Double.parseDouble(value));
@@ -171,7 +171,7 @@ public class NumberFn extends SemanticFn {
         if (request("DURATION")) {
           String value = languageInfo.getNormalizedNerSpan("DURATION", start, end);
           if (value != null) {
-          	LogInfo.log("NumberFn.check duration: " + value);
+//          	LogInfo.log("NumberFn.check duration: " + value);
             try {
               NumberValue numberValue = (opts.unitless ?
                   new NumberValue(Double.parseDouble(value.substring(0))) :

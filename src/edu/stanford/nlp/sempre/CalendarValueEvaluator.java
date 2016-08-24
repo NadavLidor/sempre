@@ -21,14 +21,14 @@ public class CalendarValueEvaluator implements ValueEvaluator {
   	EventsWorld predWorld = EventsWorld.fromJSON(predEvents);
   	
   	if (targetWorld.allitems.size() != predWorld.allitems.size()) {
-  		LogInfo.log("NOT equals: different number of allitems");
+//  		LogInfo.log("NOT equals: different number of allitems");
   		return 0;
   	}
   	
   	double res = 1.0;
   	
   	if (targetWorld.selected.size() != predWorld.selected.size()) {
-  		LogInfo.log("Different number of selected");
+//  		LogInfo.log("Different number of selected");
   		res = 0.000001; // if selected number is off, max value returned is this
   	}
   	
@@ -36,7 +36,7 @@ public class CalendarValueEvaluator implements ValueEvaluator {
   	targetWorld.allitems.removeAll(predWorld.allitems);
   	
   	if (targetWorld.allitems.size() > 0) {
-  		LogInfo.log("NOT equals: difference:");
+//  		LogInfo.log("NOT equals: difference:");
   		return 0;
   		
 //		for (Item i : targetWorld.allitems) {

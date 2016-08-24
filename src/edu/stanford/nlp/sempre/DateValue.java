@@ -23,7 +23,7 @@ public class DateValue extends Value {
   	if (dateStr.contains(" T1") || dateStr.contains(" T0")) return null; // don't handle datetime
   	LocalDateTime d = EventsWorld.calendarTime();
 //  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
-  	LogInfo.log("DateValue dateStr: " + dateStr);
+//  	LogInfo.log("DateValue dateStr: " + dateStr);
   	 
 	    if (dateStr.equals("PRESENT_REF")) return null;
 	    if (dateStr.startsWith("OFFSET P") && dateStr.charAt(8) != 'T') { //OFFSET P1D "tomorrow", but not time such as OFFSET PT1H  
