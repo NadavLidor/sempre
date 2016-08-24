@@ -303,14 +303,16 @@ class BeamFloatingParserState extends ChartParserState {
     for (Rule rule : parser.grammar.rules) {
       if (!rule.isFloating() || !coarseAllows(rule.lhs, start, end)) continue;
 
+      Set<String> cellsPruned = new HashSet<>();
+      
       if (rule.rhs.size() == 1) {
         /* Apply cat unary rules simply */
         String rhsCat = rule.rhs.get(0);
         List<Derivation> derivs = chart[start][end].get(rhsCat);
 
         if (derivs == null) continue;
-
-//        LogInfo.logs("applyFLOATINGCatUnaryRules %s %s %s %s", start, end, rule, chart[start][end]);
+        
+        pruneCell(cellsPruned, rhsCat, start, end, derivs); //TODO
         
         for (Derivation deriv : derivs)
           applyRule(start, end, rule, Collections.singletonList(deriv));
@@ -321,9 +323,6 @@ class BeamFloatingParserState extends ChartParserState {
           derivsCreated += applyFloatingRule(rule, start, end, chart[start][i], chart[i][end]);
           derivsCreated += applyFloatingRule(rule, start, end, chart[i][end], chart[start][i]);
         }
-        
-//        LogInfo.logs("applyFLOATINGNonCatUnaryRules %s %s %s %s", start, end, rule, chart[start][end]);
-
 
         /* If no derivs created, propagate up */
 //        if (derivsCreated == 0) {
@@ -331,8 +330,11 @@ class BeamFloatingParserState extends ChartParserState {
           if (start != numTokens - 1)
             copyDerivs(chart[start + 1][end], chart[start][end]);
 //        }
-      }
-    }
+        }
+          
+        for (Map.Entry<String, List<Derivation>> entry : chart[start][end].entrySet())
+        	pruneCell(cellsPruned, entry.getKey(), start, end, entry.getValue());
+    	}
   }
 
   protected int applyFloatingRule(Rule rule, int start, int end, Map<String, List<Derivation>> first, Map<String, List<Derivation>> second) {
@@ -364,7 +366,7 @@ class BeamFloatingParserState extends ChartParserState {
         dest.put(cat, derivations = new ArrayList<>());
 
       /* add only if the formula not already present to ensure no duplicates */
-      ArrayList<Formula> formulas = new ArrayList<Formula>();
+      Set<Formula> formulas = new HashSet<Formula>();
       for (Derivation deriv : derivations)
         formulas.add(deriv.formula);
 

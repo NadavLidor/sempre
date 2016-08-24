@@ -13,20 +13,31 @@ public class TimeFn extends SemanticFn {
       @Override
       public Derivation createDerivation() {
         String value = ex.languageInfo.getNormalizedNerSpan("TIME", c.getStart(), c.getEnd());
-//        LogInfo.log("TimeFn value1 :" + value);
-//        String value2 = ex.languageInfo.tokens.get(c.getStart());
-//        LogInfo.log("TimeFn value2 :" + value2);
-        if (value == null)
-          return null;
-        TimeValue timeValue = TimeValue.parseTimeValue(value);
-        if (timeValue == null)
-          return null;
-//        LogInfo.log("TimeFn timeValue :" + timeValue);
-        return new Derivation.Builder()
-                .withCallable(c)
-                .formula(new ValueFormula<>(timeValue))
-                .type(SemType.timeType)
-                .createDerivation();
+        if (value != null) {
+	        TimeValue timeValue = TimeValue.parseTimeValue(value);
+	        if (timeValue == null)
+	          return null;
+	        return new Derivation.Builder()
+	                .withCallable(c)
+	                .formula(new ValueFormula<>(timeValue))
+	                .type(SemType.timeType)
+	                .createDerivation();
+        }
+        return null;
+//        else { // looking forward option TODO not for now
+//          value = ex.languageInfo.getNormalizedNerSpan("NUMBER", c.getStart(), c.getEnd());
+//          LogInfo.log("TimeFn.else: " + value);
+//          if (value != null) {
+//	        TimeValue timeValue = TimeValue.parseTimeNumberValue(value);
+//	        if (timeValue == null)
+//	          return null;
+//	          LogInfo.log("TimeFn timeValue :" + timeValue);
+//	        return new Derivation.Builder()
+//	                .withCallable(c)
+//	                .formula(new ValueFormula<>(timeValue))
+//	                .type(SemType.timeType)
+//	                .createDerivation();
+//        }
       }
     };
   }

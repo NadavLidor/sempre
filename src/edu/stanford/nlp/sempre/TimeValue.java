@@ -1,5 +1,8 @@
 package edu.stanford.nlp.sempre;
 
+import java.time.LocalDateTime;
+
+import edu.stanford.nlp.sempre.interactive.actions.EventsWorld;
 import fig.basic.LispTree;
 import fig.basic.LogInfo;
 
@@ -12,6 +15,24 @@ public class TimeValue extends Value {
   public final int hour;
   public final int minute;
 
+  
+  // looking forward function
+//  public static TimeValue parseTimeNumberValue(String timeStr) {
+//  	try {
+//  		double d = Double.parseDouble(timeStr);
+//  		int i = (int) d;
+//  		if (i > -1 && i < 24) {
+//  			LocalDateTime datetime = EventsWorld.calendarTime().plusMinutes(1); //round
+//  			while (!(datetime.getHour() == i || datetime.getHour() - 12 != i)) {
+//  				datetime.plusHours(1);
+//  			}
+//  			return new TimeValue(datetime.getHour(), 0);
+//  		}
+//    } catch (NumberFormatException e) {}
+//  	return null;
+//  	
+//  }
+  
   // timeStr format is THH:MM:SS (M and S optional)
   public static TimeValue parseTimeValue(String timeStr) {
 	

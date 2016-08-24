@@ -1,8 +1,8 @@
 ### temp
 
-(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtime ((reverse start_datetime) this) (var d)))))) (floating 1)) 
+(rule $ROOT ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtime ((reverse start_datetime) this) (var d)))))) (floating 1)) 
 
-(rule $Actions ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtimereverse ((reverse start_datetime) this) (var d)))))) (floating 1)) 
+(rule $ROOT ($Sets $Duration) (lambda s (lambda d (:foreach (var s) (: move start_datetime (call addtimereverse ((reverse start_datetime) this) (var d)))))) (floating 1)) 
 
 #(rule $ROOT ($Select) (IdentityFn) (floating 1))
 
@@ -21,7 +21,7 @@
 # (rule $ROOT ($Select $Remove) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
 
 # (rule $ROOT ($Select $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1)) # chain a select and an action
-(rule $Action ($Add $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
+(rule $ROOT ($Add $Actions) (lambda s (lambda a (:s (var s) (var a)))) (floating 1))
 (rule $ROOT ($Add) (IdentityFn))
 
 
@@ -47,34 +47,20 @@
 (rule $Remove (clear) (ConstantFn (: remove)) (anchored 1))
 (rule $And (and) and (anchored 1))
 (rule $Or (and) or (anchored 1))
-(rule $OR (or) or (anchored 1))
+(rule $Or (or) or (anchored 1))
 (rule $Or (either) (ConstantFn (string or)) (anchored 1))
-(rule $Actions (cancel all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
-(rule $Actions (delete all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
-(rule $Add (create) (ConstantFn (: add)) (anchored 1))
-(rule $Add (add) (ConstantFn (: add)) (anchored 1))
-(rule $Add (new) (ConstantFn (: add)) (anchored 1))
-(rule $Add (make) (ConstantFn (: add)) (anchored 1))
-(rule $Add (meeting) (ConstantFn (: add)) (anchored 1))
+(rule $ROOT (cancel all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
+(rule $ROOT (delete all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
 (rule $Set (next) (ConstantFn (call pick_first start_datetime (call after start_datetime (call now)))) (anchored 1))
 
-(rule $Pick (Pick) (ConstantFn (string pick)) (anchored 1))
-(rule $Remove (Cancel) (ConstantFn (: remove)) (anchored 1))
-(rule $Remove (Delete) (ConstantFn (: remove)) (anchored 1))
-(rule $Remove (Remove) (ConstantFn (: remove)) (anchored 1))
-(rule $Remove (Clear) (ConstantFn (: remove)) (anchored 1))
-(rule $And (And) and (anchored 1))
-(rule $Or (And) or (anchored 1))
-(rule $OR (Ar) or (anchored 1))
-(rule $Or (Either) (ConstantFn (string or)) (anchored 1))
-(rule $Actions (Cancel all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
-(rule $Actions (Delete all) (ConstantFn (:s (: select *) (: remove))) (anchored 1))
-(rule $Add (Create) (ConstantFn (: add)) (anchored 1))
-(rule $Add (Add) (ConstantFn (: add)) (anchored 1))
-(rule $Add (New) (ConstantFn (: add)) (anchored 1))
-(rule $Set (Next) (ConstantFn (call pick_first start_datetime (call after start_datetime (call now)))) (anchored 1))
+(rule $Add (nothing) (ConstantFn (: add)) (floating 1))
+#(rule $Add (create) (ConstantFn (: add)) (anchored 1))
+#(rule $Add (add) (ConstantFn (: add)) (anchored 1))
+#(rule $Add (new) (ConstantFn (: add)) (anchored 1))
+#(rule $Add (make) (ConstantFn (: add)) (anchored 1))
+#(rule $Add (meeting) (ConstantFn (: add)) (anchored 1))
 
-(rule $Duration (5) (ConstantFn (call numberunit (number 5) (string minutes))) (anchored 1))
+
 (rule $Duration (10) (ConstantFn (call numberunit (number 10) (string minutes))) (anchored 1))
 (rule $Duration (15) (ConstantFn (call numberunit (number 15) (string minutes))) (anchored 1))
 (rule $Duration (20) (ConstantFn (call numberunit (number 20) (string minutes))) (anchored 1))
@@ -121,6 +107,7 @@
 (rule $Time (6) (ConstantFn (time 18 0)) (anchored 1))
 (rule $Time (7) (ConstantFn (time 19 0)) (anchored 1))
 (rule $Time (8) (ConstantFn (time 20 0)) (anchored 1))
+(rule $Time (8) (ConstantFn (time 8 0)) (anchored 1))
 (rule $Time (9) (ConstantFn (time 21 0)) (anchored 1))
 (rule $Time (9) (ConstantFn (time 9 0)) (anchored 1))
 (rule $Time (10) (ConstantFn (time 22 0)) (anchored 1))
@@ -313,16 +300,16 @@
 (rule $DateTimeSet ($Sets) (lambda s ((reverse start_datetime) (var s))) (floating 1))
 (rule $DateTimeSet ($Sets) (lambda s ((reverse end_datetime) (var s))) (floating 1))
 
-(rule $DateSet ($Sets) (lambda s ((reverse start_date) (var s))) (floating 1))
-(rule $DateSet ($Sets) (lambda s ((reverse end_date) (var s))) (floating 1))
+#(rule $DateSet ($Sets) (lambda s ((reverse start_date) (var s))) (floating 1))
+#(rule $DateSet ($Sets) (lambda s ((reverse end_date) (var s))) (floating 1))
 
-(rule $TimeSet ($Sets) (lambda s ((reverse start_time) (var s))) (floating 1))
-(rule $TimeSet ($Sets) (lambda s ((reverse end_time) (var s))) (floating 1))
+#(rule $TimeSet ($Sets) (lambda s ((reverse start_time) (var s))) (floating 1))
+#(rule $TimeSet ($Sets) (lambda s ((reverse end_time) (var s))) (floating 1))
 
-(rule $DurationSet ($Sets) (lambda s ((reverse duration) (var s))) (floating 1))
+#(rule $DurationSet ($Sets) (lambda s ((reverse duration) (var s))) (floating 1))
 
-(rule $TitleSet ($Sets) (lambda s ((reverse title) (var s))) (floating 1))
-(rule $TitleSet ($Sets) (lambda s ((reverse location) (var s))) (floating 1))
+#(rule $TitleSet ($Sets) (lambda s ((reverse title) (var s))) (floating 1))
+#(rule $TitleSet ($Sets) (lambda s ((reverse location) (var s))) (floating 1))
 
 
 #############################################################################
@@ -353,11 +340,11 @@
 # utilities
 (rule $Action (clear calendar) (ConstantFn (: clear)) (anchored 1))
 (rule $Action (reset calendar) (ConstantFn (: reset (string default))) (anchored 1))
-(rule $Action (reset $TOKEN) (lambda n (: reset (var n))) (anchored 1))
-(rule $Action (base $Number $Number) (lambda x (lambda y (: @base (var x) (var y)))) (anchored 1))
-(rule $ROOT (_contextcmd) (ConstantFn (string "(context (graph NaiveKnowledgeGraph ((string [[1,3,1,\"Green\",[]],[2,2,1,\"Blue\",[]],[1,3,2,\"Red\",[]]]) (name b) (name c))))")) (anchored 1))
+#(rule $Action (reset $TOKEN) (lambda n (: reset (var n))) (anchored 1))
+#(rule $Action (base $Number $Number) (lambda x (lambda y (: @base (var x) (var y)))) (anchored 1))
+#(rule $ROOT (_contextcmd) (ConstantFn (string "(context (graph NaiveKnowledgeGraph ((string [[1,3,1,\"Green\",[]],[2,2,1,\"Blue\",[]],[1,3,2,\"Red\",[]]]) (name b) (name c))))")) (anchored 1))
 
 
-(rule $ValueSet ($Color) (IdentityFn) (anchored 1))
+#(rule $ValueSet ($Color) (IdentityFn) (anchored 1))
 #(rule $ValueSet ($Number) (IdentityFn) (anchored 1))			 
 

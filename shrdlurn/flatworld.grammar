@@ -2,15 +2,15 @@
 (def @change change)
 (def @remove remove)
 (def @R reverse)
-
+##################################################684
 (rule $ROOT ($Actions) (IdentityFn) (anchored 1)) # process for better NADAV
 
 # (rule $Actions ($Actions ; $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (anchored 1)) nadav
 (rule $Actions ($Action $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (floating 1)) # not Actions to avoid multi ':s'
 (rule $Actions ($Action) (IdentityFn) (floating 1))
-(rule $Action ([ $Actions ]) (IdentityFn) (floating 1))
-(rule $Action (repeat $Numbers [ $Actions ]) (lambda n (lambda a (:loop (var n) (var a)))) (anchored 1))
-(rule $Action (if $ValueSet [ $Actions ]) (lambda b (lambda a (:if (var b) (var a)))) (floating 1))
+# (rule $Action ([ $Actions ]) (IdentityFn) (floating 1))
+# (rule $Actions (repeat $Numbers [ $Actions ]) (lambda n (lambda a (:loop (var n) (var a)))) (anchored 1))
+# (rule $Actions (if $ValueSet [ $Actions ]) (lambda b (lambda a (:if (var b) (var a)))) (floating 1))
 
 # basic actions, local scope "for has color red [add red left; add red top]" 
 (rule $Action (for $Sets [ $Actions ] ) (lambda s (lambda a (:for (var s) (var a)))) (floating 1))
@@ -91,7 +91,7 @@
 #############################
 
 # do add red top 3 times
-(rule $Action ($Numbers $Action) (lambda n (lambda a (:loop (var n) (var a)))) (floating 1))
+#(rule $Action ($Numbers $Action) (lambda n (lambda a (:loop (var n) (var a)))) (floating 1))
 # (rule $Action ($Numbers $Add) (lambda n (lambda a (:loop (var n) (var a)))) (floating 1))
 
 # add red top to has color red

@@ -1063,13 +1063,14 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
 o('ParserState.customExpectedCounts', 'UNIFORM'),
 o('Params.l1Reg', 'lazy'),
 o('Params.l1RegCoeff', 0.001),
-o('Parser.beamSize', 3),
+o('Parser.beamSize', 300),
 o('Params.initStepSize', 0.1),
 o('Params.adaptiveStepSize', true),
 
 o('FeatureExtractor.featureComputers', 'interactive.actions.BeamFloatingFeatureComputer'),
 # o('FeatureExtractor.featureDomains', 'rule', 'subtree'),
-o('FeatureExtractor.featureDomains', 'rule'),
+o('FeatureExtractor.featureDomains', 'rule', 'bff', 'stats'),
+# o('FeatureExtractor.featureDomains', 'rule'),
 o('BeamFloatingFeatureComputer.ngramN', 2),
 o('BeamFloatingFeatureComputer.parameterizeCats', 'Number','Color', 'Date', 'Time'),
 
