@@ -43,7 +43,7 @@ public class TimeValue extends Value {
   	int minute = 0;
   	
   	String hourStr = timeStr.substring(timeStr.indexOf('T'), timeStr.length());
-  	LogInfo.log("timeStr: " + timeStr);
+//  	LogInfo.log("timeStr: " + timeStr);
   	
   	try {
   		hour = Integer.parseInt(hourStr.substring(1, 3));
