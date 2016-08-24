@@ -756,10 +756,13 @@ public class EventsWorld extends FlatWorld {
   }
   
   public void add() {
-  	this.selected().forEach(ev -> ((Event)ev).names.clear());
-  	this.selected.clear();
   	
   	Event e = new Event();
+  	if (this.selected().contains(e)) return;
+  	
+  	// otherwise clear all selected
+  	this.selected().forEach(ev -> ((Event)ev).names.clear());
+  	this.selected.clear();
   	e.names.add("N");
     this.allitems.add(e);
     this.selected.add(e); 
