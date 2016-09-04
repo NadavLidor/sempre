@@ -175,7 +175,7 @@ public class  Event extends Item {
 //    else if (property.equals("repeat") && value instanceof NumberValue)
 //    	updateRepeat((NumberValue)value);
     else {
-      throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double));
+      throw new RuntimeException("EVENT UPDATE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double) + (value instanceof SUDateValue));
     }
       
   }
