@@ -16,6 +16,7 @@ import edu.stanford.nlp.sempre.DateTimeValue;
 import edu.stanford.nlp.sempre.DateValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NumberValue;
+import edu.stanford.nlp.sempre.SUDateValue;
 import edu.stanford.nlp.sempre.TimeValue;
 import fig.basic.LogInfo;
 
@@ -93,9 +94,9 @@ public class  Event extends Item {
     else if (property.equals("end_weekday"))
         propval = new NumberValue(this.end.getDayOfWeek().getValue());
     else if (property.equals("start_date"))
-      propval = new DateValue(this.start.getYear(), this.start.getMonthValue(), this.start.getDayOfMonth()); 
+      propval = new SUDateValue(Integer.toString(this.start.getYear()) + "-" + Integer.toString(this.start.getMonthValue()) + "-" + Integer.toString(this.start.getDayOfMonth())); 
     else if (property.equals("end_date"))
-      propval = new DateValue(this.end.getYear(), this.end.getMonthValue(), this.end.getDayOfMonth());
+    	propval = new SUDateValue(Integer.toString(this.end.getYear()) + "-" + Integer.toString(this.end.getMonthValue()) + "-" + Integer.toString(this.end.getDayOfMonth()));
     else if (property.equals("start_time"))
       propval = new TimeValue(this.start.getHour(), this.start.getMinute()); 
     else if (property.equals("end_time"))
@@ -155,10 +156,10 @@ public class  Event extends Item {
     	updateWeekday((NumberValue)value, "end");
     else if (property.equals("duration") && value instanceof Set<?>)
     	updateDuration((Set<NumberValue>)value);
-    else if (property.equals("start_date") && value instanceof DateValue)
-    	updateDate((DateValue)value, "start");
-    else if (property.equals("end_date") && value instanceof DateValue)
-    	updateDate((DateValue)value, "end");
+    else if (property.equals("start_date") && value instanceof SUDateValue)
+    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime()), "start");
+    else if (property.equals("end_date") && value instanceof SUDateValue)
+    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime()), "end");
     else if (property.equals("start_time") && value instanceof TimeValue)
     	updateTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
@@ -179,7 +180,11 @@ public class  Event extends Item {
       
   }
   
-  // move is similar to update, but preserves the current duration
+//  private DateValue parseSUDateValue(SUDateValue value) {
+//		return DateValue.parse
+//	}
+
+	// move is similar to update, but preserves the current duration
   @SuppressWarnings("unchecked")
 	public void move(String property, Object value) {
     if (property.equals("start_weekday") && value instanceof String) // TODO
@@ -190,10 +195,10 @@ public class  Event extends Item {
     	moveWeekday((NumberValue)value, "start");
     else if (property.equals("end_weekday") && value instanceof NumberValue)
     	moveWeekday((NumberValue)value, "end");
-    else if (property.equals("start_date") && value instanceof DateValue)
-    	moveDate((DateValue)value, "start");
-    else if (property.equals("end_date") && value instanceof DateValue)
-    	moveDate((DateValue)value, "end");
+    else if (property.equals("start_date") && value instanceof SUDateValue)
+    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime()), "start");
+    else if (property.equals("end_date") && value instanceof SUDateValue)
+    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime()), "end");
     else if (property.equals("start_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)

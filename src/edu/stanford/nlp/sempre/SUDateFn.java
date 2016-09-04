@@ -11,7 +11,7 @@ import fig.basic.LogInfo;
  *
  * @author Percy Liang
  */
-public class DateFn extends SemanticFn {
+public class SUDateFn extends SemanticFn {
 	
   public DerivationStream call(final Example ex, final Callable c) {
     return new SingleDerivationStream() {
@@ -22,14 +22,13 @@ public class DateFn extends SemanticFn {
         if (value == null)
           return null;
         
-        DateValue dateValue = DateValue.parseDateValue(value);
-        if (dateValue == null)
-          return null;
+      	SUDateValue suDateValue = new SUDateValue(value);
+        LogInfo.log("DateFn value: " + value);
         return new Derivation.Builder()
-                .withCallable(c)
-                .formula(new ValueFormula<>(dateValue))
-                .type(SemType.dateType)
-                .createDerivation();
+            .withCallable(c)
+            .formula(new ValueFormula<>(suDateValue))
+            .type(SemType.dateType)
+            .createDerivation();
       }
     };
   }

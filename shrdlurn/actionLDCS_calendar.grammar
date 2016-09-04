@@ -150,7 +150,7 @@
 
 #### dates
 
-(rule $Date ($PHRASE) (DateFn))
+(rule $Date ($PHRASE) (SUDateFn))
 
 (rule $Action ($Date) (lambda d (: move end_date (var d))) (anchored 1))
 (rule $Action ($Date) (lambda d (: move start_date (var d))) (anchored 1))
@@ -188,19 +188,6 @@
 #(rule $Action (`` $Word '') (lambda t (: update title (var t))) (anchored 1))
 #(rule $Set (`` $Word '') (lambda t (location (var t))) (anchored 1))
 #(rule $Action (`` $Word '') (lambda t (: update location (var t))) (anchored 1))
-
-
-### time
-
-(rule $Date ($PHRASE) (DateFn))
-
-(rule $Action ($Time) (lambda d (: move end_time (var d))) (anchored 1))
-(rule $Action ($Time) (lambda d (: move start_time (var d))) (anchored 1))
-(rule $Action ($Time) (lambda d (: update end_time (var d))) (anchored 1))
-(rule $Action ($Time) (lambda d (: update start_time (var d))) (anchored 1))
-
-(rule $Set ($Time) (lambda d (start_time (var d))) (anchored 1))
-(rule $Set ($Time) (lambda d (end_time (var d))) (anchored 1))
 
 
 ### time
