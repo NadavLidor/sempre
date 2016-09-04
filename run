@@ -1064,8 +1064,11 @@ o('ParserState.customExpectedCounts', 'UNIFORM'),
 o('Params.l1Reg', 'lazy'),
 o('Params.l1RegCoeff', 0.001),
 o('Parser.beamSize', 300),
-selo('Params.initStepSize', 0.1, 0.2, 0.05),
-selo('Params.adaptiveStepSize', true, false),
+
+o('Params.initStepSize', 0.1),
+o('Params.adaptiveStepSize', true),
+# selo(nil, 'Params.initStepSize', 0.1, 0.2, 0.05),
+# selo(nil, 'Params.adaptiveStepSize', true, false),
 
 o('FeatureExtractor.featureComputers', 'interactive.actions.BeamFloatingFeatureComputer'),
 o('FeatureExtractor.featureDomains', 'rule', 'bff', 'stats'),
@@ -1085,8 +1088,10 @@ o('Master.newGrammarPath', './shrdlurn_output/grammar/'),
 o('Master.onlineLearnExamples', true),
 o('Master.independentSessions', false),
 
-o('Dataset.inPaths', 'train:./shrdlurn_output/examples/startup.lisp'),
-selo('Learner.maxTrainIters', 3, 5),
+#o('Dataset.inPaths', 'train:./shrdlurn_output/examples/startup.lisp'),
+
+#o('Learner.maxTrainIters', 3),
+# selo(nil, 'Learner.maxTrainIters', 3, 5),
 
 o('server', true),
 o('Server.numThreads', 8),
