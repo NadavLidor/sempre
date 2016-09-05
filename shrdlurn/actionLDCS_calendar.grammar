@@ -253,8 +253,12 @@
 # time ranges
 
 (rule $Set ($AfterSet $BeforeSet) (lambda r1 (lambda r2 (and (var r1) (var r2)))) (floating 1))
+
 (rule $Set ($AfterSet $Set) (lambda r1 (lambda r2 (and (var r1) (var r2)))) (floating 1))
 (rule $Set ($BeforeSet $Set) (lambda r1 (lambda r2 (and (var r1) (var r2)))) (floating 1))
+
+#(rule $Set ($AfterSet $AfterSet) (lambda r1 (lambda r2 (and (var r1) (var r2)))) (floating 1))
+#(rule $Set ($BeforeSet $BeforeSet) (lambda r1 (lambda r2 (and (var r1) (var r2)))) (floating 1))
 
 ##### debug this
 

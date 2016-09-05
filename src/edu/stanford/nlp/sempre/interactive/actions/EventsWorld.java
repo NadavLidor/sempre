@@ -225,8 +225,18 @@ public class EventsWorld extends FlatWorld {
   
   public Set<Item> after(String rel, Set<Object> values) {
 //  	LogInfo.log("AFTER EVENTWORLD: " + values);
-  	if (values == null || values.isEmpty()) return new HashSet<Item>();
-    return this.allitems.stream().filter(i -> isAfter(values, i.get(rel)))
+  	if (values == null || values.isEmpty()) 
+  		return new HashSet<Item>();
+  	
+  	Object value = null;
+  	for (Object o : values) {
+  		value = o;
+  	}
+  	if (value instanceof SUDateValue)
+  		value = DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime());
+  	
+  	final Object f = value;
+    return this.allitems.stream().filter(i -> isAfter(f, i.get(rel)))
         .collect(Collectors.toSet());
   }
   
@@ -234,39 +244,35 @@ public class EventsWorld extends FlatWorld {
 //  	LogInfo.log("BEFORE EVENTWORLD: " + values + " " + rel);
   	
   	
-  	if (values == null || values.isEmpty()) return new HashSet<Item>();
-    return this.allitems.stream().filter(i -> isBefore(values, i.get(rel)))
+  	if (values == null || values.isEmpty()) 
+  		return new HashSet<Item>();
+  	
+  	Object value = null;
+  	for (Object o : values) {
+  		value = o;
+  	}
+  	if (value instanceof SUDateValue)
+  		value = DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime());
+  	
+  	final Object f = value;
+    return this.allitems.stream().filter(i -> isBefore(f, i.get(rel)))
         .collect(Collectors.toSet());
   }
   
-  public boolean isAfter(Set<Object> values, Object v) {
+  public boolean isAfter(Object o, Object v) {
   	if (v instanceof SUDateValue) {
-  		for (Object o : values) {
   			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, EventsWorld.calendarTime());
-  			DateValue b = DateValue.parseSUDateValue(((SUDateValue)o).date, EventsWorld.calendarTime());
-    		return (a.isAfter(b));
-    	}
-  	}
-  	if (v instanceof DateValue) {
-  		for (Object o : values) {
-    		return (o instanceof DateValue && ((DateValue)v).isAfter((DateValue)o));
-    	}
-  	}
-  	if (v instanceof TimeValue) {
-  		for (Object o : values) {
-    		return (o instanceof TimeValue && ((TimeValue)v).isAfter((TimeValue)o));
-    	}
-  	}
-  	if (v instanceof LocalDateTime) {
-  		for (Object o : values) {
-    		return (o instanceof LocalDateTime && ((LocalDateTime)v).isAfter((LocalDateTime)o));
-    	}
-  	}
-  	if (v instanceof DateTimeValue) {
-  		for (Object o : values) {
-    		return (o instanceof DateTimeValue && ((DateTimeValue)v).isAfter((DateTimeValue)o));
-  		}
-  	}
+    		return (a.isAfter((DateValue)o));
+    }
+  	if (v instanceof DateValue)
+    	return (o instanceof DateValue && ((DateValue)v).isAfter((DateValue)o));
+  	if (v instanceof TimeValue)
+    	return (o instanceof TimeValue && ((TimeValue)v).isAfter((TimeValue)o));
+  	if (v instanceof LocalDateTime)
+    	return (o instanceof LocalDateTime && ((LocalDateTime)v).isAfter((LocalDateTime)o));
+  	if (v instanceof DateTimeValue)
+    	return (o instanceof DateTimeValue && ((DateTimeValue)v).isAfter((DateTimeValue)o));
+  	
   	LogInfo.log("EventsWorld.isAfter: object is not of right type");
   	return false;
   }
@@ -281,34 +287,20 @@ public class EventsWorld extends FlatWorld {
   }
   
   
-  public boolean isBefore(Set<Object> values, Object v) {
+  public boolean isBefore(Object o, Object v) {
   	if (v instanceof SUDateValue) {
-  		for (Object o : values) {
-  			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, EventsWorld.calendarTime());
-  			DateValue b = DateValue.parseSUDateValue(((SUDateValue)o).date, EventsWorld.calendarTime());
-    		return (a.isBefore(b));
-    	}
+			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, EventsWorld.calendarTime());
+  		return (a.isBefore((DateValue)o));
   	}
-  	if (v instanceof DateValue) {
-  		for (Object o : values) {
-    		return (o instanceof DateValue && ((DateValue)v).isBefore((DateValue)o)); 
-    	}
-  	}
-  	if (v instanceof TimeValue) {
-  		for (Object o : values) {
-    		return (o instanceof TimeValue && ((TimeValue)v).isBefore((TimeValue)o)); 
-    	}
-  	}
-  	if (v instanceof LocalDateTime) {
-  		for (Object o : values) {
-    		return (o instanceof LocalDateTime && ((LocalDateTime)v).isBefore((LocalDateTime)o)); 
-    	}
-  	}
-  	if (v instanceof DateTimeValue) {
-  		for (Object o : values) {
-    		return (o instanceof DateTimeValue && ((DateTimeValue)v).isBefore((DateTimeValue)o)); 
-    	}
-  	}
+  	if (v instanceof DateValue)
+  		return (o instanceof DateValue && ((DateValue)v).isBefore((DateValue)o)); 
+  	if (v instanceof TimeValue)
+  		return (o instanceof TimeValue && ((TimeValue)v).isBefore((TimeValue)o));
+  	if (v instanceof DateTimeValue)
+    	return (o instanceof DateTimeValue && ((DateTimeValue)v).isBefore((DateTimeValue)o));
+  	if (v instanceof LocalDateTime)
+  		return (o instanceof LocalDateTime && ((LocalDateTime)v).isBefore((LocalDateTime)o));  
+  	
   	LogInfo.log("EventsWorld.isBefore: object is not of right type");
   	return false;
   }
