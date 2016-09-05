@@ -530,6 +530,8 @@ public class EventsWorld extends FlatWorld {
     this.allitems.add(n.clone());
     
     */
+    	
+    n.moveWeekday(-1, "start"); // go back to last monday
     
     n.start = n.start.plusDays(1); //mon
     n.end = n.end.plusDays(1);
