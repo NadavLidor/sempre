@@ -237,7 +237,10 @@ public class  Event extends Item {
 	  	this.start = value.datetime;
 	  	if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
 	  }
-	  else if (op.equals("end")) this.end = value.datetime;
+	  else if (op.equals("end")) {
+	  	this.end = value.datetime;
+	  	if (this.end.isBefore(this.start)) this.start = this.end.plusMinutes(-duration);
+	  }
 	  
   }
   
@@ -251,7 +254,10 @@ public class  Event extends Item {
 	  	this.start = sample;
 	  	if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
 	  }
-	  else if (op.equals("end")) this.end = sample;
+	  else if (op.equals("end")) {
+	  	this.end = sample;
+	  	if (this.end.isBefore(this.start)) this.start = this.end.plusMinutes(-duration);
+	  }
   }
   
   // if no unit is specified, no change is made
