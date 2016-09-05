@@ -23,7 +23,7 @@ public class SUDateFn extends SemanticFn {
           return null;
         
       	SUDateValue suDateValue = new SUDateValue(value);
-        LogInfo.log("DateFn value: " + value);
+        LogInfo.log("SUDateFn value: " + value);
         return new Derivation.Builder()
             .withCallable(c)
             .formula(new ValueFormula<>(suDateValue))

@@ -228,28 +228,25 @@ public class EventsWorld extends FlatWorld {
   public boolean isAfter(Set<Object> values, Object v) {
   	if (v instanceof DateValue) {
   		for (Object o : values) {
-    		if (o != null && o instanceof DateValue && ((DateValue)v).isAfter((DateValue)o)) 
-    			return true;
+    		return (o instanceof DateValue && ((DateValue)v).isAfter((DateValue)o));
     	}
   	}
   	if (v instanceof TimeValue) {
   		for (Object o : values) {
-    		if (o != null && o instanceof TimeValue && ((TimeValue)v).isAfter((TimeValue)o)) 
-    			return true;
+    		return (o instanceof TimeValue && ((TimeValue)v).isAfter((TimeValue)o));
     	}
   	}
   	if (v instanceof LocalDateTime) {
   		for (Object o : values) {
-    		if (o != null && o instanceof LocalDateTime && ((LocalDateTime)v).isAfter((LocalDateTime)o))  // TODO the null check??
-    			return true;
+    		return (o instanceof LocalDateTime && ((LocalDateTime)v).isAfter((LocalDateTime)o));
     	}
   	}
   	if (v instanceof DateTimeValue) {
   		for (Object o : values) {
-    		if (o != null && o instanceof DateTimeValue && ((DateTimeValue)v).isAfter((DateTimeValue)o)) 
-    			return true;
-    	}
+    		return (o instanceof DateTimeValue && ((DateTimeValue)v).isAfter((DateTimeValue)o));
+  		}
   	}
+  	LogInfo.log("EventsWorld.isAfter: object is not of right type");
   	return false;
   }
   
@@ -266,28 +263,25 @@ public class EventsWorld extends FlatWorld {
   public boolean isBefore(Set<Object> values, Object v) {
   	if (v instanceof DateValue) {
   		for (Object o : values) {
-    		if (o != null && o instanceof DateValue && ((DateValue)v).isBefore((DateValue)o)) 
-    			return true;
+    		return (o instanceof DateValue && ((DateValue)v).isBefore((DateValue)o)); 
     	}
   	}
   	if (v instanceof TimeValue) {
   		for (Object o : values) {
-    		if (o != null && o instanceof TimeValue && ((TimeValue)v).isBefore((TimeValue)o)) 
-    			return true;
+    		return (o instanceof TimeValue && ((TimeValue)v).isBefore((TimeValue)o)); 
     	}
   	}
   	if (v instanceof LocalDateTime) {
   		for (Object o : values) {
-    		if (o != null && o instanceof LocalDateTime && ((LocalDateTime)v).isBefore((LocalDateTime)o)) //TODO the null check?? 
-    			return true;
+    		return (o instanceof LocalDateTime && ((LocalDateTime)v).isBefore((LocalDateTime)o)); 
     	}
   	}
   	if (v instanceof DateTimeValue) {
   		for (Object o : values) {
-    		if (o != null && o instanceof DateTimeValue && ((DateTimeValue)v).isBefore((DateTimeValue)o)) 
-    			return true;
+    		return (o instanceof DateTimeValue && ((DateTimeValue)v).isBefore((DateTimeValue)o)); 
     	}
   	}
+  	LogInfo.log("EventsWorld.isBefore: object is not of right type");
   	return false;
   }
   

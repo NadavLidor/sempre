@@ -1063,7 +1063,7 @@ addMode('interactive-calendar', 'interactive semantic parsing in blocks', lambda
 o('ParserState.customExpectedCounts', 'UNIFORM'),
 o('Params.l1Reg', 'lazy'),
 o('Params.l1RegCoeff', 0.001),
-o('Parser.beamSize', 300),
+o('Parser.beamSize', 800),
 
 o('Params.initStepSize', 0.1),
 o('Params.adaptiveStepSize', true),
