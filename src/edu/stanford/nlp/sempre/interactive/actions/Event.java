@@ -235,18 +235,14 @@ public class  Event extends Item {
 	  if (op.equals("start")) {
 		  this.start = this.start.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.start = this.start.with(ChronoField.MINUTE_OF_HOUR, time.minute);
-		  if (this.end.isBefore(this.start)) {
+		  if (!this.end.isAfter(this.start))
 		  	this.end = this.start.plusMinutes(duration);
-		  	LogInfo.log("updateTime start");
-		  }
 	  }
 	  else if (op.equals("end")) {
 		  this.end = this.end.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.end = this.end.with(ChronoField.MINUTE_OF_HOUR, time.minute);
-		  if (this.end.isBefore(this.start)) {
+		  if (this.end.isBefore(this.start))
 		  	this.start = this.end.plusMinutes(-duration);
-		  	LogInfo.log("updateTime end");
-		  }
 	  }
   }
 
@@ -255,11 +251,11 @@ public class  Event extends Item {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 	  if (op.equals("start")) {
 	  	this.start = value.datetime;
-	  	if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+	  	if (!this.end.isAfter(this.start)) this.end = this.start.plusMinutes(duration);
 	  }
 	  else if (op.equals("end")) {
 	  	this.end = value.datetime;
-	  	if (this.end.isBefore(this.start)) this.start = this.end.plusMinutes(-duration);
+	  	if (!this.end.isAfter(this.start)) this.start = this.end.plusMinutes(-duration);
 	  }
 	  
   }
@@ -272,11 +268,11 @@ public class  Event extends Item {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 	  if (op.equals("start")) {
 	  	this.start = sample;
-	  	if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+	  	if (!this.end.isAfter(this.start)) this.end = this.start.plusMinutes(duration);
 	  }
 	  else if (op.equals("end")) {
 	  	this.end = sample;
-	  	if (this.end.isBefore(this.start)) this.start = this.end.plusMinutes(-duration);
+	  	if (!this.end.isAfter(this.start)) this.start = this.end.plusMinutes(-duration);
 	  }
   }
   
@@ -375,7 +371,7 @@ public class  Event extends Item {
 		  if (date.month != -1) this.end = this.end.with(ChronoField.MONTH_OF_YEAR, date.month);
 		  if (date.year != -1) this.end = this.end.with(ChronoField.YEAR, date.year);
 	  }
-	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+	  if (!this.end.isAfter(this.start)) this.end = this.start.plusMinutes(duration);
   }
   
   public void moveDate(DateValue date, String op) {
@@ -531,7 +527,7 @@ public class  Event extends Item {
   	  }
   	}
 	  
-	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+	  if (!this.end.isAfter(this.start)) this.end = this.start.plusMinutes(duration);
   }
   
   //advance start or end to next occurrence of weekday (Mon = 1, Sun = 7)
@@ -565,7 +561,7 @@ public class  Event extends Item {
 		  }
 	  }
 	  
-	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+	  if (!this.end.isAfter(this.start)) this.end = this.start.plusMinutes(duration);
   }
   
 
