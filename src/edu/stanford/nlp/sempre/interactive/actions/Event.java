@@ -217,17 +217,31 @@ public class  Event extends Item {
       throw new RuntimeException("EVENT MOVE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double));
   }
 
+//  public void updateTime(TimeValue time, String op) {
+//  	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
+//	  if (op.equals("start")) {
+//		  this.start = this.start.with(ChronoField.HOUR_OF_DAY, time.hour);
+//		  this.start = this.start.with(ChronoField.MINUTE_OF_HOUR, time.minute);
+//	  }
+//	  else if (op.equals("end")) {
+//		  this.end = this.end.with(ChronoField.HOUR_OF_DAY, time.hour);
+//		  this.end = this.end.with(ChronoField.MINUTE_OF_HOUR, time.minute);
+//	  }
+//	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+//  }
+//  
   public void updateTime(TimeValue time, String op) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 	  if (op.equals("start")) {
 		  this.start = this.start.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.start = this.start.with(ChronoField.MINUTE_OF_HOUR, time.minute);
+		  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
 	  }
 	  else if (op.equals("end")) {
 		  this.end = this.end.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.end = this.end.with(ChronoField.MINUTE_OF_HOUR, time.minute);
+		  if (this.end.isBefore(this.start)) this.start = this.end.plusMinutes(-duration);
 	  }
-	  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
   }
 
   public void updateDateTime(DateTimeValue value, String op) {
