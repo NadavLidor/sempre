@@ -235,12 +235,18 @@ public class  Event extends Item {
 	  if (op.equals("start")) {
 		  this.start = this.start.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.start = this.start.with(ChronoField.MINUTE_OF_HOUR, time.minute);
-		  if (this.end.isBefore(this.start)) this.end = this.start.plusMinutes(duration);
+		  if (this.end.isBefore(this.start)) {
+		  	this.end = this.start.plusMinutes(duration);
+		  	LogInfo.log("updateTime start");
+		  }
 	  }
 	  else if (op.equals("end")) {
 		  this.end = this.end.with(ChronoField.HOUR_OF_DAY, time.hour);
 		  this.end = this.end.with(ChronoField.MINUTE_OF_HOUR, time.minute);
-		  if (this.end.isBefore(this.start)) this.start = this.end.plusMinutes(-duration);
+		  if (this.end.isBefore(this.start)) {
+		  	this.start = this.end.plusMinutes(-duration);
+		  	LogInfo.log("updateTime end");
+		  }
 	  }
   }
 
