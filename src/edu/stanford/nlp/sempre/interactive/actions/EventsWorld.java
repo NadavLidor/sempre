@@ -401,7 +401,7 @@ public class EventsWorld extends FlatWorld {
   public void reset(String name) {
     this.allitems.clear();
     this.selected.clear();
-    Event n = new Event();
+    Event n = new Event(this.datetime);
     
     /*
     n.title = "lunch with jack";
@@ -794,7 +794,7 @@ public class EventsWorld extends FlatWorld {
   
   public void add() {
   	
-  	Event e = new Event();
+  	Event e = new Event(this.datetime);
   	if (this.selected().contains(e)) return;
   	
   	// otherwise clear all selected

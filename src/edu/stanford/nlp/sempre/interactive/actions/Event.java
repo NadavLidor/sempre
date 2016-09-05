@@ -36,16 +36,20 @@ public class  Event extends Item {
 //  public List<Boolean> repeats; // [0] weekly, [1,7] days of week, [8] monthly, [9] yearly
 //  public HashSet<Person> guests;
   public Set<String> names;
-	
+	private LocalDateTime currentTime;
   
-  public Event() {
+  public Event(LocalDateTime currentTime) {
     this.title = "meeting";
 		this.location = "";
 //		this.repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
 //		this.guests = new HashSet<Person>();
 		this.names = new HashSet<>();
-			
-		this.start = EventsWorld.calendarTime();
+		if (currentTime != null) 
+			this.currentTime = currentTime;
+		else 
+			this.currentTime = LocalDateTime.now();
+		
+		this.start = this.currentTime ;
 		if (this.start.getMinute() > 30) {
 			this.start = this.start.plusHours(1);
 			this.start = this.start.truncatedTo(ChronoUnit.HOURS);
@@ -57,22 +61,17 @@ public class  Event extends Item {
 		this.end = this.start.plusHours(1);
   }
   
-  public Event(String title, String location) {
-  	this();
-  	this.title = title;
-  	this.location = location;
-  }
   
 //  public Event(String title, String location, LocalDateTime start, LocalDateTime end, List<Boolean> repeats, HashSet<Person> guests) {
   public Event(String title, String location, LocalDateTime start, LocalDateTime end) {
-  	this();
+  	this(null);
   	this.title = title;
   	this.location = location;
   	this.start = start;
   	this.end = end;
-//  	for (int i = 0 ; i < repeats.size(); i++) this.repeats.set(i, repeats.get(i));
+//  	for (int i = 0 ; i < repeats.size(); i++) 
+//  	  this.repeats.set(i, repeats.get(i));
   	// TODO guests
-
   }
    
   public Event copy() { // TODO needed?
@@ -159,9 +158,9 @@ public class  Event extends Item {
     else if (property.equals("duration") && value instanceof Set<?>)
     	updateDuration((Set<NumberValue>)value);
     else if (property.equals("start_date") && value instanceof SUDateValue)
-    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime()), "start");
+    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, this.currentTime), "start");
     else if (property.equals("end_date") && value instanceof SUDateValue)
-    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime()), "end");
+    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, this.currentTime), "end");
     else if (property.equals("start_time") && value instanceof TimeValue)
     	updateTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
@@ -198,9 +197,9 @@ public class  Event extends Item {
     else if (property.equals("end_weekday") && value instanceof NumberValue)
     	moveWeekday((NumberValue)value, "end");
     else if (property.equals("start_date") && value instanceof SUDateValue)
-    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime()), "start");
+    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, this.currentTime), "start");
     else if (property.equals("end_date") && value instanceof SUDateValue)
-    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime()), "end");
+    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, this.currentTime), "end");
     else if (property.equals("start_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
@@ -262,7 +261,7 @@ public class  Event extends Item {
   
   public void updateDateTime(Set<LocalDateTime> value, String op) {
   	
-  	LocalDateTime sample = EventsWorld.calendarTime();
+  	LocalDateTime sample = this.currentTime;
   	for (LocalDateTime i : value) {sample = i; break;}
   	
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
@@ -319,7 +318,7 @@ public class  Event extends Item {
   public void moveDateTime(Set<LocalDateTime> value, String op) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 //  	LogInfo.log("moveDateTime EVENT: " + value.toString());
-  	LocalDateTime sample = EventsWorld.calendarTime();
+  	LocalDateTime sample = this.currentTime;
   	for (LocalDateTime i : value) {sample = i; break;}
   	
 	  if (op.equals("start")) {
@@ -572,7 +571,7 @@ public class  Event extends Item {
   }
   @SuppressWarnings("unchecked")
   public static Event fromJSONObject(List<Object> props) {
-    Event retcube = new Event();
+    Event retcube = new Event(null);
     retcube.title = ((String)props.get(0));
     retcube.location = ((String)props.get(1));
     retcube.start = LocalDateTime.parse(((String)props.get(2)));
