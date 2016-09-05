@@ -1,9 +1,11 @@
 package edu.stanford.nlp.sempre;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.stanford.nlp.sempre.interactive.actions.EventsWorld;
 import fig.basic.LogInfo;
 
 /**
@@ -21,6 +23,9 @@ public class SUDateFn extends SemanticFn {
         
         if (value == null)
           return null;
+        
+        if (value.contains(" T1") || value.contains(" T0") || value.equals("PRESENT_REF")) // don't handle datetime 
+        	return null;
         
       	SUDateValue suDateValue = new SUDateValue(value);
         LogInfo.log("SUDateFn value: " + value);
