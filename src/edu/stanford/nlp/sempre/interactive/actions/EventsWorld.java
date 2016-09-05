@@ -530,11 +530,14 @@ public class EventsWorld extends FlatWorld {
     this.allitems.add(n.clone());
     
     */
-    	
-    n.moveWeekday(3, "start"); // go back to last sunday
     
-    n.start = n.start.plusDays(1); //mon
-    n.end = n.end.plusDays(1);
+    while (n.start.getDayOfWeek().getValue() != 1) {
+    	n.start = n.start.plusDays(-1);
+    	n.end = n.end.plusDays(-1);
+    }
+    
+//    n.start = n.start.plusDays(1); //mon
+//    n.end = n.end.plusDays(1);
     
     n.title = "project sync";
     n.location = "";
