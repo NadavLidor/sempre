@@ -18,11 +18,11 @@ public class SUDateFn extends SemanticFn {
         if (value == null)
           return null;
         
-        if (value.contains(" T1") || value.contains(" T0") || value.equals("PRESENT_REF")) // don't handle datetime 
+        SUDateValue suDateValue = SUDateValue.checkDateValue(value);
+        if (suDateValue == null) 
         	return null;
         
-      	SUDateValue suDateValue = new SUDateValue(value);
-        LogInfo.log("SUDateFn value: " + value);
+        LogInfo.log("SUDateFn value: " + suDateValue.date);
         return new Derivation.Builder()
             .withCallable(c)
             .formula(new ValueFormula<>(suDateValue))

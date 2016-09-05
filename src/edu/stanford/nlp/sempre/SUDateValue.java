@@ -6,8 +6,9 @@ public class SUDateValue extends Value {
 	
 	public final String date;
 
-  public static SUDateValue parseDateValue(String dateStr) {
-  	if (dateStr == null || dateStr.length() < 1) return null;
+  public static SUDateValue checkDateValue(String dateStr) {
+  	if (dateStr == null || dateStr.length() < 1 || dateStr.contains(" T1") || dateStr.contains(" T0") || dateStr.equals("PRESENT_REF")) 
+  		return null;
     return new SUDateValue(dateStr);
   }
 

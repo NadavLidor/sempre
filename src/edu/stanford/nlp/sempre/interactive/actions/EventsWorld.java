@@ -20,6 +20,7 @@ import edu.stanford.nlp.sempre.DateValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NaiveKnowledgeGraph;
 import edu.stanford.nlp.sempre.NumberValue;
+import edu.stanford.nlp.sempre.SUDateTimeValue;
 import edu.stanford.nlp.sempre.SUDateValue;
 import edu.stanford.nlp.sempre.StringValue;
 import edu.stanford.nlp.sempre.TimeValue;
@@ -105,11 +106,12 @@ public class EventsWorld extends FlatWorld {
 
 	  Set<Object> temp = new HashSet<Object>();
 	    for (Object o : values) {
-	    	if (o instanceof SUDateValue) {
+	    	if (o instanceof SUDateValue)
 	    		temp.add(DateValue.parseSUDateValue(((SUDateValue)o).date, this.datetime));
-	    	} else {
+	    	else if (o instanceof SUDateTimeValue)
+	    		temp.add(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)o).datetime, this.datetime));
+	    	else
 	    		break;
-	    	}
 	    }
 	    if (temp.size() > 0) values = temp;
 	    final Set<Object> values_final = values;
@@ -253,6 +255,8 @@ public class EventsWorld extends FlatWorld {
   	}
   	if (value instanceof SUDateValue)
   		value = DateValue.parseSUDateValue(((SUDateValue)value).date, this.datetime);
+  	else if (value instanceof SUDateTimeValue)
+  		value = DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.datetime);
   	
   	final Object f = value;
     return this.allitems.stream().filter(i -> isAfter(f, i.get(rel)))
@@ -272,6 +276,8 @@ public class EventsWorld extends FlatWorld {
   	}
   	if (value instanceof SUDateValue)
   		value = DateValue.parseSUDateValue(((SUDateValue)value).date, this.datetime);
+  	else if (value instanceof SUDateTimeValue)
+  		value = DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.datetime);
   	
   	final Object f = value;
     return this.allitems.stream().filter(i -> isBefore(f, i.get(rel)))
@@ -279,11 +285,10 @@ public class EventsWorld extends FlatWorld {
   }
   
   public boolean isAfter(Object o, Object v) {
-  	if (v instanceof SUDateValue) {
-//  		DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, calendarTime());
-  		DateValue a = (DateValue) v;
-    	return (a.isAfter((DateValue)o));
-    }
+  	if (v instanceof SUDateValue)
+    	return (((DateValue)v).isAfter((DateValue)o));
+  	if (v instanceof SUDateTimeValue)
+  		return (((DateTimeValue)v).isAfter((DateTimeValue)o));
   	if (v instanceof DateValue)
     	return ((DateValue)v).isAfter((DateValue)o);
   	if (v instanceof TimeValue)
@@ -308,11 +313,10 @@ public class EventsWorld extends FlatWorld {
   
   
   public boolean isBefore(Object o, Object v) {
-  	if (v instanceof SUDateValue) {
-//			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, calendarTime());
-  		DateValue a = (DateValue) v;
-  		return (a.isBefore((DateValue)o));
-  	}
+  	if (v instanceof SUDateValue)
+  		return (((DateValue)v).isBefore((DateValue)o));
+  	if (v instanceof SUDateTimeValue)
+  		return (((DateTimeValue)v).isBefore((DateTimeValue)o));
   	if (v instanceof DateValue)
   		return ((DateValue)v).isBefore((DateValue)o); 
   	if (v instanceof TimeValue)

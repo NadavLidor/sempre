@@ -139,7 +139,8 @@
 
 #### dateTimeValue
 
-(rule $DateTimeValue ($PHRASE) (DateTimeFn))
+#(rule $DateTimeValue ($PHRASE) (DateTimeFn))
+(rule $DateTimeValue ($PHRASE) (SUDateTimeFn))
 (rule $Action ($DateTimeValue) (lambda d (: move end_datetimevalue (var d))) (anchored 1))
 (rule $Action ($DateTimeValue) (lambda d (: move start_datetimevalue (var d))) (anchored 1))
 (rule $Action ($DateTimeValue) (lambda d (: update end_datetimevalue (var d))) (anchored 1))

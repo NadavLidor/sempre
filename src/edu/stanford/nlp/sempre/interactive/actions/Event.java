@@ -16,6 +16,7 @@ import edu.stanford.nlp.sempre.DateTimeValue;
 import edu.stanford.nlp.sempre.DateValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NumberValue;
+import edu.stanford.nlp.sempre.SUDateTimeValue;
 import edu.stanford.nlp.sempre.SUDateValue;
 import edu.stanford.nlp.sempre.TimeValue;
 import fig.basic.LogInfo;
@@ -165,10 +166,10 @@ public class  Event extends Item {
     	updateTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	updateTime((TimeValue)value, "end");
-    else if (property.equals("start_datetimevalue") && value instanceof DateTimeValue)
-    	updateDateTime((DateTimeValue)value, "start");
-    else if (property.equals("end_datetimevalue") && value instanceof DateTimeValue)
-    	updateDateTime((DateTimeValue)value, "end");
+    else if (property.equals("start_datetimevalue") && value instanceof SUDateTimeValue)
+    	updateDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "start");
+    else if (property.equals("end_datetimevalue") && value instanceof SUDateTimeValue)
+    	updateDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "end");
     else if (property.equals("start_datetime") && value instanceof Set<?>)
     	updateDateTime((Set<LocalDateTime>)value, "start");
     else if (property.equals("end_datetime") && value instanceof Set<?>)
@@ -204,10 +205,10 @@ public class  Event extends Item {
     	moveTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "end");
-    else if (property.equals("start_datetimevalue") && value instanceof DateTimeValue)
-    	moveDateTime((DateTimeValue)value, "start");
-    else if (property.equals("end_datetimevalue") && value instanceof DateTimeValue)
-    	moveDateTime((DateTimeValue)value, "end");
+    else if (property.equals("start_datetimevalue") && value instanceof SUDateTimeValue)
+    	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "start");
+    else if (property.equals("end_datetimevalue") && value instanceof SUDateTimeValue)
+    	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "end");
     else if (property.equals("start_datetime") && value instanceof Set<?>)
     	moveDateTime((Set<LocalDateTime>)value, "start");
     else if (property.equals("end_datetime") && value instanceof Set<?>)
