@@ -531,7 +531,7 @@ public class EventsWorld extends FlatWorld {
     
     */
     	
-    n.moveWeekday(-1, "start"); // go back to last monday
+    n.moveWeekday(-7, "start"); // go back to last sunday
     
     n.start = n.start.plusDays(1); //mon
     n.end = n.end.plusDays(1);
