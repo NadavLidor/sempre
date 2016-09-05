@@ -265,13 +265,13 @@ public class EventsWorld extends FlatWorld {
     		return (a.isAfter((DateValue)o));
     }
   	if (v instanceof DateValue)
-    	return (o instanceof DateValue && ((DateValue)v).isAfter((DateValue)o));
+    	return ((DateValue)v).isAfter((DateValue)o);
   	if (v instanceof TimeValue)
-    	return (o instanceof TimeValue && ((TimeValue)v).isAfter((TimeValue)o));
+    	return ((TimeValue)v).isAfter((TimeValue)o);
   	if (v instanceof LocalDateTime)
-    	return (o instanceof LocalDateTime && ((LocalDateTime)v).isAfter((LocalDateTime)o));
+    	return ((LocalDateTime)v).isAfter((LocalDateTime)o);
   	if (v instanceof DateTimeValue)
-    	return (o instanceof DateTimeValue && ((DateTimeValue)v).isAfter((DateTimeValue)o));
+    	return ((DateTimeValue)v).isAfter((DateTimeValue)o);
   	
   	LogInfo.log("EventsWorld.isAfter: object is not of right type");
   	return false;
@@ -293,21 +293,21 @@ public class EventsWorld extends FlatWorld {
   		return (a.isBefore((DateValue)o));
   	}
   	if (v instanceof DateValue)
-  		return (o instanceof DateValue && ((DateValue)v).isBefore((DateValue)o)); 
+  		return ((DateValue)v).isBefore((DateValue)o); 
   	if (v instanceof TimeValue)
-  		return (o instanceof TimeValue && ((TimeValue)v).isBefore((TimeValue)o));
+  		return ((TimeValue)v).isBefore((TimeValue)o);
   	if (v instanceof DateTimeValue)
-    	return (o instanceof DateTimeValue && ((DateTimeValue)v).isBefore((DateTimeValue)o));
+    	return ((DateTimeValue)v).isBefore((DateTimeValue)o);
   	if (v instanceof LocalDateTime)
-  		return (o instanceof LocalDateTime && ((LocalDateTime)v).isBefore((LocalDateTime)o));  
+  		return ((LocalDateTime)v).isBefore((LocalDateTime)o);  
   	
   	LogInfo.log("EventsWorld.isBefore: object is not of right type");
   	return false;
   }
   
   
-  public LocalDateTime now(){
-  	return calendarTime();
+  public LocalDateTime now() {
+  	return EventsWorld.calendarTime();
   }
   
   public LocalDateTime todaystart(){ // 12 am
