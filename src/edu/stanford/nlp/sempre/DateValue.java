@@ -18,56 +18,13 @@ public class DateValue extends Value {
   // Format: YYYY-MM-DD (from Freebase).
   // Return null if it's not a valid date string.
   public static DateValue parseDateValue(String dateStr) {
-  	
-  	if (dateStr.contains(" T1") || dateStr.contains(" T0")) return null; // don't handle datetime
-  	LocalDateTime d = EventsWorld.calendarTime();
-//  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00")).truncatedTo(ChronoUnit.MINUTES);
-//  	LogInfo.log("DateValue dateStr: " + dateStr);
-  	 
-	    if (dateStr.equals("PRESENT_REF")) return null;
-	    if (dateStr.startsWith("OFFSET P") && dateStr.charAt(8) != 'T') { //OFFSET P1D "tomorrow", but not time such as OFFSET PT1H  
-//	    	if (dateStr.contains("INTERSECT")) return null; // but not datetime, e.g. OFFSET P1D INTERSECT T13:50
-	  		Character unit = dateStr.charAt(dateStr.length() - 1);
-	  		int value = Integer.parseInt(dateStr.substring(8, dateStr.length() - 1));
-	  		if (unit.equals('M')) // coreNLP gives M to both months and minutes
-					d = d.plusHours(value);
-	  		else if (unit.equals('H'))
-	  			d = d.plusHours(value);
-	  		else if (unit.equals('D'))
-					d = d.plusDays(value);
-	  		else if (unit.equals('W'))
-					d = d.plusDays(7 * value);
-	  		else if (unit.equals('Y'))
-					d = d.plusYears(value);
-	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
-	    }
-	    if (dateStr.startsWith("THIS P1D")) { // today
-	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
-	    }
-	    if (dateStr.startsWith("THIS")) 
-	    	dateStr = dateStr.substring(5, dateStr.length());
-	    if (dateStr.startsWith("XXXX-WXX-")) { // day of week
-	  		int weekday = Integer.parseInt(dateStr.substring(9, 10));
-	  		d = d.plusDays(weekday - d.getDayOfWeek().getValue());
-	  		if (dateStr.endsWith("W")) {
-	  			int week = Integer.parseInt(dateStr.substring(19, dateStr.length() - 1));
-	  			d = d.plusDays(7 * week);
-	  		}
-	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
-	    }
-    
-    
-    //XXXX-WXX-5 "friday"
-    //THIS XXXX-WXX-5 "this friday"
-    //XXXX-WXX-5 OFFSET P1W "next friday"
-    //THIS P1D "today"
-    //OFFSET P1D "tomorrow" 
-    //XXXX-WXX-5 OFFSET P1W
+    if (dateStr.equals("PRESENT_REF")) return null;
+    if (dateStr.startsWith("OFFSET")) return null;
 
     // We don't handle the following things:
     //   - "30 A.D" since its value is "+0030"
     //   - "Dec 20, 2009 10:04am" since its value is "2009-12-20T10:04"
-    int year = d.getYear(), month = d.getMonthValue(), day = d.getDayOfMonth();
+    int year = -1, month = -1, day = -1;
     boolean isBC = dateStr.startsWith("-");
     if (isBC) dateStr = dateStr.substring(1);
 
@@ -84,14 +41,25 @@ public class DateValue extends Value {
     if (dateParts.length > 3)
       throw new RuntimeException("Date has more than 3 parts: " + dateStr);
 
-    if (dateParts.length >= 1) {try {year = Integer.parseInt(dateParts[0]) * (isBC ? -1 : 1);} catch (NumberFormatException e) {}}
-    if (dateParts.length >= 2) {try {month = Integer.parseInt(dateParts[1]);} catch (NumberFormatException e) {}}
-    if (dateParts.length >= 3) {try {day = Integer.parseInt(dateParts[2]);} catch (NumberFormatException e) {}}
+    if (dateParts.length >= 1) year = parseIntRobust(dateParts[0]) * (isBC ? -1 : 1);
+    if (dateParts.length >= 2) month = parseIntRobust(dateParts[1]);
+    if (dateParts.length >= 3) day = parseIntRobust(dateParts[2]);
 
     return new DateValue(year, month, day);
   }
   
-public static DateValue parseSUDateValue(String dateStr, LocalDateTime now) {
+  private static int parseIntRobust(String i) {
+    int val;
+    try {
+      val = Integer.parseInt(i);
+    } catch (NumberFormatException ex) {
+      val = -1;
+    }
+    return val;
+  }
+  
+  
+  public static DateValue parseSUDateValue(String dateStr, LocalDateTime now) {
   	
   	if (dateStr.contains(" T1") || dateStr.contains(" T0")) return null; // don't handle datetime
   	LocalDateTime d = now;
@@ -150,16 +118,6 @@ public static DateValue parseSUDateValue(String dateStr, LocalDateTime now) {
 
     return new DateValue(year, month, day);
   }
-
-//  private static int parseIntRobust(String i) {
-//    int val;
-//    try {
-//      val = Integer.parseInt(i);
-//    } catch (NumberFormatException ex) {
-//      val = -1;
-//    }
-//    return val;
-//  }
 
   // used by Session.java:45
   public static DateValue now() {

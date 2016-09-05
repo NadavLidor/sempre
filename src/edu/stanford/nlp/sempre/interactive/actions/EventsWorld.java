@@ -35,8 +35,9 @@ public class EventsWorld extends FlatWorld {
 		this.selected = set;
 	} //TODO
 	
-  public static LocalDateTime calendarTime() {
-  	return LocalDateTime.parse("2015-11-11T12:59:00");
+  public LocalDateTime calendarTime() {
+  	return this.datetime;
+  	//LocalDateTime.parse("2015-11-11T12:59:00");
   }
 	
   public static EventsWorld fromContext(ContextValue context) {
@@ -53,28 +54,43 @@ public class EventsWorld extends FlatWorld {
       		+ "[\"Meeting_Today_2\",\"cafe\",\"2016-08-08T13:00\",\"2016-08-08T14:30\",[]],"
       		+ "[\"Meeting_Tomorrow\",\"bar\",\"2016-08-09T15:00\",\"2016-08-10T16:00\",[]]" //repeats on Thu.
       		+ "]";
-      return fromJSON(defaultEvents);
+      return fromJSON(defaultEvents, new DateTimeValue(LocalDateTime.now()));
     }
-
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
-    return fromJSON(wallString);
+    return fromJSON(wallString, context.datetime);
   }
   
   @SuppressWarnings("unchecked")
+  public EventsWorld(Set<Item> eventset, DateTimeValue currentTime) {
+    super();
+    this.allitems = eventset;
+    this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
+    this.datetime = currentTime.datetime;
+  }
+  
   public EventsWorld(Set<Item> eventset) {
     super();
     this.allitems = eventset;
     this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
+    this.datetime = LocalDateTime.now();
   }
 
   public String toJSON() {
-  	LogInfo.log("this.selected().toString()");
-  	LogInfo.log(this.selected().toString());
+//  	LogInfo.log("this.selected().toString()"); TODO there's a bug with the 'S' and 'N'
+//  	LogInfo.log(this.selected().toString());
     this.selected().forEach(e -> ((Event)e).names.add("S"));
     return Json.writeValueAsStringHard(this.allitems.stream().map(c -> ((Event)c).toJSON()).collect(Collectors.toList()));
   }
 
+  public static EventsWorld fromJSON(String wallString, DateTimeValue currentTime) {
+  	@SuppressWarnings("unchecked")
+    List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
+    Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
+        .collect(Collectors.toSet());
+    return new EventsWorld(events, currentTime);
+  }
+  
   public static EventsWorld fromJSON(String wallString) {
   	@SuppressWarnings("unchecked")
     List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
@@ -233,7 +249,7 @@ public class EventsWorld extends FlatWorld {
   		value = o;
   	}
   	if (value instanceof SUDateValue)
-  		value = DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime());
+  		value = DateValue.parseSUDateValue(((SUDateValue)value).date, calendarTime());
   	
   	final Object f = value;
     return this.allitems.stream().filter(i -> isAfter(f, i.get(rel)))
@@ -252,7 +268,7 @@ public class EventsWorld extends FlatWorld {
   		value = o;
   	}
   	if (value instanceof SUDateValue)
-  		value = DateValue.parseSUDateValue(((SUDateValue)value).date, EventsWorld.calendarTime());
+  		value = DateValue.parseSUDateValue(((SUDateValue)value).date, calendarTime());
   	
   	final Object f = value;
     return this.allitems.stream().filter(i -> isBefore(f, i.get(rel)))
@@ -261,7 +277,7 @@ public class EventsWorld extends FlatWorld {
   
   public boolean isAfter(Object o, Object v) {
   	if (v instanceof SUDateValue) {
-  			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, EventsWorld.calendarTime());
+  			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, calendarTime());
     		return (a.isAfter((DateValue)o));
     }
   	if (v instanceof DateValue)
@@ -289,7 +305,7 @@ public class EventsWorld extends FlatWorld {
   
   public boolean isBefore(Object o, Object v) {
   	if (v instanceof SUDateValue) {
-			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, EventsWorld.calendarTime());
+			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, calendarTime());
   		return (a.isBefore((DateValue)o));
   	}
   	if (v instanceof DateValue)
@@ -307,7 +323,7 @@ public class EventsWorld extends FlatWorld {
   
   
   public LocalDateTime now() {
-  	return EventsWorld.calendarTime();
+  	return calendarTime();
   }
   
   public LocalDateTime todaystart(){ // 12 am
@@ -385,8 +401,9 @@ public class EventsWorld extends FlatWorld {
   public void reset(String name) {
     this.allitems.clear();
     this.selected.clear();
-    
     Event n = new Event();
+    
+    /*
     n.title = "lunch with jack";
     n.location = "the usual";
     n.start = n.start.withHour(12);
@@ -511,6 +528,8 @@ public class EventsWorld extends FlatWorld {
     n.end = n.start.withHour(19);
     n.end = n.end.withMinute(30);
     this.allitems.add(n.clone());
+    
+    */
     
     n.start = n.start.plusDays(1); //mon
     n.end = n.end.plusDays(1);
@@ -676,6 +695,8 @@ public class EventsWorld extends FlatWorld {
     n.end = n.start.withHour(20);
     n.end = n.end.withMinute(30);
     this.allitems.add(n.clone());
+
+    /*
     
     n.start = n.start.plusDays(1); //next mon
     n.end = n.end.plusDays(1);
@@ -762,6 +783,8 @@ public class EventsWorld extends FlatWorld {
     n.end = n.start.withHour(15);
     n.end = n.end.withMinute(30);
     this.allitems.add(n.clone());
+    
+    */
     
   }
   
