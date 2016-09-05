@@ -94,8 +94,10 @@ public class  Event extends Item {
     else if (property.equals("end_weekday"))
         propval = new NumberValue(this.end.getDayOfWeek().getValue());
     else if (property.equals("start_date"))
+//    	propval = new DateValue(this.start.getYear(), this.start.getMonthValue(), this.start.getDayOfMonth());
       propval = new SUDateValue(Integer.toString(this.start.getYear()) + "-" + Integer.toString(this.start.getMonthValue()) + "-" + Integer.toString(this.start.getDayOfMonth())); 
     else if (property.equals("end_date"))
+//    	propval = new DateValue(this.end.getYear(), this.end.getMonthValue(), this.end.getDayOfMonth());
     	propval = new SUDateValue(Integer.toString(this.end.getYear()) + "-" + Integer.toString(this.end.getMonthValue()) + "-" + Integer.toString(this.end.getDayOfMonth()));
     else if (property.equals("start_time"))
       propval = new TimeValue(this.start.getHour(), this.start.getMinute()); 

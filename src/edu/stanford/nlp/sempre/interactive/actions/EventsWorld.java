@@ -20,6 +20,7 @@ import edu.stanford.nlp.sempre.DateValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NaiveKnowledgeGraph;
 import edu.stanford.nlp.sempre.NumberValue;
+import edu.stanford.nlp.sempre.SUDateValue;
 import edu.stanford.nlp.sempre.StringValue;
 import edu.stanford.nlp.sempre.TimeValue;
 import fig.basic.LogInfo;
@@ -84,11 +85,22 @@ public class EventsWorld extends FlatWorld {
 
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
-//    LogInfo.log("HAS EVENTWORLD: " + values);
+    LogInfo.log("HAS EVENTWORLD: " + values);
+//    Set<Object> temp = new HashSet<Object>();
     if (rel.equals("repeat")) {
       return this.allitems.stream().filter(i -> !Collections.disjoint(values, (Collection<?>) i.get(rel)))
           .collect(Collectors.toSet());
     }
+    
+//    for (Object o : values) {
+//    	if (o instanceof SUDateValue) {
+//    		temp.add(DateValue.parseSUDateValue(((SUDateValue)o).date, EventsWorld.calendarTime()));
+//    	} else {
+//    		break;
+//    	}
+//    }
+//    if (temp.size() > 0) values = temp;
+    
     return this.allitems.stream().filter(i -> values.contains(i.get(rel)))
         .collect(Collectors.toSet());
   }
@@ -220,12 +232,21 @@ public class EventsWorld extends FlatWorld {
   
   public Set<Item> before(String rel, Set<Object> values) {
 //  	LogInfo.log("BEFORE EVENTWORLD: " + values + " " + rel);
+  	
+  	
   	if (values == null || values.isEmpty()) return new HashSet<Item>();
     return this.allitems.stream().filter(i -> isBefore(values, i.get(rel)))
         .collect(Collectors.toSet());
   }
   
   public boolean isAfter(Set<Object> values, Object v) {
+  	if (v instanceof SUDateValue) {
+  		for (Object o : values) {
+  			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, EventsWorld.calendarTime());
+  			DateValue b = DateValue.parseSUDateValue(((SUDateValue)o).date, EventsWorld.calendarTime());
+    		return (a.isAfter(b));
+    	}
+  	}
   	if (v instanceof DateValue) {
   		for (Object o : values) {
     		return (o instanceof DateValue && ((DateValue)v).isAfter((DateValue)o));
@@ -261,6 +282,13 @@ public class EventsWorld extends FlatWorld {
   
   
   public boolean isBefore(Set<Object> values, Object v) {
+  	if (v instanceof SUDateValue) {
+  		for (Object o : values) {
+  			DateValue a = DateValue.parseSUDateValue(((SUDateValue)v).date, EventsWorld.calendarTime());
+  			DateValue b = DateValue.parseSUDateValue(((SUDateValue)o).date, EventsWorld.calendarTime());
+    		return (a.isBefore(b));
+    	}
+  	}
   	if (v instanceof DateValue) {
   		for (Object o : values) {
     		return (o instanceof DateValue && ((DateValue)v).isBefore((DateValue)o)); 
