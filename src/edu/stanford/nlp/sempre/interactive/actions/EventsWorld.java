@@ -102,7 +102,7 @@ public class EventsWorld extends FlatWorld {
 
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
-    LogInfo.log("HAS EVENTWORLD: " + values);
+//    LogInfo.log("HAS EVENTWORLD: " + values);
 
 	  Set<Object> temp = new HashSet<Object>();
 	    for (Object o : values) {

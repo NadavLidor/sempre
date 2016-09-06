@@ -123,7 +123,7 @@ public class  Event extends Item {
     else
       throw new RuntimeException("EVENT GET property " + property + " is not supported.");
     
-    LogInfo.log("EVENT GET: " + propval.toString());
+//    LogInfo.log("EVENT GET: " + propval.toString());
     return propval;
   }
   
