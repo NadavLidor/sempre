@@ -65,10 +65,10 @@ public class DateValue extends Value {
   	LocalDateTime d = now;
   	 
 	    if (dateStr.equals("PRESENT_REF")) return null;
-	    if (dateStr.startsWith("OFFSET P") && dateStr.charAt(8) != 'T') { //OFFSET P1D "tomorrow", but not time such as OFFSET PT1H  
-	  		Character unit = dateStr.charAt(dateStr.length() - 1);
+	    if (dateStr.startsWith("OFFSET P") && dateStr.charAt(8) != 'T') { //OFFSET P1D "tomorrow", but not time such as OFFSET PT1H
 	  		if (dateStr.length() > 14) // remove intersect, e.g. "tomorrow morning" as "OFFSET P1D INTERSECT MO"
 	  			dateStr = dateStr.substring(0, dateStr.indexOf(" INTER"));
+	  		Character unit = dateStr.charAt(dateStr.length() - 1);
 	  		int value = Integer.parseInt(dateStr.substring(8, dateStr.length() - 1)); 
 	  		if (unit.equals('M')) // coreNLP gives M to both months and minutes
 					d = d.plusHours(value);
