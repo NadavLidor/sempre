@@ -6,7 +6,7 @@
 (rule $ROOT ($Actions) (IdentityFn) (anchored 1)) # process for better NADAV
 
 # (rule $Actions ($Actions ; $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (anchored 1)) nadav
-(rule $Actions ($Actions $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (floating 1)) # not Actions to avoid multi ':s'
+(rule $Actions ($Action $Action) (lambda a1 (lambda a2 (:s (var a1) (var a2)))) (floating 1)) # not Actions to avoid multi ':s'
 (rule $Actions ($Action) (IdentityFn) (floating 1))
 # (rule $Action ([ $Actions ]) (IdentityFn) (floating 1))
 # (rule $Actions (repeat $Numbers [ $Actions ]) (lambda n (lambda a (:loop (var n) (var a)))) (anchored 1))
