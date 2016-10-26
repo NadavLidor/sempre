@@ -1,67 +1,5 @@
 
 
-handle ":""
-(\d\d+):(\d\d) ?(\w\w)?
-
-no ":"
-(\d\d?)(\d\d) ?(\w\w)?
-
-(\d\d?) ?(am|pm)? 
-
-
-
-
-
-
-
-(context (graph NaiveKnowledgeGraph ((string [[1,3,1,\"Green\",\"pam\",[]],[2,2,1,\"Blue\",\"john\",[]]]) (name b) (name c))))
-(context (graph NaiveKnowledgeGraph ((string [[1,3,1,\"Green\",[]]]) (name b) (name c))))
-
-
-(context (graph NaiveKnowledgeGraph ((string [[1,3,1,\"Green\",\"Meeting_Pam\",\"gates\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],[2,2,1,\"Blue\",\"Lunch\",\"Bytes\",\"2016-07-22T12:00:00\",\"2016-07-22T13:30:00\",[]]]) (name b) (name c))))
-
-
-[
-[\"Meeting with Pam\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],
-[\"Lunch\",\"Bytes\",\"2016-07-22T12:00:00\",\"2016-07-22T13:30:00\",[]],
-[\"Lunch\",\"SF\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[]],
-[\"Group meeting\",\"office\",\"2016-07-24T15:00:00\",\"2016-07-24T16:30:00\",[]]
-]
-
-[
-[\"Meeting with Pam\",\"office\",\"2016-07-21T10:15:00\",\"2016-07-22T11:15:00\",[]],
-[\"Lunch\",\"Bytes\",\"2016-07-22T12:00:00\",\"2016-07-22T13:30:00\",[]],
-[\"Lunch\",\"SF\",\"2016-07-23T12:00:00\",\"2016-07-23T13:30:00\",[]],
-[\"Group meeting\",\"office\",\"2016-07-24T15:00:00\",\"2016-07-24T16:30:00\",[]]
-]
-
-
-Lunch 			Bytes 	2016-07-22 	12:00:00 	2016-07-22 	13:30:00
-Meeting_Pam 	gates 	2016-07-21	10:15:00 	2016-07-22 	11:15:00 // two day long meeting
-
-update date : 3rd of august
-update move date : 3rd of august
-
-
-update title : good
-update weekday : wed
-update end weekday : fri
-
-find has title : lunch
-find has weekday : wed
-find has title : lunch and has weekday : wed
-find has title : good and has weekday : wed and has duration hours : 3
-
-find has location : bytes or has location : gates ; update location : x
-
-find has location : gates ; delete
-
-
-
-(context (graph NaiveKnowledgeGraph ((string [[1,3,2,\"Red\",[]],[2,2,1,\"Blue\",[]],[2,2,2,\"Red\",[]],[1,3,3,\"Red\",[]],[1,3,1,\"Green\",[]]]) (name b) (name c))))
-
-(string [[1,3,2,\"Red\",[]],[2,2,3,\"Red\",[]],[2,2,1,\"Blue\",[]],[2,2,2,\"Red\",[]],[1,3,3,\"Red\",[]],[1,3,1,\"Green\",[]],[1,3,4,\"Red\",[]]]) (name b) (name c)
-
 add red all
 
 
@@ -76,18 +14,7 @@ npm run local
 ./run @mode=interactive-calendar -interactive -server true -LanguageAnalyzer.languageAnalyzer corenlp.CoreNLPAnalyzer
 
 
-
-SELECTED
-mark or list of cubes?
-
-why no hashmap from ID -> Cube
-
-that way we can efficiently intersect IDs
-
-
-
 NOTES ABOUT FUNCTIONS:
-
 
  - currently move/update to weekday looks for the next weekday to match after the current event's date (e.g. if event is three weeks ago on Sunday, and we day "move to Monday" it will be moved +1 days forward)
 

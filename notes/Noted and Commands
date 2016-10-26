@@ -1,0 +1,49 @@
+Noted and Commands
+
+cat state/execs/128.exec/options.map | grep 'Params.initStepSize\|Params.adaptiveStepSize\|Learner.maxTrainIters'
+cat state/execs/129.exec/output.map  | grep correct.mean
+ls -lart state/execs/
+cat state/execs/80.exec/output.map  | grep correct.count
+
+
+
+oracle.mean	0.7901639344262295
+______________________________
+80
+Params.initStepSize	0.1
+Params.adaptiveStepSize	true
+Learner.maxTrainIters	3
+
+train.correct.mean	0.3901639344262295
+iter=0-train.correct.mean	0.36462823549645473
+iter=1-train.correct.mean	0.38688524590163936
+iter=2-train.correct.mean	0.3901639344262295
+iter=3-train.correct.mean	0.3901639344262295
+
+
+______________________________
+89
+Params.initStepSize	0.1
+Params.adaptiveStepSize	true
+Learner.maxTrainIters	5
+
+train.correct.mean	0.38688524590163936
+iter=0-train.correct.mean	0.36462823549645473
+iter=1-train.correct.mean	0.38688524590163936
+
+
+Definition: repeat 2 [add green] = (:loop 2 (: add green))
+Definiedum: add green twice
+$Action <- add green  (: add green)
+$Action <- $Action twice : lambda a (:loop 2 (var a))
+http://www.aclweb.org/anthology/D10-1119
+http://www-psych.stanford.edu/~jbt/224/Stolcke_Omohundro_94.pdf (https://scholar.google.com/citations?user=MpZ6dTEAAAAJ&hl=en)
+
+
+
+
+- unfreeze time
+- have a good devset of say 100 example
+- use the devset to improve the features: 100% training accuracy
+- do some theory on "online fraud", implement a generic method (handle different measurements like accuracy, average rank, accuracy@n), do a bit of literature survey
+- run the experiment again
