@@ -1088,9 +1088,8 @@ o('Master.newGrammarPath', './shrdlurn_output/grammar/'),
 o('Master.onlineLearnExamples', true),
 o('Master.independentSessions', false),
 
-#o('Dataset.inPaths', 'train:./shrdlurn_output/examples/startup.lisp'),
-
-#o('Learner.maxTrainIters', 3),
+o('Dataset.inPaths', 'train:./shrdlurn_output/examples/one_example.lisp'),
+o('Learner.maxTrainIters', 1),
 # selo(nil, 'Learner.maxTrainIters', 3, 5),
 
 o('server', true),
