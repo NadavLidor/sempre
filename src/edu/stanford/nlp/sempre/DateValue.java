@@ -84,6 +84,7 @@ public class DateValue extends Value {
 	    }
 	    if (dateStr.startsWith("THIS P1D")) { // today
 	    	DateValue res = new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
+	    	LogInfo.log("DateValue.parseSUDateValue: " + d.toString());
 	    	LogInfo.log("DateValue.parseSUDateValue: " + res.toString());
 	    	return res;
 	    }
