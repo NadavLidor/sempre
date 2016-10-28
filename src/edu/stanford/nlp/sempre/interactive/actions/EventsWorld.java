@@ -59,6 +59,7 @@ public class EventsWorld extends FlatWorld {
     }
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
+    LogInfo.log("EventsWorld.fromContext: " + context.datetime);
     return fromJSON(wallString, context.datetime);
   }
   

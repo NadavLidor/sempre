@@ -280,9 +280,8 @@ public class DateTimeValue extends Value {
   }
 
   public DateTimeValue(LispTree tree) {
-  	
+  	LogInfo.log("DateTimeValue.lisp: " + tree.child(1).toString());
   	this.datetime  = LocalDateTime.parse(tree.child(1).toString());
-  	
   }
 
   @Override
