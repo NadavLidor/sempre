@@ -74,7 +74,7 @@ public class EventsWorld extends FlatWorld {
     super();
     this.allitems = eventset;
     this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
-    this.datetime = LocalDateTime.now();
+    this.datetime = LocalDateTime.now(); //BUGGGGG
   }
 
   public String toJSON() {
@@ -92,13 +92,13 @@ public class EventsWorld extends FlatWorld {
     return new EventsWorld(events, currentTime);
   }
   
-  public static EventsWorld fromJSON(String wallString) {
-  	@SuppressWarnings("unchecked")
-    List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
-    Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
-        .collect(Collectors.toSet());
-    return new EventsWorld(events);
-  }
+//  public static EventsWorld fromJSON(String wallString) {
+//  	@SuppressWarnings("unchecked")
+//    List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
+//    Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
+//        .collect(Collectors.toSet());
+//    return new EventsWorld(events);
+//  }
 
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
