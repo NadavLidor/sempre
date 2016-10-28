@@ -70,12 +70,12 @@ public class EventsWorld extends FlatWorld {
     this.datetime = currentTime.datetime;
   }
   
-  public EventsWorld(Set<Item> eventset) {
-    super();
-    this.allitems = eventset;
-    this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
-    this.datetime = LocalDateTime.now(); //BUGGGGG
-  }
+//  public EventsWorld(Set<Item> eventset) {
+//    super();
+//    this.allitems = eventset;
+//    this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
+//    this.datetime = LocalDateTime.now(); //BUGGGGG
+//  }
 
   public String toJSON() {
 //  	LogInfo.log("this.selected().toString()"); TODO there's a bug with the 'S' and 'N'
