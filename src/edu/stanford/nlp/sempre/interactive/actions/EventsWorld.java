@@ -65,6 +65,7 @@ public class EventsWorld extends FlatWorld {
   @SuppressWarnings("unchecked")
   public EventsWorld(Set<Item> eventset, DateTimeValue currentTime) {
     super();
+    LogInfo.log("EventsWorld.EventsWorld: " + currentTime.toString());
     this.allitems = eventset;
     this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
     this.datetime = currentTime.datetime;
@@ -74,7 +75,7 @@ public class EventsWorld extends FlatWorld {
 //    super();
 //    this.allitems = eventset;
 //    this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
-//    this.datetime = LocalDateTime.now(); //BUGGGGG
+//    this.datetime = LocalDateTime.now();
 //  }
 
   public String toJSON() {
