@@ -83,7 +83,9 @@ public class DateValue extends Value {
 	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
 	    }
 	    if (dateStr.startsWith("THIS P1D")) { // today
-	    	return new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
+	    	DateValue res = new DateValue(d.getYear(), d.getMonthValue(), d.getDayOfMonth());
+	    	LogInfo.log("DateValue.parseSUDateValue: " + res.toString());
+	    	return res;
 	    }
 	    if (dateStr.startsWith("THIS")) 
 	    	dateStr = dateStr.substring(5, dateStr.length());
