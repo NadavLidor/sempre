@@ -71,12 +71,12 @@ public class EventsWorld extends FlatWorld {
     this.datetime = currentTime.datetime;
   }
   
-//  public EventsWorld(Set<Item> eventset) {
-//    super();
-//    this.allitems = eventset;
-//    this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
-//    this.datetime = LocalDateTime.now();
-//  }
+  public EventsWorld(Set<Item> eventset) {
+    super();
+    this.allitems = eventset;
+    this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
+    this.datetime = LocalDateTime.now();
+  }
 
   public String toJSON() {
 //  	LogInfo.log("this.selected().toString()"); TODO there's a bug with the 'S' and 'N'
@@ -90,16 +90,17 @@ public class EventsWorld extends FlatWorld {
     List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
     Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
         .collect(Collectors.toSet());
+    LogInfo.log("EventsWorld.fromJSON: " + currentTime.toString());
     return new EventsWorld(events, currentTime);
   }
   
-//  public static EventsWorld fromJSON(String wallString) {
-//  	@SuppressWarnings("unchecked")
-//    List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
-//    Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
-//        .collect(Collectors.toSet());
-//    return new EventsWorld(events);
-//  }
+  public static EventsWorld fromJSON(String wallString) {
+  	@SuppressWarnings("unchecked")
+    List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
+    Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
+        .collect(Collectors.toSet());
+    return new EventsWorld(events);
+  }
 
   @Override
   public Set<Item> has(String rel, Set<Object> values) {
@@ -114,7 +115,8 @@ public class EventsWorld extends FlatWorld {
 	    	else
 	    		break;
 	    }
-	    if (temp.size() > 0) values = temp;
+	    if (temp.size() > 0) 
+	    	values = temp;
 	    final Set<Object> values_final = values;
 	    
 	    if (rel.equals("repeat")) {
