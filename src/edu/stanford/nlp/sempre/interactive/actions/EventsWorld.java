@@ -142,7 +142,7 @@ public class EventsWorld extends FlatWorld {
   @Override
   public void update(String rel, Object value, Set<Item> selected) {
 //  	this.allitems.removeAll(selected);
-    selected.forEach(i -> i.update(rel, value));
+    selected.forEach(i -> i.update(rel, value, this.datetime));
 //    this.allitems.addAll(selected);
   }
   
@@ -152,7 +152,7 @@ public class EventsWorld extends FlatWorld {
   
   // calendar world specific actions TODO
   public void move(String rel, Object value) {
-  	this.selected.forEach(i -> i.move(rel, value));
+  	this.selected.forEach(i -> i.move(rel, value, this.datetime));
   }
     
   

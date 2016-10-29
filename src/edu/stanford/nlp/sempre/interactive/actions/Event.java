@@ -37,7 +37,7 @@ public class  Event extends Item {
 //  public List<Boolean> repeats; // [0] weekly, [1,7] days of week, [8] monthly, [9] yearly
 //  public HashSet<Person> guests;
   public Set<String> names;
-	private LocalDateTime currentTime;
+//	private LocalDateTime currentTime; TODO
   
   public Event(LocalDateTime currentTime) {
     this.title = "meeting";
@@ -45,12 +45,10 @@ public class  Event extends Item {
 //		this.repeats = new ArrayList<Boolean>(Collections.nCopies(9, false));
 //		this.guests = new HashSet<Person>();
 		this.names = new HashSet<>();
-		if (currentTime != null) 
-			this.currentTime = currentTime;
-		else 
-			this.currentTime = LocalDateTime.now();
+		if (currentTime == null) 
+			currentTime = LocalDateTime.now();
 		
-		this.start = this.currentTime ;
+		this.start = currentTime ;
 		if (this.start.getMinute() > 30) {
 			this.start = this.start.plusHours(1);
 			this.start = this.start.truncatedTo(ChronoUnit.HOURS);
@@ -143,7 +141,7 @@ public class  Event extends Item {
   
   @SuppressWarnings("unchecked")
 	@Override
-  public void update(String property, Object value) {
+  public void update(String property, Object value, LocalDateTime datetime) {
     if (property.equals("title") && value instanceof String)
     	this.title = (String)value;
     else if (property.equals("location") && value instanceof String)
@@ -159,21 +157,21 @@ public class  Event extends Item {
     else if (property.equals("duration") && value instanceof Set<?>)
     	updateDuration((Set<NumberValue>)value);
     else if (property.equals("start_date") && value instanceof SUDateValue)
-    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, this.currentTime), "start");
+    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, datetime), "start");
     else if (property.equals("end_date") && value instanceof SUDateValue)
-    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, this.currentTime), "end");
+    	updateDate(DateValue.parseSUDateValue(((SUDateValue)value).date, datetime), "end");
     else if (property.equals("start_time") && value instanceof TimeValue)
     	updateTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	updateTime((TimeValue)value, "end");
     else if (property.equals("start_datetimevalue") && value instanceof SUDateTimeValue)
-    	updateDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "start");
+    	updateDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, datetime), "start");
     else if (property.equals("end_datetimevalue") && value instanceof SUDateTimeValue)
-    	updateDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "end");
+    	updateDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, datetime), "end");
     else if (property.equals("start_datetime") && value instanceof Set<?>)
-    	updateDateTime((Set<LocalDateTime>)value, "start");
+    	updateDateTime((Set<LocalDateTime>)value, "start", datetime);
     else if (property.equals("end_datetime") && value instanceof Set<?>)
-    	updateDateTime((Set<LocalDateTime>)value, "end");
+    	updateDateTime((Set<LocalDateTime>)value, "end", datetime);
 //    else if (property.equals("repeat") && value instanceof NumberValue)
 //    	updateRepeat((NumberValue)value);
     else {
@@ -188,7 +186,7 @@ public class  Event extends Item {
 
 	// move is similar to update, but preserves the current duration
   @SuppressWarnings("unchecked")
-	public void move(String property, Object value) {
+	public void move(String property, Object value, LocalDateTime datetime) {
     if (property.equals("start_weekday") && value instanceof String) // TODO
     	moveWeekday(Utils.weekdayToInt((String)value), "start");
     else if (property.equals("end_weekday") && value instanceof String) // TODO
@@ -198,25 +196,25 @@ public class  Event extends Item {
     else if (property.equals("end_weekday") && value instanceof NumberValue)
     	moveWeekday((NumberValue)value, "end");
     else if (property.equals("start_date") && value instanceof SUDateValue)
-    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, this.currentTime), "start");
+    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, datetime), "start");
     else if (property.equals("end_date") && value instanceof SUDateValue) {
-    	LogInfo.log("Event.move end_date: currentTime is used here: " + this.currentTime);
-    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, this.currentTime), "end");
+    	LogInfo.log("Event.move end_date: currentTime is used here: " + datetime);
+    	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, datetime), "end");
     }
     else if (property.equals("start_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "end");
     else if (property.equals("start_datetimevalue") && value instanceof SUDateTimeValue) {
-    	LogInfo.log("Event.move start_datetimevalue: currentTime is used here: " + this.currentTime);
-    	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "start");
+    	LogInfo.log("Event.move start_datetimevalue: currentTime is used here: " + datetime);
+    	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, datetime), "start");
     }
     else if (property.equals("end_datetimevalue") && value instanceof SUDateTimeValue)
-    	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "end");
+    	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, datetime), "end");
     else if (property.equals("start_datetime") && value instanceof Set<?>)
-    	moveDateTime((Set<LocalDateTime>)value, "start");
+    	moveDateTime((Set<LocalDateTime>)value, "start", datetime);
     else if (property.equals("end_datetime") && value instanceof Set<?>)
-    	moveDateTime((Set<LocalDateTime>)value, "end");
+    	moveDateTime((Set<LocalDateTime>)value, "end", datetime);
     else
       throw new RuntimeException("EVENT MOVE setting property " + property + " is not supported." + (value instanceof NumberValue) + (value instanceof String) + (value instanceof Set<?>) + (value instanceof DateValue) + (value instanceof Integer) + (value instanceof Double));
   }
@@ -264,9 +262,9 @@ public class  Event extends Item {
 	  
   }
   
-  public void updateDateTime(Set<LocalDateTime> value, String op) {
+  public void updateDateTime(Set<LocalDateTime> value, String op, LocalDateTime datetime) {
   	
-  	LocalDateTime sample = this.currentTime;
+  	LocalDateTime sample = datetime;
   	for (LocalDateTime i : value) {sample = i; break;}
   	
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
@@ -320,10 +318,10 @@ public class  Event extends Item {
 //  	}
 //  }
   
-  public void moveDateTime(Set<LocalDateTime> value, String op) {
+  public void moveDateTime(Set<LocalDateTime> value, String op, LocalDateTime datetime) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 //  	LogInfo.log("moveDateTime EVENT: " + value.toString());
-  	LocalDateTime sample = this.currentTime;
+  	LocalDateTime sample = datetime;
   	for (LocalDateTime i : value) {sample = i; break;}
   	
 	  if (op.equals("start")) {
