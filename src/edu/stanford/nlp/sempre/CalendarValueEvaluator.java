@@ -12,6 +12,8 @@ import fig.basic.LogInfo;
 public class CalendarValueEvaluator implements ValueEvaluator {
   public double getCompatibility(Value target, Value pred) {
 
+  	LogInfo.log("getCompatibility: " + target);
+  	
   	// target
   	String targetEvents = ((StringValue)target).value;
   	EventsWorld targetWorld = EventsWorld.fromJSON(targetEvents);
