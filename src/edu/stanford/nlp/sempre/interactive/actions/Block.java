@@ -1,4 +1,5 @@
 package edu.stanford.nlp.sempre.interactive.actions;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,7 +79,7 @@ public class  Block extends Item {
   }
   
   @Override
-  public void update(String property, Object value) {
+  public void update(String property, Object value, LocalDateTime datetime) {
     
     // updating with empty set does nothing, throw something?
     if (value instanceof Set && ((Set)value).size() == 0)

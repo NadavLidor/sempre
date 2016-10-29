@@ -1,15 +1,11 @@
 package edu.stanford.nlp.sempre.interactive.actions;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -76,9 +72,8 @@ public class EventsWorld extends FlatWorld {
     super();
     LogInfo.log("EventsWorld.eventset: WORLD CREATED with NOW");
     this.allitems = eventset;
-    this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
-    LocalDateTime.parse("2016-10-26T11:59:00"); 
-//    this.datetime = LocalDateTime.now(); TODO
+    this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet()); 
+    this.datetime = LocalDateTime.now(); //TODO
   }
 
   public String toJSON() {

@@ -1,18 +1,20 @@
 package edu.stanford.nlp.sempre.interactive.actions;
 
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import com.google.common.collect.Sets;
 
 import edu.stanford.nlp.sempre.ContextValue;
 import edu.stanford.nlp.sempre.Json;
 import edu.stanford.nlp.sempre.NaiveKnowledgeGraph;
 import edu.stanford.nlp.sempre.StringValue;
+
+
 
 enum CubeColor {
   Red(0), Orange(1), Yellow (2), Green(3), Blue(4), White(6), Black(7),
@@ -152,7 +154,8 @@ public class BlocksWorld extends FlatWorld {
   @Override
   public void update(String rel, Object value, Set<Item> selected) {
     allitems.removeAll(selected);
-    selected.forEach(i -> i.update(rel, value));
+    LocalDateTime datetime = LocalDateTime.now();
+    selected.forEach(i -> i.update(rel, value, datetime));
     allitems.addAll(selected);
   }
   
