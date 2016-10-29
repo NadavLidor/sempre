@@ -329,23 +329,22 @@ public abstract class Parser {
       // Either print all predictions or this prediction is worse by some amount.
       
       // print without derivation
-      	String derivString = deriv.toString();
-      	derivString = derivString.substring(0, derivString.indexOf("(value")); //don't print value
-        LogInfo.logs(
-            "Pred@%04d: %s [score=%s, prob=%s%s]", i, derivString,
-            Fmt.D(deriv.score), Fmt.D(probs[i]), compatibilities != null ? ", comp=" + Fmt.D(compatibilities[i]) : "");
-        if (opts.dumpAllFeatures) FeatureVector.logFeatureWeights("Features", deriv.getAllFeatureVector(), state.params);
+//      	String derivString = deriv.toString();
+//      	derivString = derivString.substring(0, derivString.indexOf("(value")); //don't print value
+//        LogInfo.logs(
+//            "Pred@%04d: %s [score=%s, prob=%s%s]", i, derivString,
+//            Fmt.D(deriv.score), Fmt.D(probs[i]), compatibilities != null ? ", comp=" + Fmt.D(compatibilities[i]) : "");
+//        if (opts.dumpAllFeatures) FeatureVector.logFeatureWeights("Features", deriv.getAllFeatureVector(), state.params);
         
         // print with derivation
-//        boolean print = printAllPredictions || ((probs[i] >= probs[0] / 2 || i < 10) && i < opts.maxPrintedPredictions);
-//        if (print) {
-//          LogInfo.logs(
-//                  "Pred@%04d: %s [score=%s, prob=%s%s]", i, deriv.toString(),
-//                  Fmt.D(deriv.score), Fmt.D(probs[i]), compatibilities != null ? ", comp=" + Fmt.D(compatibilities[i]) : "");
-//          // LogInfo.logs("Derivation tree: %s", deriv.toRecursiveString());
-//          if (opts.dumpAllFeatures) FeatureVector.logFeatureWeights("Features", deriv.getAllFeatureVector(), state.params);
-//        }
-        
+        boolean print = printAllPredictions || ((probs[i] >= probs[0] / 2 || i < 10) && i < opts.maxPrintedPredictions);
+        if (print) {
+          LogInfo.logs(
+                  "Pred@%04d: %s [score=%s, prob=%s%s]", i, deriv.toString(),
+                  Fmt.D(deriv.score), Fmt.D(probs[i]), compatibilities != null ? ", comp=" + Fmt.D(compatibilities[i]) : "");
+          // LogInfo.logs("Derivation tree: %s", deriv.toRecursiveString());
+          if (opts.dumpAllFeatures) FeatureVector.logFeatureWeights("Features", deriv.getAllFeatureVector(), state.params);
+        }
         
         
     }
