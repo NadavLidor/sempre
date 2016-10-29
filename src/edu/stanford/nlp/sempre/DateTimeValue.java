@@ -25,6 +25,7 @@ public class DateTimeValue extends Value {
 //  	LocalDateTime d = LocalDateTime.now(ZoneId.of("UTC+00:00"));
 //  	LocalDateTime d = EventsWorld.calendarTime(); //TODO
   	LocalDateTime d = LocalDateTime.now(); //TODO
+  	LogInfo.log("DateTimeValue.parseDateTimeValue: HERE NOW");
   	if (d.getMinute() > 30) {
   		d = d.plusMinutes(30);
   		d = d.truncatedTo(ChronoUnit.HOURS);
