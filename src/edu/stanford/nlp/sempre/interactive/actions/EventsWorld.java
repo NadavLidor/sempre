@@ -77,7 +77,7 @@ public class EventsWorld extends FlatWorld {
     LogInfo.log("EventsWorld.eventset: WORLD CREATED with NOW");
     this.allitems = eventset;
     this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
-    this.datetime = LocalDateTime.now();
+    this.datetime = LocalDateTime.now().plusDays(10);
   }
 
   public String toJSON() {
