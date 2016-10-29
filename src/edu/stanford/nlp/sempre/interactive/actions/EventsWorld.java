@@ -77,7 +77,8 @@ public class EventsWorld extends FlatWorld {
     LogInfo.log("EventsWorld.eventset: WORLD CREATED with NOW");
     this.allitems = eventset;
     this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
-    this.datetime = LocalDateTime.now().plusDays(10);
+    LocalDateTime.parse("2016-10-26T11:59:00"); 
+//    this.datetime = LocalDateTime.now(); TODO
   }
 
   public String toJSON() {
@@ -101,7 +102,7 @@ public class EventsWorld extends FlatWorld {
     List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
     Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
         .collect(Collectors.toSet());
-    LogInfo.log("EventsWorld.wallString: WORLD CREATED with NOW");
+//    LogInfo.log("EventsWorld.wallString: WORLD CREATED with NOW"); TODO
     return new EventsWorld(events);
   }
 
