@@ -1,18 +1,11 @@
 package edu.stanford.nlp.sempre;
 
-import java.util.stream.Collectors;
-
-import edu.stanford.nlp.sempre.interactive.actions.Event;
 import edu.stanford.nlp.sempre.interactive.actions.EventsWorld;
-import edu.stanford.nlp.sempre.interactive.actions.Item;
-import fig.basic.LispTree;
 import fig.basic.LogInfo;
 
 // This is the simplest evaluator, but exact match can sometimes be too harsh.
 public class CalendarValueEvaluator implements ValueEvaluator {
   public double getCompatibility(Value target, Value pred) {
-
-  	LogInfo.log("getCompatibility: " + target);
   	
   	// target
   	String targetEvents = ((StringValue)target).value;

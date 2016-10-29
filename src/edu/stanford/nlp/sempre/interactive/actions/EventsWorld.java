@@ -55,7 +55,6 @@ public class EventsWorld extends FlatWorld {
     }
     NaiveKnowledgeGraph graph = (NaiveKnowledgeGraph)context.graph;
     String wallString = ((StringValue)graph.triples.get(0).e1).value;
-    LogInfo.log("EventsWorld.fromContext: " + context.datetime);
     return fromJSON(wallString, context.datetime);
   }
   
@@ -70,7 +69,6 @@ public class EventsWorld extends FlatWorld {
   
   public EventsWorld(Set<Item> eventset) {
     super();
-    LogInfo.log("EventsWorld.eventset: WORLD CREATED with NOW");
     this.allitems = eventset;
     this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet()); 
     this.datetime = LocalDateTime.now(); //TODO
@@ -88,7 +86,6 @@ public class EventsWorld extends FlatWorld {
     List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
     Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
         .collect(Collectors.toSet());
-    LogInfo.log("EventsWorld.fromJSON: " + currentTime.toString());
     return new EventsWorld(events, currentTime);
   }
   
@@ -97,7 +94,6 @@ public class EventsWorld extends FlatWorld {
     List<List<Object>> eventstr = Json.readValueHard(wallString, List.class);
     Set<Item> events = eventstr.stream().map(e -> {return Event.fromJSONObject(e);})
         .collect(Collectors.toSet());
-//    LogInfo.log("EventsWorld.wallString: WORLD CREATED with NOW"); TODO
     return new EventsWorld(events);
   }
 

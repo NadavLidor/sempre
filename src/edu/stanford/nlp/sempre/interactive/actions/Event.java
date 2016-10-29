@@ -197,18 +197,14 @@ public class  Event extends Item {
     	moveWeekday((NumberValue)value, "end");
     else if (property.equals("start_date") && value instanceof SUDateValue)
     	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, datetime), "start");
-    else if (property.equals("end_date") && value instanceof SUDateValue) {
-    	LogInfo.log("Event.move end_date: currentTime is used here: " + datetime);
+    else if (property.equals("end_date") && value instanceof SUDateValue)
     	moveDate(DateValue.parseSUDateValue(((SUDateValue)value).date, datetime), "end");
-    }
     else if (property.equals("start_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "start");
     else if (property.equals("end_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "end");
-    else if (property.equals("start_datetimevalue") && value instanceof SUDateTimeValue) {
-    	LogInfo.log("Event.move start_datetimevalue: currentTime is used here: " + datetime);
+    else if (property.equals("start_datetimevalue") && value instanceof SUDateTimeValue)
     	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, datetime), "start");
-    }
     else if (property.equals("end_datetimevalue") && value instanceof SUDateTimeValue)
     	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, datetime), "end");
     else if (property.equals("start_datetime") && value instanceof Set<?>)
