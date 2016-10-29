@@ -206,7 +206,7 @@ public class  Event extends Item {
     else if (property.equals("end_time") && value instanceof TimeValue)
     	moveTime((TimeValue)value, "end");
     else if (property.equals("start_datetimevalue") && value instanceof SUDateTimeValue) {
-    	LogInfo.log("Event.move: currentTime is used here");
+    	LogInfo.log("Event.move: currentTime is used here: " + this.currentTime);
     	moveDateTime(DateTimeValue.parseSUDateTimeValue(((SUDateTimeValue)value).datetime, this.currentTime), "start");
     }
     else if (property.equals("end_datetimevalue") && value instanceof SUDateTimeValue)
