@@ -61,7 +61,6 @@ public class EventsWorld extends FlatWorld {
   @SuppressWarnings("unchecked")
   public EventsWorld(Set<Item> eventset, DateTimeValue currentTime) {
     super();
-    LogInfo.log("EventsWorld.eventset.currentTime: " + currentTime.toString());
     this.allitems = eventset;
     this.selected = eventset.stream().filter(e -> ((Event)e).names.contains("S")).collect(Collectors.toSet());
     this.datetime = currentTime.datetime;

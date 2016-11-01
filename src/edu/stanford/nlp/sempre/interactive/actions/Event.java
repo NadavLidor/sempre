@@ -360,14 +360,14 @@ public class  Event extends Item {
   public void updateDate(DateValue date, String op) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 	  if (op.equals("start")) {
+	  	if (date.year != -1) this.start = this.start.with(ChronoField.YEAR, date.year);
+	  	if (date.month != -1) this.start = this.start.with(ChronoField.MONTH_OF_YEAR, date.month);
 		  if (date.day != -1) this.start = this.start.with(ChronoField.DAY_OF_MONTH, date.day);
-		  if (date.month != -1) this.start = this.start.with(ChronoField.MONTH_OF_YEAR, date.month);
-		  if (date.year != -1) this.start = this.start.with(ChronoField.YEAR, date.year);
 	  }
 	  else if (op.equals("end")) {
-		  if (date.day != -1) this.end = this.end.with(ChronoField.DAY_OF_MONTH, date.day);
-		  if (date.month != -1) this.end = this.end.with(ChronoField.MONTH_OF_YEAR, date.month);
-		  if (date.year != -1) this.end = this.end.with(ChronoField.YEAR, date.year);
+	  	if (date.year != -1) this.end = this.end.with(ChronoField.YEAR, date.year);
+	  	if (date.month != -1) this.end = this.end.with(ChronoField.MONTH_OF_YEAR, date.month);
+	  	if (date.day != -1) this.end = this.end.with(ChronoField.DAY_OF_MONTH, date.day);
 	  }
 	  if (!this.end.isAfter(this.start)) this.end = this.start.plusMinutes(duration);
   }
@@ -375,15 +375,15 @@ public class  Event extends Item {
   public void moveDate(DateValue date, String op) {
   	long duration = this.start.until(this.end, ChronoUnit.MINUTES);
 	  if (op.equals("start")) {
-		  if (date.day != -1) this.start = this.start.with(ChronoField.DAY_OF_MONTH, date.day);
-		  if (date.month != -1) this.start = this.start.with(ChronoField.MONTH_OF_YEAR, date.month);
-		  if (date.year != -1) this.start = this.start.with(ChronoField.YEAR, date.year);
+	  	if (date.year != -1) this.start = this.start.with(ChronoField.YEAR, date.year);
+	  	if (date.month != -1) this.start = this.start.with(ChronoField.MONTH_OF_YEAR, date.month);
+	  	if (date.day != -1) this.start = this.start.with(ChronoField.DAY_OF_MONTH, date.day);
 		  this.end = this.start.plusMinutes(duration);
 	  }
 	  else if (op.equals("end")) {
-		  if (date.day != -1) this.end = this.end.with(ChronoField.DAY_OF_MONTH, date.day);
-		  if (date.month != -1) this.end = this.end.with(ChronoField.MONTH_OF_YEAR, date.month);
-		  if (date.year != -1) this.end = this.end.with(ChronoField.YEAR, date.year);
+	  	if (date.year != -1) this.end = this.end.with(ChronoField.YEAR, date.year);
+	  	if (date.month != -1) this.end = this.end.with(ChronoField.MONTH_OF_YEAR, date.month);
+	  	if (date.day != -1) this.end = this.end.with(ChronoField.DAY_OF_MONTH, date.day);
 		  this.start = this.end.plusMinutes(-duration);
 	  }
   }
